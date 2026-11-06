@@ -150,10 +150,7 @@ html { scroll-behavior: smooth; }
   body.needs-worksheet .plan-step { animation: none !important; }
 }
 
-/* Ensure the native `hidden` attribute always wins over Tailwind's display
-   utilities (flex/grid/block), regardless of class source order. Used by the
-   intake form's personal/business toggle so `el.hidden = true/false` works
-   reliably no matter what display utility an element also carries. */
+/* The hidden attribute must beat Tailwind display utilities (flex, grid, block). */
 [hidden] { display: none !important; }
 
 @media print {
@@ -161,7 +158,7 @@ html { scroll-behavior: smooth; }
   body > footer { display: none !important; }
 }
 
-/* FAQ accordions (homepage + TFSA calculator) */
+/* FAQ accordions on the quote page and the TFSA calculator. */
 .faq-answer { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
 .faq-item.open .faq-answer { max-height: 600px; }
 .faq-item.open .faq-chevron { transform: rotate(180deg); }
