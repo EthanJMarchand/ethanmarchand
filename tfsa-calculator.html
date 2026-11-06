@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canadian TFSA Calculator: Retirement Balance &amp; Income Projector | Advisor Strategies</title>
+<meta name="description" content="Free Canadian TFSA calculator. See whether your monthly contribution catches you up on your TFSA room, and project what it could be worth — and pay you — by retirement.">
+<meta name="keywords" content="TFSA calculator, Canadian TFSA calculator, TFSA contribution calculator, max out TFSA calculator, how long to max out my TFSA, TFSA savings calculator, tax-free savings account calculator, TFSA contribution room calculator, TFSA retirement calculator">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ethanmarchand.ca/tfsa-calculator.html">
+<meta name="author" content="Ethan Marchand">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Canadian TFSA Calculator: Retirement Balance &amp; Income Projector">
+<meta property="og:description" content="See whether your monthly contribution catches you up on your TFSA room, and project what it could be worth — and pay you — by retirement.">
+<meta property="og:url" content="https://ethanmarchand.ca/tfsa-calculator.html">
+<meta property="og:image" content="https://ethanmarchand.ca/assets/logo.png">
+<meta property="og:locale" content="en_CA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Canadian TFSA Calculator: Retirement Balance &amp; Income Projector">
+<meta name="twitter:description" content="See whether your monthly contribution catches you up on your TFSA room, and project what it could be worth — and pay you — by retirement.">
+<link rel="icon" href="assets/icon.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ethanmarchand.ca/" },
+    { "@type": "ListItem", "position": 2, "name": "TFSA Calculator", "item": "https://ethanmarchand.ca/tfsa-calculator.html" }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Canadian TFSA Calculator",
+  "url": "https://ethanmarchand.ca/tfsa-calculator.html",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any (web browser)",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CAD" },
+  "description": "Free Canadian TFSA calculator: see whether your monthly contribution catches you up on your TFSA room (and exactly when), and project your account's tax-free growth and retirement income.",
+  "creator": { "@type": "Person", "name": "Ethan Marchand" },
+  "publisher": { "@type": "Organization", "name": "Advisor Strategies", "legalName": "Advisor Strategies Inc." },
+  "inLanguage": "en-CA",
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json" id="faq-schema">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "How long will it take me to max out my TFSA?", "acceptedAnswer": { "@type": "Answer", "text": "It depends on your available contribution room and how much you can contribute each month, compared to how much new room the CRA adds each year. Enter your age, estimated contributions to date, and a monthly contribution amount into the calculator above — it tells you the exact year you'll be fully caught up, or lets you know if that pace won't fully catch up before retirement." } },
+    { "@type": "Question", "name": "What is the TFSA contribution limit for 2026?", "acceptedAnswer": { "@type": "Answer", "text": "The TFSA dollar limit for 2026 is $7,000. If you were 18 or older in 2009 and have never contributed, your total lifetime TFSA contribution room by 2026 is $109,000." } },
+    { "@type": "Question", "name": "How much can I contribute to my TFSA every year?", "acceptedAnswer": { "@type": "Answer", "text": "The CRA sets a new annual TFSA dollar limit each year, usually indexed to inflation and rounded to the nearest $500. For 2026, that limit is $7,000. Unused room carries forward indefinitely, so your total available room is usually larger than just one year's limit." } },
+    { "@type": "Question", "name": "What happens if I over-contribute to my TFSA?", "acceptedAnswer": { "@type": "Answer", "text": "The CRA charges a penalty tax of 1% per month on the excess amount for as long as it stays in the account. It's worth double-checking your available room in your CRA My Account before contributing if you're not sure." } },
+    { "@type": "Question", "name": "Is TFSA growth actually tax-free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Interest, dividends, and capital gains earned inside a TFSA are never taxed, and withdrawals — including all of that growth — are completely tax-free too, unlike money withdrawn from a taxable account." } },
+    { "@type": "Question", "name": "How is this different from a basic TFSA contribution room calculator?", "acceptedAnswer": { "@type": "Answer", "text": "Most TFSA calculators only tell you your current contribution room. This one estimates your available room from your age and what you've contributed so far, tells you whether your planned monthly contribution is enough to catch up (and exactly when), and projects your account's tax-free growth and retirement income." } },
+    { "@type": "Question", "name": "Where do I find my exact TFSA contribution room?", "acceptedAnswer": { "@type": "Answer", "text": "This calculator estimates your available room from your age and what you've told it you've contributed. For the exact figure on record, log in to your CRA My Account and go to \"RRSP and TFSA\" — if the two numbers don't match, trust the CRA figure." } }
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body class="bg-paper text-ink antialiased">
+<!-- Hand-coded by Ethan Marchand. No annuities, no outsourcing, just me and too much coffee. -->
+
+<header class="no-print sticky top-0 z-50 bg-navydeep border-b border-white/10">
+  <nav class="max-w-6xl mx-auto flex items-center justify-between gap-4 px-6 md:px-8 py-3.5" aria-label="Primary">
+    <a href="/" class="flex items-center shrink-0" aria-label="Advisor Strategies home">
+      <img src="/assets/logo-light.png" alt="Advisor Strategies" width="407" height="76" class="h-9 md:h-10 w-auto">
+    </a>
+    <div class="hidden lg:flex items-center gap-x-6 text-sm font-medium text-cream/80">
+      <a href="/" data-nav="home" class="site-nav-link hover:text-cream transition">Home</a>
+      <div class="site-nav-dropdown relative">
+        <button type="button" data-nav-dropdown class="site-nav-dropdown-trigger site-nav-link inline-flex items-center gap-1.5 hover:text-cream transition" aria-expanded="false" aria-haspopup="true">
+          Tools
+          <svg class="site-nav-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 4.5 L6 8 L9.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="site-nav-dropdown-menu" role="menu">
+          <a href="/life-insurance-quote.html" data-nav="quote" role="menuitem">Get a Quote</a>
+          <a href="/tfsa-calculator.html" data-nav="tfsa" role="menuitem">TFSA Calculator</a>
+          <a href="/needs-analysis.html" data-nav="plan" role="menuitem">Financial Plan</a>
+          <a href="/client-intake.html" data-nav="intake" role="menuitem">Client Intake</a>
+          <a href="/investor-questionnaire.html" data-nav="iq" role="menuitem">Investor Questionnaire</a>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 shrink-0">
+      <a href="https://advisorstrategies.ca/" class="hidden sm:inline-flex items-center px-5 py-2.5 rounded-full bg-gold text-navydeep text-sm font-semibold hover:bg-golddim hover:text-cream transition">I'm a client</a>
+      <button id="nav-toggle" aria-label="Toggle menu" aria-controls="mobile-menu" class="lg:hidden text-cream">
+        <svg width="24" height="18" viewBox="0 0 22 16" fill="none"><path d="M0 1h22M0 8h22M0 15h22" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+    </div>
+  </nav>
+  <div id="mobile-menu" class="hidden lg:hidden flex-col gap-1 px-6 pb-6 pt-2 text-sm font-medium text-cream/80 bg-navydeep border-t border-white/10">
+    <a href="/" data-nav="home" class="py-2">Home</a>
+    <p class="pt-2 pb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-cream/50">Tools</p>
+    <a href="/life-insurance-quote.html" data-nav="quote" class="py-2 pl-2">Get a Quote</a>
+    <a href="/tfsa-calculator.html" data-nav="tfsa" class="py-2 pl-2">TFSA Calculator</a>
+    <a href="/needs-analysis.html" data-nav="plan" class="py-2 pl-2">Financial Plan</a>
+    <a href="/client-intake.html" data-nav="intake" class="py-2 pl-2">Client Intake</a>
+    <a href="/investor-questionnaire.html" data-nav="iq" class="py-2 pl-2">Investor Questionnaire</a>
+    <a href="https://advisorstrategies.ca/" class="py-2">I'm a client</a>
+  </div>
+</header>
+
+<section class="pt-16 pb-10 text-center bg-[radial-gradient(ellipse_at_top_right,rgba(97,137,134,0.10),transparent_55%)]">
+  <div class="max-w-2xl mx-auto px-6 md:px-8">
+    <div class="flex items-center justify-center gap-2 text-[12px] font-semibold tracking-[0.16em] uppercase text-golddim mb-4">
+      <svg width="18" height="14" viewBox="0 0 20 16" fill="none"><path d="M1 2 L10 14 L19 2" stroke="currentColor" stroke-width="2.4"/></svg>
+      Free Canadian TFSA Calculator
+    </div>
+    <h1 class="font-serif font-semibold text-4xl md:text-5xl leading-[1.1] text-navydeep mb-5">TFSA Retirement Balance &amp; Income Calculator</h1>
+    <p class="text-inksoft text-[15.5px] max-w-lg mx-auto">A free Canadian TFSA calculator that shows whether your monthly contribution is enough to catch up your Tax-Free Savings Account room &mdash; and exactly when &mdash; plus roughly what that account could be worth, and pay you, by the time you retire.</p>
+  </div>
+</section>
+
+<!-- Fill out the boxes below. Unlike a real insurance application, there's no medical exam. -->
+<section class="py-16 md:py-20 bg-paperdim border-t border-line" id="calculator">
+  <div class="max-w-4xl mx-auto px-6 md:px-8">
+    <div class="text-center max-w-xl mx-auto mb-10">
+      <div class="flex items-center justify-center gap-2 text-[12px] font-semibold tracking-[0.16em] uppercase text-golddim mb-4">
+        <svg width="18" height="14" viewBox="0 0 20 16" fill="none"><path d="M1 2 L10 14 L19 2" stroke="currentColor" stroke-width="2.4"/></svg>
+        Step 1 of 2 &mdash; Enter your numbers
+      </div>
+      <h2 class="font-serif font-semibold text-3xl md:text-4xl text-navydeep mb-4">Tell us about your TFSA</h2>
+      <p class="text-inksoft text-[15.5px]">Fill in the fields below &mdash; your plan updates automatically as you go.</p>
+    </div>
+
+    <div class="bg-white border-2 border-gold rounded-sm p-6 md:p-10 shadow-lg">
+      <div class="flex items-baseline gap-3 mb-6">
+        <span class="font-serif font-semibold text-golddim text-sm">01</span>
+        <h3 class="font-serif font-semibold text-lg text-navydeep m-0">Your TFSA situation</h3>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-6 mb-8">
+        <label class="flex flex-col gap-1.5">
+          <span class="text-[13px] font-semibold text-navydeep">Your age</span>
+          <input type="number" id="tfsa-age" min="18" max="150" value="35" class="bg-paperdim text-[14.5px] px-3.5 py-2.5 border-2 border-line rounded-sm w-full">
+        </label>
+
+        <label class="flex flex-col gap-1.5">
+          <span class="text-[13px] font-semibold text-navydeep">What's your TFSA balance right now?</span>
+          <input type="number" id="tfsa-current-balance" min="0" step="100" value="64000" class="bg-paperdim text-[14.5px] px-3.5 py-2.5 border-2 border-line rounded-sm w-full">
+          <span class="text-[12px] text-inksoft">The actual current value, including any growth &mdash; this is what we grow forward.</span>
+        </label>
+
+        <label class="flex flex-col gap-1.5">
+          <span class="text-[13px] font-semibold text-navydeep">Estimated contributions made to-date</span>
+          <input type="number" id="tfsa-balance" min="0" step="100" value="59000" class="bg-paperdim text-[14.5px] px-3.5 py-2.5 border-2 border-line rounded-sm w-full">
+          <span class="text-[12px] text-inksoft">The total you've deposited, not including growth. We'll estimate your available room from your age.</span>
+          <p id="tfsa-error-contributions" class="hidden text-red-600 text-[12.5px] mt-0.5"></p>
+        </label>
+
+        <fieldset class="flex flex-col gap-1.5">
+          <legend class="text-[13px] font-semibold text-navydeep mb-1">How much would you like to contribute monthly?</legend>
+          <div class="flex flex-wrap gap-4 mb-1">
+            <label class="flex items-center gap-2 text-sm text-inksoft"><input type="radio" name="tfsa-contribution-mode" value="amount" checked>A specific amount</label>
+            <label class="flex items-center gap-2 text-sm text-inksoft"><input type="radio" name="tfsa-contribution-mode" value="max">Keep me maxed out</label>
+          </div>
+          <input type="number" id="tfsa-contribution" min="0" step="25" value="1500" class="bg-paperdim text-[14.5px] px-3.5 py-2.5 border-2 border-line rounded-sm w-full">
+          <span class="text-[12px] text-inksoft">We'll show you whether that catches you up, and when.</span>
+          <p id="tfsa-contribution-note" class="hidden text-golddim text-[12.5px] mt-0.5"></p>
+        </fieldset>
+      </div>
+
+      <div class="flex items-baseline gap-3 mt-2 mb-6 pt-8 border-t border-line">
+        <span class="font-serif font-semibold text-golddim text-sm">02</span>
+        <h3 class="font-serif font-semibold text-lg text-navydeep m-0">Retirement assumptions</h3>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8 mb-10">
+        <label class="flex flex-col gap-1.5">
+          <div class="flex justify-between items-baseline">
+            <span class="text-[13px] font-semibold text-navydeep">Retirement age</span>
+            <span class="text-[13px] font-semibold text-golddim"><span id="tfsa-retire-age-val">65</span></span>
+          </div>
+          <input type="range" id="tfsa-retire-age" min="36" max="85" step="1" value="65">
+        </label>
+        <label class="flex flex-col gap-1.5">
+          <div class="flex justify-between items-baseline">
+            <span class="text-[13px] font-semibold text-navydeep">Rate of return while saving</span>
+            <span class="text-[13px] font-semibold text-golddim"><span id="tfsa-rate-accum-val">6</span>%</span>
+          </div>
+          <input type="range" id="tfsa-rate-accum" min="4" max="12" step="0.5" value="6">
+        </label>
+        <label class="flex flex-col gap-1.5">
+          <div class="flex justify-between items-baseline">
+            <span class="text-[13px] font-semibold text-navydeep">Rate of return in retirement</span>
+            <span class="text-[13px] font-semibold text-golddim"><span id="tfsa-rate-retire-val">4</span>%</span>
+          </div>
+          <input type="range" id="tfsa-rate-retire" min="2" max="8" step="0.5" value="4">
+        </label>
+      </div>
+
+      <div class="flex justify-center pt-8 mt-10 border-t border-line">
+        <button type="button" id="tfsa-calculate-btn" class="inline-flex items-center justify-center gap-2.5 px-9 py-4 rounded-sm bg-navydeep text-white text-[15px] font-semibold hover:bg-navy transition w-full sm:w-auto">See Results</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- The math happens below. I promise it's more reliable than my golf swing. -->
+<section class="py-16 md:py-20 border-t border-line" id="tfsa-results">
+  <div class="max-w-5xl mx-auto px-6 md:px-8">
+    <div class="text-center max-w-xl mx-auto mb-12">
+      <div class="flex items-center justify-center gap-2 text-[12px] font-semibold tracking-[0.16em] uppercase text-golddim mb-4">
+        <svg width="18" height="14" viewBox="0 0 20 16" fill="none"><path d="M1 2 L10 14 L19 2" stroke="currentColor" stroke-width="2.4"/></svg>
+        Step 2 of 2 &mdash; Your results
+      </div>
+      <h2 class="font-serif font-semibold text-3xl md:text-4xl text-navydeep mb-4">Your TFSA plan</h2>
+      <p class="text-inksoft text-[15.5px]">Based on the numbers you entered above &mdash; adjust anything up there and this updates instantly.</p>
+    </div>
+
+    <div class="bg-navydeep rounded-sm p-8 md:p-10 text-white mb-8">
+      <div class="grid sm:grid-cols-2 gap-8 pb-8 mb-6 border-b border-white/15">
+        <div>
+          <p class="text-white/60 text-[13px] mb-1.5">Projected TFSA balance at retirement (age <span id="tfsa-summary-retire-age">65</span>)</p>
+          <p class="font-serif font-semibold text-4xl md:text-5xl"><span id="tfsa-fv-total">$0</span></p>
+        </div>
+        <div>
+          <p class="text-white/60 text-[13px] mb-1.5">Estimated tax-free income for life</p>
+          <p class="font-serif font-semibold text-4xl md:text-5xl"><span id="tfsa-monthly-income">$0</span><span class="text-white/50 text-lg font-sans font-normal">/mo</span></p>
+        </div>
+      </div>
+      <p id="tfsa-catchup-note" class="text-white/70 text-[14px] leading-relaxed mb-3">&mdash;</p>
+      <p class="text-white/50 text-[12.5px]">You've contributed an estimated <span id="tfsa-contributed-est" class="text-white font-semibold">$0</span> of your <span id="tfsa-lifetime-room" class="text-white font-semibold">$0</span> lifetime TFSA room so far. Income assumes withdrawals are structured to last until age 95.</p>
+    </div>
+
+    <div class="bg-white border border-line rounded-sm p-8 mb-8">
+      <div class="flex flex-wrap items-baseline justify-between gap-3 mb-1">
+        <h3 class="font-serif font-semibold text-lg text-navydeep">Your estimated payment schedule</h3>
+        <div class="flex items-center gap-4 text-[12.5px] text-inksoft">
+          <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-gold inline-block"></span>At your pace</span>
+          <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-olive inline-block"></span>Capped by available room</span>
+        </div>
+      </div>
+      <p class="text-[12.5px] text-inksoft mb-5">Years beyond what's on record assume the CRA keeps increasing the TFSA limit by about $<span id="tfsa-increase-estimate">0</span>/year &mdash; the average pace of the last decade of real increases &mdash; rounded to the nearest $500.</p>
+      <div class="max-h-96 overflow-y-auto border border-line rounded-sm">
+        <table class="w-full text-[13.5px] border-collapse">
+          <thead class="sticky top-0 bg-paperdim text-navydeep text-[11.5px] uppercase tracking-wide">
+            <tr>
+              <th class="text-left font-semibold px-4 py-2.5">Year</th>
+              <th class="text-left font-semibold px-4 py-2.5">Age</th>
+              <th class="text-right font-semibold px-4 py-2.5">Monthly Contribution</th>
+              <th class="text-left font-semibold px-4 py-2.5">Status</th>
+            </tr>
+          </thead>
+          <tbody id="tfsa-schedule-body" class="divide-y divide-line"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-[1.4fr_1fr] gap-8 mb-8">
+      <div class="bg-white border border-line rounded-sm p-8">
+        <p class="text-[12px] font-semibold tracking-[0.16em] uppercase text-golddim mb-3">Growth to retirement</p>
+        <svg id="tfsa-area-chart" viewBox="0 0 640 260" class="w-full h-auto" preserveAspectRatio="none"></svg>
+        <div class="flex justify-between text-[12.5px] text-inksoft mt-2">
+          <span id="chart-age-start-label">Age 35</span>
+          <span id="chart-age-end-label">Age 65</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-4 text-[12.5px] text-inksoft mt-3">
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gold inline-block"></span>You contributed</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-olive inline-block"></span>Tax-free growth</span>
+        </div>
+      </div>
+
+      <div class="bg-white border border-line rounded-sm p-8 flex flex-col items-center">
+        <p class="text-[12px] font-semibold tracking-[0.16em] uppercase text-golddim mb-4 self-start">Contributions vs. growth</p>
+        <div class="relative w-[150px] h-[150px] mb-3">
+          <svg viewBox="0 0 120 120" class="w-full h-full -rotate-90">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="#eeebe4" stroke-width="16"/>
+            <circle id="donut-contrib" cx="60" cy="60" r="50" fill="none" stroke="#618986" stroke-width="16" stroke-linecap="round"/>
+            <circle id="donut-growth" cx="60" cy="60" r="50" fill="none" stroke="#6d6650" stroke-width="16" stroke-linecap="round"/>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="font-serif font-semibold text-lg text-navydeep" id="donut-total">$0</span>
+            <span class="text-[10.5px] text-inksoft uppercase tracking-wide">total</span>
+          </div>
+        </div>
+        <div class="w-full space-y-2">
+          <div class="flex items-center justify-between text-[13px]"><span class="flex items-center gap-2 text-inksoft"><span class="w-2.5 h-2.5 rounded-full bg-gold inline-block"></span>You contributed</span><span class="font-semibold text-navydeep"><span id="tfsa-fv-contrib-pct">0</span>%</span></div>
+          <div class="flex items-center justify-between text-[13px]"><span class="flex items-center gap-2 text-inksoft"><span class="w-2.5 h-2.5 rounded-full bg-olive inline-block"></span>Tax-free growth</span><span class="font-semibold text-navydeep"><span id="tfsa-fv-growth-pct">0</span>%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-[12px] text-inksoft leading-relaxed mt-6">This calculator is for illustrative purposes only and isn't personalized financial advice. It assumes a constant rate of return, and that your contribution never exceeds the TFSA room actually available in a given year. It doesn't account for fees, taxes on non-registered accounts, or future changes to TFSA rules. Actual results will vary. <a href="needs-analysis.html" class="text-golddim underline">Open the financial plan</a> when these numbers should sit in a full plan.</p>
+  </div>
+</section>
+
+<!-- Turning "here's my plan" into "let's talk about my plan." -->
+<section class="py-16 md:py-20 bg-paperdim border-t border-line" id="tfsa-consult">
+  <div class="max-w-3xl mx-auto px-6 md:px-8">
+    <div class="text-center max-w-xl mx-auto mb-10">
+      <div class="flex items-center justify-center gap-2 text-[12px] font-semibold tracking-[0.16em] uppercase text-golddim mb-4">
+        <svg width="18" height="14" viewBox="0 0 20 16" fill="none"><path d="M1 2 L10 14 L19 2" stroke="currentColor" stroke-width="2.4"/></svg>
+        Ready to talk it through?
+      </div>
+      <h2 class="font-serif font-semibold text-3xl md:text-4xl text-navydeep mb-4">Send me your results</h2>
+      <p class="text-inksoft text-[15.5px]">Send the plan you just built straight to me, along with the best way to reach you, and I'll follow up to talk through your options &mdash; no obligation.</p>
+    </div>
+
+    <div class="bg-white border-2 border-gold rounded-sm p-6 md:p-10 shadow-lg">
+      <form id="tfsa-consult-form" name="tfsa-consultation" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="flex flex-col gap-5" novalidate>
+        <input type="hidden" name="form-name" value="tfsa-consultation">
+        <p class="hidden"><label>Don't fill this out if you're human: <input name="bot-field"></label></p>
+
+        <input type="hidden" name="resultsAge" id="results-age">
+        <input type="hidden" name="resultsRetireAge" id="results-retire-age">
+        <input type="hidden" name="resultsTfsaCurrentBalance" id="results-tfsa-current-balance">
+        <input type="hidden" name="resultsTfsaBalance" id="results-tfsa-balance">
+        <input type="hidden" name="resultsContributionMode" id="results-contribution-mode">
+        <input type="hidden" name="resultsMonthlyContribution" id="results-monthly-contribution">
+        <input type="hidden" name="resultsProjectedTfsaValue" id="results-fv-total">
+        <input type="hidden" name="resultsTfsaMonthlyIncome" id="results-tfsa-monthly-income">
+
+        <p class="text-[13px] text-inksoft -mb-1 flex items-start gap-2">
+          <span class="inline-block w-3.5 h-3.5 rounded-sm border-2 border-gold flex-shrink-0 mt-0.5"></span>
+          <span>Fields boxed in gold (<em class="text-golddim not-italic font-semibold">*</em>) are required.</span>
+        </p>
+
+        <label class="flex flex-col gap-1.5">
+          <span class="text-[13px] font-semibold text-navydeep">Full name<em class="text-golddim not-italic">*</em></span>
+          <input type="text" name="fullName" required autocomplete="name" class="text-[14.5px] px-3.5 py-2.5 border-2 border-gold rounded-sm bg-white w-full">
+          <p id="tfsa-error-fullName" class="hidden text-red-600 text-[12.5px] mt-0.5"></p>
+        </label>
+
+        <fieldset class="flex flex-col gap-1.5">
+          <legend class="text-[13px] font-semibold text-navydeep mb-1">Preferred contact method<em class="text-golddim not-italic">*</em></legend>
+          <div id="tfsa-box-contact-method" class="flex gap-5 flex-wrap px-3.5 py-2.5 border-2 border-gold rounded-sm bg-white">
+            <label class="flex items-center gap-2 text-sm text-inksoft"><input type="radio" name="contactMethod" value="Call" required>Call</label>
+            <label class="flex items-center gap-2 text-sm text-inksoft"><input type="radio" name="contactMethod" value="Text" required>Text</label>
+            <label class="flex items-center gap-2 text-sm text-inksoft"><input type="radio" name="contactMethod" value="Email" required>Email</label>
+          </div>
+          <p id="tfsa-error-contact-method" class="hidden text-red-600 text-[12.5px] mt-0.5"></p>
+        </fieldset>
+
+        <div class="grid sm:grid-cols-2 gap-5">
+          <label class="flex flex-col gap-1.5">
+            <span class="text-[13px] font-semibold text-navydeep">Phone number</span>
+            <input type="tel" name="phone" autocomplete="tel" pattern="(\+?1[\-.\s]?)?\(?\d{3}\)?[\-.\s]?\d{3}[\-.\s]?\d{4}" title="Enter a 10-digit phone number, e.g. 780-123-4567" placeholder="780-123-4567" class="text-[14.5px] px-3.5 py-2.5 border-2 border-gold rounded-sm bg-white w-full">
+            <p class="text-[12px] text-inksoft">Required if Call or Text is selected above.</p>
+            <p id="tfsa-error-phone" class="hidden text-red-600 text-[12.5px] mt-0.5"></p>
+          </label>
+          <label class="flex flex-col gap-1.5">
+            <span class="text-[13px] font-semibold text-navydeep">Email</span>
+            <input type="email" name="email" autocomplete="email" class="text-[14.5px] px-3.5 py-2.5 border-2 border-gold rounded-sm bg-white w-full">
+            <p class="text-[12px] text-inksoft">Required if Email is selected above.</p>
+            <p id="tfsa-error-email" class="hidden text-red-600 text-[12.5px] mt-0.5"></p>
+          </label>
+        </div>
+
+        <label class="flex flex-col gap-1.5">
+          <span class="text-[13px] font-semibold text-navydeep">Province<em class="text-golddim not-italic">*</em></span>
+          <select name="province" required class="text-[14.5px] px-3.5 py-2.5 border-2 border-gold rounded-sm bg-white w-full h-12">
+            <option value="">Select your province</option>
+            <option>Alberta</option>
+            <option>British Columbia</option>
+            <option>Manitoba</option>
+            <option>New Brunswick</option>
+            <option>Newfoundland and Labrador</option>
+            <option>Northwest Territories</option>
+            <option>Nova Scotia</option>
+            <option>Nunavut</option>
+            <option>Ontario</option>
+            <option>Prince Edward Island</option>
+            <option>Quebec</option>
+            <option>Saskatchewan</option>
+            <option>Yukon</option>
+          </select>
+          <p id="tfsa-error-province" class="hidden text-red-600 text-[12.5px] mt-0.5"></p>
+        </label>
+
+        <div class="rounded-sm border border-line bg-paperdim px-4 py-3.5">
+          <p class="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-golddim">How this information is handled</p>
+          <p class="mt-2 text-[13px] leading-6 text-inksoft">What you enter here, including the results of this calculation, is shared with me, Ethan Marchand, Managing Advisor, Client Services at Advisor Strategies Submitting this form emails those details to me. That message is how I receive them. This website does not keep an account for you.</p>
+        </div>
+
+        <div id="tfsa-consult-status" class="text-[13.5px] min-h-0" role="status" aria-live="polite"></div>
+
+        <button type="submit" class="w-full py-4 rounded-sm bg-navydeep text-white text-[15px] font-semibold hover:bg-navy transition">Send My Results</button>
+        <p class="text-[12px] text-inksoft leading-relaxed">This isn't an application for anything &mdash; just a way to get your calculated plan in front of me so our first conversation starts somewhere useful.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Tax-free growth: the one thing on this page I definitely didn't invent. Thanks, CRA. -->
+<section class="py-16 md:py-20 border-t border-line">
+  <div class="max-w-6xl mx-auto px-6 md:px-8">
+    <div class="text-center max-w-xl mx-auto mb-12">
+      <div class="flex items-center justify-center gap-2 text-[12px] font-semibold tracking-[0.16em] uppercase text-olive mb-4">
+        <svg width="18" height="14" viewBox="0 0 20 16" fill="none"><path d="M1 2 L10 14 L19 2" stroke="currentColor" stroke-width="2.4"/></svg>
+        Why It Matters
+      </div>
+      <h2 class="font-serif font-semibold text-3xl md:text-4xl text-navydeep mb-4">The advantages of a TFSA</h2>
+      <p class="text-inksoft text-[15.5px]">Simple in theory, easy to under-use in practice. Here's why it's worth actually maxing out.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div class="bg-white border border-line rounded-sm p-6">
+        <h3 class="font-serif font-semibold text-lg text-navydeep mb-2">Growth is 100% tax-free</h3>
+        <p class="text-[14px] text-inksoft leading-relaxed">Every dollar of interest, dividends, or capital gains inside a TFSA grows without being taxed &mdash; not this year, not when you withdraw it.</p>
+      </div>
+      <div class="bg-white border border-line rounded-sm p-6">
+        <h3 class="font-serif font-semibold text-lg text-navydeep mb-2">Withdrawals are tax-free too</h3>
+        <p class="text-[14px] text-inksoft leading-relaxed">Money you pull out of a TFSA in retirement isn't added to your taxable income for the year &mdash; not the contributions, not the growth.</p>
+      </div>
+      <div class="bg-white border border-line rounded-sm p-6">
+        <h3 class="font-serif font-semibold text-lg text-navydeep mb-2">Doesn't affect OAS or GIS</h3>
+        <p class="text-[14px] text-inksoft leading-relaxed">TFSA withdrawals aren't counted as income, so they won't trigger Old Age Security clawback or reduce income-tested benefits.</p>
+      </div>
+      <div class="bg-white border border-line rounded-sm p-6">
+        <h3 class="font-serif font-semibold text-lg text-navydeep mb-2">Room carries forward, forever</h3>
+        <p class="text-[14px] text-inksoft leading-relaxed">Unused contribution room never expires &mdash; it just keeps accumulating year after year, waiting for you to use it.</p>
+      </div>
+      <div class="bg-white border border-line rounded-sm p-6">
+        <h3 class="font-serif font-semibold text-lg text-navydeep mb-2">Fully flexible access</h3>
+        <p class="text-[14px] text-inksoft leading-relaxed">There's no penalty for withdrawing early, and whatever you take out gets added back to your contribution room the following January.</p>
+      </div>
+      <div class="bg-white border border-line rounded-sm p-6">
+        <h3 class="font-serif font-semibold text-lg text-navydeep mb-2">Useful at every life stage</h3>
+        <p class="text-[14px] text-inksoft leading-relaxed">An emergency fund, a house down payment, or a retirement account &mdash; a TFSA can be all three, and it changes roles as your life does.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Frequently Asked Questions, frequently answered by me, at frequently odd hours. -->
+<section class="py-16 md:py-20 border-t border-line" id="tfsa-faq">
+  <div class="max-w-3xl mx-auto px-6 md:px-8">
+    <div class="text-center mb-12">
+      <div class="flex items-center justify-center gap-2 text-[12px] font-semibold tracking-[0.16em] uppercase text-golddim mb-4">
+        <svg width="18" height="14" viewBox="0 0 20 16" fill="none"><path d="M1 2 L10 14 L19 2" stroke="currentColor" stroke-width="2.4"/></svg>
+        Common Questions
+      </div>
+      <h2 class="font-serif font-semibold text-3xl md:text-4xl text-navydeep">TFSA calculator &amp; contribution FAQ</h2>
+    </div>
+
+    <div class="space-y-3" id="tfsa-faq-list">
+      <div class="faq-item border border-line rounded-sm bg-white">
+        <button class="faq-toggle w-full flex items-center justify-between gap-4 text-left px-6 py-5 font-semibold text-navydeep text-[15px]">
+          How long will it take me to max out my TFSA?
+          <svg class="faq-chevron flex-shrink-0 transition-transform text-golddim" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1 L7 8 L13 1" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+        <div class="faq-answer px-6"><p class="text-[14.5px] text-inksoft leading-relaxed pb-5">It depends on your available contribution room and how much you can contribute each month, compared to how much new room the CRA adds each year. Enter your age, estimated contributions to date, and a monthly contribution amount into the calculator above &mdash; it tells you the exact year you'll be fully caught up, or lets you know if that pace won't fully catch up before retirement.</p></div>
+      </div>
+      <div class="faq-item border border-line rounded-sm bg-white">
+        <button class="faq-toggle w-full flex items-center justify-between gap-4 text-left px-6 py-5 font-semibold text-navydeep text-[15px]">
+          <span>What is the TFSA contribution limit for <span class="faq-dynamic-year">2026</span>?</span>
+          <svg class="faq-chevron flex-shrink-0 transition-transform text-golddim" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1 L7 8 L13 1" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+        <div class="faq-answer px-6"><p class="text-[14.5px] text-inksoft leading-relaxed pb-5">The TFSA dollar limit for <span class="faq-dynamic-year">2026</span> is <span id="faq-current-limit">$7,000</span>. If you were 18 or older in 2009 and have never contributed, your total lifetime TFSA contribution room by <span class="faq-dynamic-year">2026</span> is <span id="faq-lifetime-max">$109,000</span>.</p></div>
+      </div>
+      <div class="faq-item border border-line rounded-sm bg-white">
+        <button class="faq-toggle w-full flex items-center justify-between gap-4 text-left px-6 py-5 font-semibold text-navydeep text-[15px]">
+          How much can I contribute to my TFSA every year?
+          <svg class="faq-chevron flex-shrink-0 transition-transform text-golddim" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1 L7 8 L13 1" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+        <div class="faq-answer px-6"><p class="text-[14.5px] text-inksoft leading-relaxed pb-5">The CRA sets a new annual TFSA dollar limit each year, usually indexed to inflation and rounded to the nearest $500. For <span class="faq-dynamic-year">2026</span>, that limit is <span id="faq-current-limit-2">$7,000</span>. Unused room carries forward indefinitely, so your total available room is usually larger than just one year's limit.</p></div>
+      </div>
+      <div class="faq-item border border-line rounded-sm bg-white">
+        <button class="faq-toggle w-full flex items-center justify-between gap-4 text-left px-6 py-5 font-semibold text-navydeep text-[15px]">
+          What happens if I over-contribute to my TFSA?
+          <svg class="faq-chevron flex-shrink-0 transition-transform text-golddim" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1 L7 8 L13 1" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+        <div class="faq-answer px-6"><p class="text-[14.5px] text-inksoft leading-relaxed pb-5">The CRA charges a penalty tax of 1% per month on the excess amount for as long as it stays in the account. It's worth double-checking your available room in your CRA My Account before contributing if you're not sure.</p></div>
+      </div>
+      <div class="faq-item border border-line rounded-sm bg-white">
+        <button class="faq-toggle w-full flex items-center justify-between gap-4 text-left px-6 py-5 font-semibold text-navydeep text-[15px]">
+          Is TFSA growth actually tax-free?
+          <svg class="faq-chevron flex-shrink-0 transition-transform text-golddim" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1 L7 8 L13 1" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+        <div class="faq-answer px-6"><p class="text-[14.5px] text-inksoft leading-relaxed pb-5">Yes. Interest, dividends, and capital gains earned inside a TFSA are never taxed, and withdrawals &mdash; including all of that growth &mdash; are completely tax-free too, unlike money withdrawn from a taxable account.</p></div>
+      </div>
+      <div class="faq-item border border-line rounded-sm bg-white">
+        <button class="faq-toggle w-full flex items-center justify-between gap-4 text-left px-6 py-5 font-semibold text-navydeep text-[15px]">
+          How is this different from a basic TFSA contribution room calculator?
+          <svg class="faq-chevron flex-shrink-0 transition-transform text-golddim" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1 L7 8 L13 1" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+        <div class="faq-answer px-6"><p class="text-[14.5px] text-inksoft leading-relaxed pb-5">Most TFSA calculators only tell you your current contribution room. This one estimates your available room from your age and what you've contributed so far, tells you whether your planned monthly contribution is enough to catch up (and exactly when), and projects your account's tax-free growth and retirement income.</p></div>
+      </div>
+      <div class="faq-item border border-line rounded-sm bg-white">
+        <button class="faq-toggle w-full flex items-center justify-between gap-4 text-left px-6 py-5 font-semibold text-navydeep text-[15px]">
+          Where do I find my exact TFSA contribution room?
+          <svg class="faq-chevron flex-shrink-0 transition-transform text-golddim" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1 L7 8 L13 1" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+        <div class="faq-answer px-6"><p class="text-[14.5px] text-inksoft leading-relaxed pb-5">This calculator estimates your available room from your age and what you've told it you've contributed. For the exact figure on record, log in to your CRA My Account and go to "RRSP and TFSA" &mdash; if the two numbers don't match, trust the CRA figure.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="no-print bg-navydeep py-12 border-t border-white/10">
+  <div class="max-w-6xl mx-auto px-6 md:px-8 flex flex-wrap items-center justify-between gap-4">
+    <p class="text-cream m-0 text-[15px]">Already a client? Continue to Advisor Strategies.</p>
+    <a href="https://advisorstrategies.ca/" class="inline-flex items-center justify-center px-6 py-3 rounded-full bg-gold text-navydeep text-sm font-semibold hover:bg-golddim hover:text-cream transition">I'm a client</a>
+  </div>
+</section>
+
+<footer class="bg-navydeep text-cream/70 pt-12 pb-7 border-t border-white/10">
+  <div class="max-w-6xl mx-auto px-6 md:px-8">
+    <div class="flex flex-wrap justify-between gap-10 pb-8 border-b border-white/10">
+      <div class="max-w-xs">
+        <img src="/assets/logo-light.png" alt="Advisor Strategies" width="407" height="76" class="h-10 w-auto mb-4">
+        <p class="text-cream text-sm font-medium m-0">Ethan Marchand</p>
+        <p class="text-cream/60 text-[13px] m-0 mt-1">Managing Advisor, Client Services</p>
+      </div>
+      <div>
+        <h2 class="text-cream text-[15px] font-medium mb-3.5">Tools</h2>
+        <div class="flex flex-col gap-2 text-sm">
+          <a href="/life-insurance-quote.html" class="hover:text-cream">Get a Quote</a>
+          <a href="/tfsa-calculator.html" class="hover:text-cream">TFSA Calculator</a>
+          <a href="/needs-analysis.html" class="hover:text-cream">Financial Plan</a>
+          <a href="/client-intake.html" class="hover:text-cream">Client Intake</a>
+          <a href="/investor-questionnaire.html" class="hover:text-cream">Investor Questionnaire</a>
+        </div>
+      </div>
+      <div>
+        <h2 class="text-cream text-[15px] font-medium mb-3.5">Clients</h2>
+        <div class="flex flex-col gap-2 text-sm">
+          <a href="https://advisorstrategies.ca/" class="hover:text-cream">advisorstrategies.ca</a>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-wrap justify-between gap-2.5 pt-5 text-[12.5px] text-cream/40">
+      <span>&copy; <span id="year"></span> Ethan Marchand · Advisor Strategies Inc.</span>
+      <span>Planning tools. Not an application for insurance.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="tfsa-limits.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

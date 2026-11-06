@@ -1,0 +1,90 @@
+[build]
+  command = "npm install && npm run build"
+  publish = "."
+
+# Former marketing pages. Clients continue to the firm.
+# force = true so a leftover static file cannot win.
+[[redirects]]
+  from = "/contact"
+  to = "https://advisorstrategies.ca/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/contact.html"
+  to = "https://advisorstrategies.ca/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/intake.html"
+  to = "https://advisorstrategies.ca/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/schedule"
+  to = "https://advisorstrategies.ca/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/schedule.html"
+  to = "https://advisorstrategies.ca/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/insights"
+  to = "https://advisorstrategies.ca/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/insights.html"
+  to = "https://advisorstrategies.ca/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/insight.html"
+  to = "https://advisorstrategies.ca/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/insights/*"
+  to = "https://advisorstrategies.ca/"
+  status = 301
+  force = true
+
+# Tool addresses stay. Preserve the query string: that string is the saved plan.
+[[redirects]]
+  from = "/client-intake"
+  to = "/client-intake.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/tfsa-calculator"
+  to = "/tfsa-calculator.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/life-insurance-quote"
+  to = "/life-insurance-quote.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/investor-questionnaire"
+  to = "/investor-questionnaire.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/needs-analysis"
+  to = "/needs-analysis.html"
+  status = 301
+  force = true

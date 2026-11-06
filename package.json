@@ -1,0 +1,15 @@
+{
+  "name": "ethanmarchand",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Advisor Strategies planning tools for Ethan Marchand",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/tailwind.css -o ./assets/css/site.css --minify",
+    "watch:css": "tailwindcss -i ./src/tailwind.css -o ./assets/css/site.css --watch",
+    "build": "npm run build:css",
+    "test:needs-analysis": "node needs-analysis/tests/calc.test.js"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Plan | Advisor Strategies</title>
+<meta name="description" content="A simplified financial plan from Advisor Strategies. Life insurance need, disability and critical illness amounts, and the retirement savings path. Entries stay in this browser tab.">
+<meta name="keywords" content="Alberta financial plan, life insurance needs, retirement planning Alberta, income replacement, disability insurance, critical illness, Sherwood Park financial planner">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ethanmarchand.ca/needs-analysis.html">
+<meta name="author" content="Ethan Marchand">
+<meta name="geo.region" content="CA-AB">
+<meta name="geo.placename" content="Sherwood Park, Alberta">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Financial Plan | Advisor Strategies">
+<meta property="og:description" content="A financial plan for life insurance, disability, critical illness, and retirement income. Entries stay in this browser tab.">
+<meta property="og:url" content="https://ethanmarchand.ca/needs-analysis.html">
+<meta property="og:image" content="https://ethanmarchand.ca/assets/logo.png">
+<meta property="og:locale" content="en_CA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Financial Plan | Advisor Strategies">
+<meta name="twitter:description" content="Life insurance need, disability and critical illness amounts, and the retirement savings path. Entries stay in this browser tab.">
+<link rel="icon" href="assets/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ethanmarchand.ca/" },
+    { "@type": "ListItem", "position": 2, "name": "Financial Plan", "item": "https://ethanmarchand.ca/needs-analysis.html" }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Advisor Strategies Financial Plan",
+  "url": "https://ethanmarchand.ca/needs-analysis.html",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any (web browser)",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CAD" },
+  "description": "A simplified financial plan for life insurance need, disability and critical illness amounts, and the retirement savings path. Entries stay in the open tab and are not sent to a server.",
+  "creator": { "@type": "Person", "name": "Ethan Marchand" },
+  "publisher": { "@type": "Organization", "name": "Advisor Strategies", "legalName": "Advisor Strategies Inc." },
+  "inLanguage": "en-CA",
+  "isAccessibleForFree": true
+}
+</script>
+</head>
+<body class="needs-worksheet bg-paper text-ink antialiased">
+<!-- Hand-coded by Ethan Marchand. The plan runs in the browser. Entries are not saved and are not sent anywhere. -->
+
+<header class="no-print sticky top-0 z-50 bg-navydeep border-b border-white/10">
+  <nav class="max-w-6xl mx-auto flex items-center justify-between gap-4 px-6 md:px-8 py-3.5" aria-label="Primary">
+    <a href="/" class="flex items-center shrink-0" aria-label="Advisor Strategies home">
+      <img src="/assets/logo-light.png" alt="Advisor Strategies" width="407" height="76" class="h-9 md:h-10 w-auto">
+    </a>
+    <div class="hidden lg:flex items-center gap-x-6 text-sm font-medium text-cream/80">
+      <a href="/" data-nav="home" class="site-nav-link hover:text-cream transition">Home</a>
+      <div class="site-nav-dropdown relative">
+        <button type="button" data-nav-dropdown class="site-nav-dropdown-trigger site-nav-link inline-flex items-center gap-1.5 hover:text-cream transition" aria-expanded="false" aria-haspopup="true">
+          Tools
+          <svg class="site-nav-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 4.5 L6 8 L9.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="site-nav-dropdown-menu" role="menu">
+          <a href="/life-insurance-quote.html" data-nav="quote" role="menuitem">Get a Quote</a>
+          <a href="/tfsa-calculator.html" data-nav="tfsa" role="menuitem">TFSA Calculator</a>
+          <a href="/needs-analysis.html" data-nav="plan" role="menuitem">Financial Plan</a>
+          <a href="/client-intake.html" data-nav="intake" role="menuitem">Client Intake</a>
+          <a href="/investor-questionnaire.html" data-nav="iq" role="menuitem">Investor Questionnaire</a>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 shrink-0">
+      <a href="https://advisorstrategies.ca/" class="hidden sm:inline-flex items-center px-5 py-2.5 rounded-full bg-gold text-navydeep text-sm font-semibold hover:bg-golddim hover:text-cream transition">I'm a client</a>
+      <button id="nav-toggle" aria-label="Toggle menu" aria-controls="mobile-menu" class="lg:hidden text-cream">
+        <svg width="24" height="18" viewBox="0 0 22 16" fill="none"><path d="M0 1h22M0 8h22M0 15h22" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+    </div>
+  </nav>
+  <div id="mobile-menu" class="hidden lg:hidden flex-col gap-1 px-6 pb-6 pt-2 text-sm font-medium text-cream/80 bg-navydeep border-t border-white/10">
+    <a href="/" data-nav="home" class="py-2">Home</a>
+    <p class="pt-2 pb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-cream/50">Tools</p>
+    <a href="/life-insurance-quote.html" data-nav="quote" class="py-2 pl-2">Get a Quote</a>
+    <a href="/tfsa-calculator.html" data-nav="tfsa" class="py-2 pl-2">TFSA Calculator</a>
+    <a href="/needs-analysis.html" data-nav="plan" class="py-2 pl-2">Financial Plan</a>
+    <a href="/client-intake.html" data-nav="intake" class="py-2 pl-2">Client Intake</a>
+    <a href="/investor-questionnaire.html" data-nav="iq" class="py-2 pl-2">Investor Questionnaire</a>
+    <a href="https://advisorstrategies.ca/" class="py-2">I'm a client</a>
+  </div>
+</header>
+
+<section class="no-print pt-16 pb-10 text-center bg-[radial-gradient(ellipse_at_top_right,rgba(97,137,134,0.10),transparent_55%)]">
+  <div class="max-w-2xl mx-auto px-6 md:px-8">
+    <div class="flex items-center justify-center gap-2 text-[12px] font-semibold tracking-[0.16em] uppercase text-golddim mb-4">
+      <svg width="18" height="14" viewBox="0 0 20 16" fill="none"><path d="M1 2 L10 14 L19 2" stroke="currentColor" stroke-width="2.4"/></svg>
+      Alberta &middot; Individual planning
+    </div>
+    <h1 class="font-serif font-semibold text-4xl md:text-5xl leading-[1.1] text-navydeep mb-5">Financial plan</h1>
+    <p class="text-inksoft text-[15.5px] max-w-lg mx-auto">Your privacy: There’s no database behind this form. It asks only for your name, current life insurance, and basic figures like your TFSA balance and room. Your answers go to me, your advisor, and live in a private link that reopens your completed form. Only you, me, anyone you share that link with, and anyone looking over your shoulder can see them.</p>
+  </div>
+</section>
+
+<noscript>
+  <p class="no-print mx-auto max-w-6xl px-6 py-6 text-sm text-inksoft">This plan needs JavaScript. It still does not send entries to a server.</p>
+</noscript>
+
+    <div class="worksheet-sticky-summary sticky top-[4.5rem] z-40 border-b border-line bg-paper/95 no-print backdrop-blur lg:hidden">
+      <div class="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-x-4 gap-y-2 px-4 py-3">
+        <div class="scope-insurance min-w-0 flex-1">
+          <p id="mobile-life-label" class="text-xs uppercase tracking-wide text-inksoft">Person 1 life insurance gap</p>
+          <p data-out="life" class="figure nums font-serif font-semibold text-2xl text-navydeep">$0</p>
+        </div>
+        <div class="scope-planning min-w-0 flex-1 text-right">
+          <p data-out="savings-label" class="text-xs uppercase tracking-wide text-inksoft">Monthly contributions</p>
+          <p data-out="savings" class="figure nums font-serif font-semibold text-2xl text-navydeep">$0</p>
+        </div>
+      </div>
+    </div>
+
+    <header class="print-only print-masthead">
+      <img src="assets/logo.png" alt="Advisor Strategies" width="700" height="161" class="print-masthead-logo" />
+      <div>
+        <p class="print-masthead-kicker">Financial plan</p>
+        <p id="print-client-line" class="print-masthead-title"></p>
+        <p id="print-prepared-line" class="print-masthead-meta"></p>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-6xl space-y-8 px-6 md:px-8 py-10 md:py-14">
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <form id="worksheet" class="space-y-6" autocomplete="off">
+        <div class="no-print">
+          <p class="text-sm leading-6 text-inksoft">
+            One step at a time. Each step asks for a few facts and shows what they change. Entries stay in this tab only and are not saved
+            in the browser. They are emailed to me only if you submit the client intake. This page does not choose a policy or an investment.
+          </p>
+          <button id="sample-case" type="button" class="mt-2 text-xs text-inksoft/70 underline decoration-transparent underline-offset-2 transition hover:text-inksoft hover:decoration-inksoft/40">Load sample household</button>
+        </div>
+
+        <div id="plan-stepper" class="no-print plan-stepper scroll-mt-24 rounded-sm border border-line bg-white px-5 py-4 shadow-sm">
+          <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-golddim"><span id="plan-step-count">Step 1 of 12</span><span class="mx-1.5 text-inksoft/50">·</span><span id="plan-step-name" class="text-navydeep">Scope</span></p>
+            <div class="flex items-center gap-4 text-xs font-medium">
+              <button id="plan-view-toggle" type="button" aria-pressed="false" class="text-inksoft underline decoration-transparent underline-offset-2 transition hover:text-navydeep hover:decoration-navydeep/40">Show every section</button>
+              <button id="print-plan-quick" type="button" class="text-navydeep underline decoration-transparent underline-offset-2 transition hover:decoration-navydeep/40">Print plan</button>
+            </div>
+          </div>
+          <div class="plan-progress mt-3" aria-hidden="true"><div id="plan-progress-bar" class="plan-progress-bar"></div></div>
+          <ol id="plan-step-list" class="plan-step-list" aria-label="Plan steps"></ol>
+        </div>
+
+        <section id="ref-a" data-plan-ref="A" data-step="a" data-step-title="Scope" class="plan-step rounded-sm border border-line bg-white p-5 md:p-6 shadow-sm">
+          <h2 class="font-serif font-semibold text-2xl text-navydeep"><span class="plan-ref" title="Section A">A</span><span id="planning-heading">What belongs in this plan?</span><button type="button" class="plan-tip" data-tip="note-scope" aria-label="About what belongs in this plan"></button></h2>
+          <p id="note-scope" class="plan-note">Show the insurance need, the retirement path, or both. A Life and A&amp;S licence covers the insurance side. The retirement figures show the income gap and where additional savings can sit — they are not a securities recommendation.</p>
+          <fieldset class="mt-3" aria-labelledby="planning-heading">
+            <legend class="sr-only">What belongs in this plan?</legend>
+            <label class="flex gap-2 text-sm font-medium">
+              <input type="radio" name="planning-mode" value="insurance" />
+              Life insurance, disability, and critical illness
+            </label>
+            <label class="mt-2 flex gap-2 text-sm font-medium">
+              <input type="radio" name="planning-mode" value="planning" />
+              Retirement and savings
+            </label>
+            <label class="mt-2 flex gap-2 text-sm font-medium">
+              <input type="radio" name="planning-mode" value="both" checked />
+              Both
+            </label>
+          </fieldset>
+        </section>
+
+        <section id="ref-b" data-plan-ref="B" data-step="b" data-step-title="Plan" class="plan-step rounded-sm border border-line bg-white p-5 md:p-6 shadow-sm">
+          <h2 class="font-serif font-semibold text-2xl text-navydeep"><span class="plan-ref" title="Section B">B</span>Plan<button type="button" class="plan-tip" data-tip="note-plan" aria-label="About this section"></button></h2>
+          <p id="note-plan" class="plan-note">Who the plan is for, and who prepared it. The plan date is printed on the plan and used in its file name.</p>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <label class="block min-w-0 max-w-full text-sm font-medium">Plan date
+              <span class="meeting-date-fit">
+                <input id="meeting-date" type="date" class="mt-1 w-full min-w-0 max-w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+              </span>
+            </label>
+            <label class="block text-sm font-medium">Client
+              <input id="client-name" value="Person 1" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+            </label>
+            <label class="block text-sm font-medium">Phone number
+              <input id="client-phone" name="client-phone" type="tel" inputmode="tel" autocomplete="tel" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+            </label>
+            <label class="block text-sm font-medium">Email
+              <input id="client-email" name="client-email" type="email" inputmode="email" autocomplete="email" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+            </label>
+            <label class="block text-sm font-medium">Preferred contact method
+              <select id="preferred-contact" name="preferred-contact" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm">
+                <option value="">Choose one</option>
+                <option value="Call">Call</option>
+                <option value="Text">Text</option>
+                <option value="Email">Email</option>
+              </select>
+            </label>
+            <label class="block text-sm font-medium">Prepared by
+              <input id="advisor-name" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="block text-sm font-medium">Firm
+              <input id="advisor-firm" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+          </div>
+        </section>
+
+        <section id="ref-c" data-plan-ref="C" data-step="c" data-step-title="Household" class="plan-step rounded-sm border border-line bg-white p-5 md:p-6 shadow-sm">
+          <h2 class="font-serif font-semibold text-2xl text-navydeep"><span class="plan-ref" title="Section C">C</span>Household</h2>
+          <label class="mt-4 flex items-center gap-2 text-sm font-medium">
+            <input id="has-partner" type="checkbox" />
+            There is an eligible TFSA &amp; RRSP successor holder
+            <button type="button" class="plan-tip" data-tip="successor-holder-tip" aria-label="Who counts as an eligible successor holder"></button>
+          </label>
+          <p id="successor-holder-tip" class="plan-note">Under the Income Tax Act, that person must be the survivor spouse (legally married) or common-law partner: living in a conjugal relationship for at least 12 continuous months, or the parents of a child together by birth or adoption, or with custody and control of a wholly dependent child. For a TFSA, they must be named successor holder in the contract or will where provincial law allows the designation. For an RRSP or RRIF, they must be the designated beneficiary (or RRIF successor annuitant) so the amount can transfer to their own registered plan on a tax-deferred basis. Checking this assumes those designations are in place. It is not a tax opinion.</p>
+          <div class="mt-4 grid gap-4 lg:grid-cols-2">
+            <div class="rounded-sm border border-line bg-white p-4">
+              <p id="person-heading-household" class="text-xs font-semibold uppercase tracking-[0.14em] text-inksoft">Person 1</p>
+              <label class="mt-3 block text-sm font-medium"><span id="person-age-label">Person 1's age</span>
+                <input id="client-age" inputmode="numeric" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+              </label>
+              <label class="mt-3 block text-sm font-medium">Retirement age
+                <input id="retirement-age" inputmode="numeric" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+              </label>
+              <label class="mt-3 block text-sm font-medium">What is your annual personal income?
+                <input id="personal-income" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+            </div>
+            <div class="person-spouse partner-only hidden rounded-sm p-4">
+              <p id="partner-heading-household" class="text-xs font-semibold uppercase tracking-[0.14em] text-olive">Person 2</p>
+              <label class="mt-3 block text-sm font-medium"><span>Spouse's name</span>
+                <input id="partner-name" value="Person 2" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+              <label class="mt-3 block text-sm font-medium"><span id="partner-age-label">Person 2's age</span>
+                <input id="partner-age" inputmode="numeric" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+              </label>
+              <label class="mt-3 block text-sm font-medium"><span id="partner-income-label">Person 2's annual income</span>
+                <input id="partner-income" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+            </div>
+          </div>
+          <div class="mt-4 rounded-sm bg-paperdim px-3 py-3 text-sm">
+            <p class="font-medium">Household income<button type="button" class="plan-tip" data-tip="note-household-income" aria-label="How household income is counted"></button></p>
+            <p id="household-income" class="figure nums mt-1 text-2xl">$0</p>
+            <p id="note-household-income" class="plan-note">Personal income plus the spouse's income. This is calculated. It is not a separate entry.</p>
+          </div>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <label class="block text-sm font-medium">How many dependants do you have?
+              <input id="dependant-count" inputmode="numeric" value="0" class="mt-1 block w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+            </label>
+            <label class="block text-sm font-medium"><span id="planned-children-text">How many children do you hope to have?</span><button type="button" class="plan-tip" data-tip="note-planned-children" aria-label="How planned children are counted"></button>
+              <input id="planned-children" inputmode="numeric" value="0" class="mt-1 block w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              <span id="note-planned-children" class="plan-note">Planned children are shown on the insurance graph as arriving two years apart. Each one adds an education amount until the independence age. A policy is not recommended on a child who is not born yet.</span>
+            </label>
+          </div>
+          <div id="dependant-ages" class="mt-4 grid gap-3 sm:grid-cols-3"></div>
+        </section>
+
+        <section id="ref-d" data-plan-ref="D" class="scope-insurance rounded-sm border border-line bg-white p-5 md:p-6 shadow-sm">
+          <h2 class="font-serif font-semibold text-2xl text-navydeep"><span class="plan-ref" title="Section D">D</span><span id="death-heading">If Person 1 dies</span><button type="button" class="plan-tip" data-tip="death-intro" aria-label="How the life insurance need is counted"></button></h2>
+          <p id="death-intro" class="plan-note">The mortgage and the children are shared. Income to replace is calculated for this person from the years below.</p>
+          <div class="plan-step" data-step="d1" data-step-title="Life insurance">
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-sm border border-line bg-white p-4">
+              <label class="block text-sm font-medium" for="death-age"><span id="death-age-label">Person 1's likely age at death</span><button type="button" class="plan-tip" data-tip="note-death-age" aria-label="How the likely age at death is used"></button>
+                <input id="death-age" inputmode="numeric" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+            </div>
+            <div class="person-spouse partner-only hidden rounded-sm p-4">
+              <label class="block text-sm font-medium" for="partner-death-age"><span id="partner-death-age-label">Person 2's likely age at death</span>
+                <input id="partner-death-age" inputmode="numeric" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+            </div>
+          </div>
+          <p id="note-death-age" class="plan-note">Each insurance chart runs to that person's likely age at death. It starts from the Canadian average life expectancy.</p>
+          <label class="mt-4 block text-sm font-medium">Income to replace (%)
+            <input id="replacement-ratio" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm sm:max-w-xs" />
+          </label>
+          <div class="mt-4 sm:max-w-xl">
+            <label class="block text-sm font-medium" for="income-years-slider"><span class="plan-ref plan-ref-control" title="Slider S.1">S.1</span>For how long<button type="button" class="plan-tip" data-tip="years-hint" aria-label="How the years of income are counted"></button></label>
+            <div class="mt-2 flex items-center gap-4">
+              <input id="income-years-slider" type="range" min="0" max="40" step="1" value="10" class="w-full" />
+              <input id="income-years" inputmode="numeric" value="10" aria-label="Years of income to replace" class="w-24 rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </div>
+            <div id="years-hint" class="plan-note space-y-1">
+              <p>Years of income the death benefit should replace. The slider starts at 10 years.</p>
+            </div>
+          </div>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <label class="block text-sm font-medium">Mortgage balance
+              <input id="debts" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label id="mortgage-years-wrap" class="block text-sm font-medium">Years left on the mortgage
+              <input id="mortgage-years" inputmode="numeric" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="block text-sm font-medium">Other debts to clear
+              <input id="other-debts" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="block text-sm font-medium">Final expenses
+              <input id="final-expenses" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+            </label>
+            <label class="block text-sm font-medium">Education fund per dependant still under the independence age
+              <input id="education-amount" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+            </label>
+            <div class="grid gap-4 sm:col-span-2 sm:grid-cols-2">
+              <label class="block text-sm font-medium"><span id="client-coverage-label">Personal life insurance in force on Person 1</span>
+                <input id="existing-coverage" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+              <div class="person-spouse partner-only hidden rounded-sm p-4">
+                <p id="partner-coverage-heading" class="text-xs font-semibold uppercase tracking-[0.14em] text-olive">Person 2</p>
+                <label class="mt-3 block text-sm font-medium"><span id="partner-personal-coverage-label">Personal life insurance already in force on Person 2</span><button type="button" class="plan-tip" data-tip="partner-coverage-note" aria-label="What this coverage reduces"></button>
+                  <input id="partner-existing-coverage" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+                  <span id="partner-coverage-note" class="plan-note">This reduces Person 2's need only. The mortgage and the children's education stay in both.</span>
+                </label>
+              </div>
+            </div>
+            <label class="block text-sm font-medium">Assets the survivor would use for this need<button type="button" class="plan-tip" data-tip="note-assets-at-death" aria-label="How these assets are counted"></button>
+              <input id="assets-at-death" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              <span id="note-assets-at-death" class="plan-note">These assets reduce the need if either person dies.</span>
+            </label>
+          </div>
+          <div class="mt-4 space-y-4 text-sm">
+            <label class="flex gap-2 font-medium"><input id="client-owns-corp" type="checkbox" /> <span id="client-owns-corp-label">Person 1 owns a corporation</span></label>
+            <div id="client-corp-fields" class="hidden rounded-sm border border-line bg-white p-4">
+              <div class="grid gap-4 sm:grid-cols-2">
+                <label class="block text-sm font-medium"><span id="client-corporate-coverage-label">Life insurance the corporation already owns on Person 1</span>
+                  <input id="corporate-coverage" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+                </label>
+                <label class="block text-sm font-medium">Adjusted cost base of that corporate policy
+                  <input id="corporate-acb" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+                </label>
+              </div>
+              <label class="mt-4 flex gap-2 text-sm font-medium">
+                <input id="count-corporate" type="checkbox" />
+                <span id="client-count-corporate-label">Count that corporate coverage toward Person 1's life insurance gap</span>
+                <button type="button" class="plan-tip" data-tip="note-count-corporate" aria-label="How corporate coverage is counted"></button>
+              </label>
+              <p id="note-count-corporate" class="plan-note">This is asked only after the corporation box is checked. It reduces this person's need only when you count it. The death benefit is generally tax-free. The corporation can usually pay the proceeds minus the adjusted cost base out as a capital dividend.</p>
+            </div>
+            <div class="person-spouse partner-only hidden rounded-sm p-4">
+            <label class="flex gap-2 font-medium"><input id="partner-owns-corp" type="checkbox" /> <span id="partner-owns-corp-label">Person 2 owns a corporation</span></label>
+            <div id="partner-corp-fields" class="hidden">
+              <div class="grid gap-4 sm:grid-cols-2">
+                <label class="block text-sm font-medium"><span id="partner-corporate-coverage-label">Life insurance a corporation already owns on Person 2</span>
+                  <input id="partner-corporate-coverage" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+                </label>
+                <label class="block text-sm font-medium">Adjusted cost base of that corporate policy
+                  <input id="partner-corporate-acb" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+                </label>
+              </div>
+              <label class="mt-4 flex gap-2 text-sm font-medium">
+                <input id="partner-count-corporate" type="checkbox" />
+                <span id="partner-count-corporate-label">Count that corporate coverage toward Person 2's life insurance gap</span>
+                <button type="button" class="plan-tip" data-tip="note-partner-count-corporate" aria-label="How this corporate coverage is counted"></button>
+              </label>
+              <p id="note-partner-count-corporate" class="plan-note">This is asked only after the second corporation box is checked. It reduces that person's need only when you count it. It does not reduce the other person's need.</p>
+            </div>
+            </div>
+          </div>
+          <div id="house-plan" class="mt-4 hidden rounded-sm bg-paperdim p-3">
+            <label class="flex gap-2 text-sm font-medium">
+              <input id="plan-house" type="checkbox" />
+              There is no mortgage. A home purchase is in the plan.
+            </label>
+            <div id="house-plan-fields" class="mt-3 hidden grid gap-4 sm:grid-cols-3">
+              <label class="block text-sm font-medium">Mortgage you expect to take
+                <input id="future-mortgage" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+              <label class="block text-sm font-medium">Years until that purchase
+                <input id="years-until-purchase" inputmode="numeric" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+              <label class="block text-sm font-medium">Years to pay that mortgage
+                <input id="future-amortization" inputmode="numeric" value="25" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+            </div>
+            <p id="house-plan-note" class="mt-3 hidden text-sm leading-6 text-inksoft"></p>
+          </div>
+          </div>
+          <div class="plan-step mt-5" data-step="d2" data-step-title="Life insurance chart">
+            <h3 class="font-serif font-semibold text-xl text-navydeep">Life insurance gap over time<button type="button" class="plan-tip" data-tip="note-need-chart" aria-label="How to read the life insurance charts"></button></h3>
+            <p id="note-need-chart" class="plan-note">Each chart runs from today to the likely age at death. The solid line is the life insurance gap. Income replacement stays at the years chosen until retirement is that close, then it steps down, and those dollars rise with inflation. The gold dashed line is the mortgage, paid down in a straight line. The olive dashed line is education for each child still under the independence age; it steps off when that child reaches the age. The dotted line is tax at death on the balances that remain in that year of the retirement plan — the same figure as Table F3. Final expenses and probate rise with inflation and stay in the solid line. Amounts are on the left. Age is along the bottom.</p>
+            <p class="plan-callout mt-3 border-l-2 border-gold bg-paperdim px-4 py-3 text-sm leading-6 text-ink">
+              <span class="font-semibold text-navydeep">Important.</span>
+              Term life insurance can only run to age 85. After that, any term coverage you did not convert to whole life expires with no value. That can leave a life insurance need beyond age 85 that this chart does not illustrate.
+            </p>
+            <div class="plan-figures">
+              <div id="ref-fig-d1" data-plan-ref="Fig. D1" class="mt-4">
+                <p class="plan-ref plan-ref-fig">Fig. D1</p>
+                <p id="need-chart-person" class="text-xs font-semibold uppercase tracking-[0.14em] text-inksoft">Person 1</p>
+                <div id="need-chart" class="need-chart mt-3"></div>
+                <button type="button" class="plan-tip plan-tip-text mt-2" data-tip="longevity-note">What this chart shows</button>
+                <p id="longevity-note" class="plan-note"></p>
+              </div>
+              <div id="ref-fig-d2" data-plan-ref="Fig. D2" class="person-spouse partner-only mt-4 hidden rounded-sm p-4">
+                <p class="plan-ref plan-ref-fig">Fig. D2</p>
+                <p id="partner-need-chart-heading" class="text-xs font-semibold uppercase tracking-[0.14em] text-olive">Person 2</p>
+                <div id="partner-need-chart" class="need-chart mt-3"></div>
+                <button type="button" class="plan-tip plan-tip-text mt-2" data-tip="partner-longevity-note">What this chart shows</button>
+                <p id="partner-longevity-note" class="plan-note"></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="ref-e" data-plan-ref="E" data-step="e" data-step-title="Disability &amp; CI" class="plan-step scope-insurance rounded-sm border border-line bg-white p-5 md:p-6 shadow-sm">
+          <h2 class="font-serif font-semibold text-2xl text-navydeep"><span class="plan-ref" title="Section E">E</span>Disability and critical illness<button type="button" class="plan-tip" data-tip="note-protection" aria-label="How disability and critical illness amounts are counted"></button></h2>
+          <p id="note-protection" class="plan-note">Enter any disability or critical illness already in force first. The figures below are the gaps after that coverage. Disability is a monthly benefit. Critical illness is one lump sum for the months of earned income needed to recover. This replaces earned income only. Income from investments is not included. These are amounts. This worksheet does not choose a product.</p>
+          <div class="mt-4 grid gap-4 lg:grid-cols-2">
+            <div class="rounded-sm border border-line bg-white p-4">
+              <p id="person-heading-protection" class="text-xs font-semibold uppercase tracking-[0.14em] text-inksoft">Person 1</p>
+              <label class="mt-3 block text-sm font-medium"><span id="client-existing-di-label">Disability already in force on Person 1, monthly</span>
+                <input id="existing-disability" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+              <label class="mt-3 block text-sm font-medium"><span id="client-existing-ci-label">Critical illness already in force on Person 1</span>
+                <input id="existing-ci" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+              <p class="mt-4 text-sm">Disability gap, monthly</p>
+              <p id="client-di" class="figure nums text-2xl">$0</p>
+              <p class="mt-3 text-sm">Critical illness gap</p>
+              <p id="client-ci" class="figure nums text-2xl">$0</p>
+            </div>
+            <div class="person-spouse partner-only hidden rounded-sm p-4">
+              <p id="partner-heading-protection" class="text-xs font-semibold uppercase tracking-[0.14em] text-olive">Person 2</p>
+              <label class="mt-3 block text-sm font-medium"><span id="partner-existing-di-label">Disability already in force on Person 2, monthly</span>
+                <input id="partner-existing-disability" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+              <label class="mt-3 block text-sm font-medium"><span id="partner-existing-ci-label">Critical illness already in force on Person 2</span>
+                <input id="partner-existing-ci" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+              <p class="mt-4 text-sm">Disability gap, monthly</p>
+              <p id="spouse-di" class="figure nums text-2xl">$0</p>
+              <p class="mt-3 text-sm">Critical illness gap</p>
+              <p id="spouse-ci" class="figure nums text-2xl">$0</p>
+            </div>
+          </div>
+          <div class="mt-4 max-w-xl">
+            <label class="block text-sm font-medium" for="disability-ratio-slider"><span class="plan-ref plan-ref-control" title="Slider S.2">S.2</span>Monthly income if disabled (% of earned income)<button type="button" class="plan-tip" data-tip="note-disability-cap" aria-label="Why this is capped at 70%"></button></label>
+            <div class="mt-2 flex items-center gap-4">
+              <input id="disability-ratio-slider" type="range" min="0" max="70" step="1" value="70" class="w-full" />
+              <input id="disability-ratio" inputmode="decimal" value="70" aria-label="Percent of earned income to replace if disabled, maximum 70" class="w-24 rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </div>
+            <p id="note-disability-cap" class="plan-note">Capped at 70% of earned income. That is the usual ceiling for individual disability coverage.</p>
+          </div>
+          <label class="mt-4 block text-sm font-medium sm:max-w-xs">Months of income the disability benefit should replace<button type="button" class="plan-tip" data-tip="disability-hint" aria-label="How the disability benefit is figured"></button>
+            <input id="disability-months" inputmode="numeric" class="mt-1 block w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            <span id="disability-hint" class="plan-note"></span>
+          </label>
+          <div class="mt-4 max-w-xl">
+            <label class="block text-sm font-medium" for="ci-ratio-slider"><span class="plan-ref plan-ref-control" title="Slider S.3">S.3</span>Earned income to replace for a critical illness (%)</label>
+            <div class="mt-2 flex items-center gap-4">
+              <input id="ci-ratio-slider" type="range" min="0" max="100" step="1" value="70" class="w-full" />
+              <input id="ci-ratio" inputmode="decimal" value="70" aria-label="Percent of earned income to replace for a critical illness" class="w-24 rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </div>
+          </div>
+          <div class="mt-4 max-w-xl">
+            <label class="block text-sm font-medium" for="ci-months-slider"><span class="plan-ref plan-ref-control" title="Slider S.4">S.4</span>Months of earned income to recover from a critical illness<button type="button" class="plan-tip" data-tip="ci-hint" aria-label="How the critical illness lump sum is figured"></button></label>
+            <div class="mt-2 flex items-center gap-4">
+              <input id="ci-months-slider" type="range" min="0" max="36" step="1" value="12" class="w-full" />
+              <input id="ci-months" inputmode="numeric" value="12" aria-label="Months of earned income to recover from a critical illness" class="w-24 rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </div>
+            <p id="ci-hint" class="plan-note"></p>
+          </div>
+          <div id="child-coverage" class="mt-4 hidden grid gap-4 sm:grid-cols-2">
+            <label class="block text-sm font-medium">Life insurance on each child already born
+              <input id="child-life" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="block text-sm font-medium">Critical illness on each child already born
+              <input id="child-ci" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+          </div>
+          <div id="child-recommendations" class="mt-4 grid gap-3 sm:grid-cols-2"></div>
+        </section>
+
+        <section id="ref-f" data-plan-ref="F" class="scope-planning rounded-sm border border-line bg-white p-5 md:p-6 shadow-sm">
+          <h2 class="font-serif font-semibold text-2xl text-navydeep"><span class="plan-ref" title="Section F">F</span>Retirement<button type="button" class="plan-tip" data-tip="note-retirement" aria-label="How the retirement plan runs"></button></h2>
+          <p id="note-retirement" class="plan-note">The table runs from this year to the later of the two likely ages at death. Contributions stop at retirement. CPP and OAS cover part of the after-tax income, and the accounts withdraw the rest.</p>
+          <div class="plan-step" data-step="f1" data-step-title="Retirement income">
+          <h3 class="mt-4 font-serif font-semibold text-xl text-navydeep">Retirement income</h3>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-sm border border-line bg-white p-4">
+              <p id="person-heading-retirement" class="text-xs font-semibold uppercase tracking-[0.14em] text-inksoft">Person 1</p>
+            <label class="mt-3 block text-sm font-medium">Average employment income over the last 5 years<button type="button" class="plan-tip" data-tip="note-income-history" aria-label="What happens when this is blank"></button>
+              <input id="income-history" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              <span id="note-income-history" class="plan-note">Leave this blank to use this year's income.</span>
+            </label>
+            <label class="block text-sm font-medium">Years in Canada from age 18 to 65
+              <input id="canada-years" inputmode="numeric" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="block text-sm font-medium">CPP you are counting on at 65, yearly<button type="button" class="plan-tip" data-tip="rrsp-room-note" aria-label="How CPP and OAS are estimated"></button>
+              <input id="cpp-annual" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              <button id="use-max-cpp" type="button" class="mt-2 text-sm font-semibold text-golddim underline hover:text-navydeep">Use the 2026 maximum at 65</button>
+              <span id="rrsp-room-note" class="plan-note"></span>
+            </label>
+            <label class="block text-sm font-medium">OAS you are counting on at 65, yearly
+              <input id="oas-annual" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              <button id="use-max-oas" type="button" class="mt-2 text-sm font-semibold text-golddim underline hover:text-navydeep">Use the current maximum</button>
+            </label>
+            </div>
+            <div class="person-spouse partner-only hidden rounded-sm p-4">
+              <p id="partner-heading-retirement" class="text-xs font-semibold uppercase tracking-[0.14em] text-olive">Person 2</p>
+            <label class="partner-only mt-3 block text-sm font-medium"><span id="partner-history-label">Person 2's average income over the last 5 years</span><button type="button" class="plan-tip" data-tip="note-partner-income-history" aria-label="What happens when this is blank"></button>
+              <input id="partner-income-history" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              <span id="note-partner-income-history" class="plan-note">Leave this blank to use this year's income.</span>
+            </label>
+            <label class="partner-only hidden block text-sm font-medium"><span id="partner-canada-label">Years Person 2 will have lived in Canada from 18 to 65</span>
+              <input id="partner-canada-years" inputmode="numeric" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="partner-only hidden block text-sm font-medium"><span id="partner-cpp-label">Person 2 CPP, yearly</span>
+              <input id="partner-cpp" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+              <button id="use-max-partner-cpp" type="button" class="mt-2 text-sm font-semibold text-golddim underline hover:text-navydeep">Use the 2026 maximum at 65</button>
+            </label>
+            <label class="partner-only hidden block text-sm font-medium"><span id="partner-oas-label">Person 2 OAS, yearly</span>
+              <input id="partner-oas" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+              <button id="use-max-partner-oas" type="button" class="mt-2 text-sm font-semibold text-golddim underline hover:text-navydeep">Use the age 65–74 maximum</button>
+            </label>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="flex gap-2 text-sm font-medium">
+                <input id="leave-legacy" type="checkbox" />
+                Do you want to leave a legacy?
+                <button type="button" class="plan-tip" data-tip="legacy-note" aria-label="How a legacy shows on the chart"></button>
+              </label>
+              <label id="legacy-amount-wrap" class="mt-3 hidden block text-sm font-medium sm:max-w-xs">How much?
+                <input id="legacy-amount" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </label>
+              <p id="legacy-note" class="plan-note"></p>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium" for="desired-income-slider"><span class="plan-ref plan-ref-control" title="Slider S.5">S.5</span>How much after-tax annual income do you need from retirement to the end of life, in today's dollars?<button type="button" class="plan-tip" data-tip="desired-income-note" aria-label="Where this amount starts"></button></label>
+              <div class="mt-2 flex items-center gap-4">
+                <input id="desired-income-slider" type="range" min="0" max="300000" step="1000" value="0" class="w-full" />
+                <input id="desired-income" inputmode="decimal" value="0" aria-label="After-tax annual income in today's dollars" class="w-32 rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </div>
+              <p id="desired-income-note" class="plan-note">Starts at 70% of combined income. Slide it, or type an amount.</p>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium" for="inflation-slider"><span class="plan-ref plan-ref-control" title="Slider S.6">S.6</span>Inflation assumption<button type="button" class="plan-tip" data-tip="inflation-average-note" aria-label="Where the inflation rate starts"></button></label>
+              <div class="mt-2 flex items-center gap-4">
+                <input id="inflation-slider" type="range" min="0" max="8" step="0.1" class="w-full" />
+                <input id="inflation-rate" inputmode="decimal" aria-label="Inflation percent" class="w-24 rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </div>
+              <p id="inflation-average-note" class="plan-note"></p>
+              <p id="income-translation" class="mt-2 text-sm leading-6"></p>
+              <div id="ref-fig-f1" data-plan-ref="Fig. F1" class="mt-4">
+                <p class="plan-ref plan-ref-fig">Fig. F1</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-inksoft">Buying power if this income never rises</p>
+                <div id="income-erosion" class="need-chart mt-3"></div>
+                <button type="button" class="plan-tip plan-tip-text mt-2" data-tip="income-erosion-note">What this chart shows</button>
+                <p id="income-erosion-note" class="plan-note"></p>
+              </div>
+            </div>
+          </div>
+          </div>
+
+          <div class="plan-step" data-step="f2" data-step-title="Accounts">
+          <h3 class="mt-4 font-serif font-semibold text-xl text-navydeep">Accounts today<button type="button" class="plan-tip" data-tip="room-notes" aria-label="How TFSA and RRSP room is counted"></button></h3>
+          <div id="room-notes" class="plan-note">
+            <div id="tfsa-breakdown" class="space-y-2"></div>
+            <p id="tfsa-room-note" class="mt-2"></p>
+            <p id="future-room-note" class="mt-1"></p>
+          </div>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-sm border border-line bg-white p-4 sm:col-span-2">
+              <p id="person-heading-accounts" class="text-xs font-semibold uppercase tracking-[0.14em] text-inksoft">Person 1 accounts</p>
+              <div class="mt-3 grid gap-4 sm:grid-cols-2">
+            <label class="block text-sm font-medium">Current TFSA balance
+              <input id="tfsa-balance" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="block text-sm font-medium">TFSA room available now
+              <input id="tfsa-room" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="block text-sm font-medium">Current RRSP balance
+              <input id="rrsp-balance" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="block text-sm font-medium">RRSP room available now
+              <input id="rrsp-room" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="block text-sm font-medium">Non-registered balance
+              <input id="nonreg-balance" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="block text-sm font-medium sm:col-span-2">Other assets<button type="button" class="plan-tip" data-tip="note-other-assets" aria-label="What counts as other assets"></button>
+              <input id="other-assets" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              <span id="note-other-assets" class="plan-note">Real estate or anything outside the TFSA, RRSP, and non-registered accounts. Only the growth is taxed when it is spent.</span>
+            </label>
+              </div>
+            </div>
+            <div class="person-spouse partner-only hidden rounded-sm p-4 sm:col-span-2">
+              <p id="partner-heading-accounts" class="text-xs font-semibold uppercase tracking-[0.14em] text-olive">Person 2 accounts</p>
+              <div class="mt-3 grid gap-4 sm:grid-cols-2">
+            <label class="block text-sm font-medium"><span id="partner-tfsa-balance-label">Person 2's TFSA balance</span>
+              <input id="partner-tfsa-balance" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="partner-only hidden block text-sm font-medium"><span id="partner-tfsa-room-label">Person 2's TFSA room available now</span>
+              <input id="partner-tfsa-room" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="partner-only hidden block text-sm font-medium"><span id="partner-rrsp-balance-label">Person 2's RRSP balance</span>
+              <input id="partner-rrsp-balance" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="partner-only hidden block text-sm font-medium"><span id="partner-rrsp-room-label">Person 2's RRSP room available now</span>
+              <input id="partner-rrsp-room" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="partner-only hidden block text-sm font-medium"><span id="partner-nonreg-label">Person 2's non-registered balance</span>
+              <input id="partner-nonreg-balance" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="partner-only hidden block text-sm font-medium sm:col-span-2"><span id="partner-other-label">Person 2's other assets</span><button type="button" class="plan-tip" data-tip="note-partner-other-assets" aria-label="What counts as other assets"></button>
+              <input id="partner-other-assets" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              <span id="note-partner-other-assets" class="plan-note">Real estate or anything outside the TFSA, RRSP, and non-registered accounts. Only the growth is taxed when it is spent.</span>
+            </label>
+              </div>
+            </div>
+          </div>
+          </div>
+
+          <div class="plan-step" data-step="f3" data-step-title="Growth &amp; contributions">
+          <h3 class="mt-4 font-serif font-semibold text-xl text-navydeep">Growth and contributions</h3>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium" for="investor-profile">Investor profile
+                <select id="investor-profile" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm">
+                  <option value="">Not set</option>
+                  <option value="minimal-risk">Minimal Risk (0% equity, 100% fixed income)</option>
+                  <option value="conservative">Conservative (20% equity, 80% fixed income)</option>
+                  <option value="moderate-conservative">Moderate Conservative (40% equity, 60% fixed income)</option>
+                  <option value="balanced">Balanced (60% equity, 40% fixed income)</option>
+                  <option value="growth">Growth (80% equity, 20% fixed income)</option>
+                  <option value="aggressive-growth">Aggressive Growth (100% equity)</option>
+                </select>
+              </label>
+              <p id="investor-profile-note" class="mt-2 text-sm text-inksoft">Choosing a profile sets both rates of return below. Moving the return-while-saving rate updates the profile to match.</p>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium" for="real-return-slider"><span class="plan-ref plan-ref-control" title="Slider S.7">S.7</span>Estimated rate of return while saving</label>
+              <div class="mt-2 flex items-center gap-4">
+                <input id="real-return-slider" type="range" min="0" max="14" step="0.1" class="w-full" />
+                <input id="real-return" inputmode="decimal" aria-label="Estimated rate of return while saving, percent" class="w-24 rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </div>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium" for="other-return-slider"><span class="plan-ref plan-ref-control" title="Slider S.8">S.8</span>Average internal rate of return for all other assets<button type="button" class="plan-tip" data-tip="note-other-return" aria-label="When to use this rate"></button></label>
+              <div class="mt-2 flex items-center gap-4">
+                <input id="other-return-slider" type="range" min="0" max="14" step="0.1" value="0" class="w-full" />
+                <input id="other-return" inputmode="decimal" value="0" aria-label="Average internal rate of return for other assets, percent" class="w-24 rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </div>
+              <p id="note-other-return" class="plan-note">Starts at 0%. Use this when other assets include real estate. It applies before and after retirement.</p>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium" for="retirement-return-slider"><span class="plan-ref plan-ref-control" title="Slider S.9">S.9</span>Estimated rate of return in retirement<button type="button" class="plan-tip" data-tip="note-retirement-return" aria-label="When this rate applies"></button></label>
+              <div class="mt-2 flex items-center gap-4">
+                <input id="retirement-return-slider" type="range" min="0" max="8" step="0.1" class="w-full" />
+                <input id="retirement-return" inputmode="decimal" aria-label="Estimated rate of return in retirement, percent" class="w-24 rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </div>
+              <p id="note-retirement-return" class="plan-note">At retirement, contributions stop. CPP and OAS cover part of the income. The TFSA, RRSP, and non-registered accounts withdraw the rest and switch to this rate.</p>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium" for="tfsa-contribution-slider"><span class="plan-ref plan-ref-control" title="Slider S.10">S.10</span>TFSA contribution, monthly<button type="button" class="plan-tip" data-tip="note-tfsa-contribution" aria-label="How TFSA deposits follow the room"></button></label>
+              <div class="mt-2 flex items-center gap-4">
+                <input id="tfsa-contribution-slider" type="range" min="0" max="10000" step="50" value="0" class="w-full" />
+                <input id="tfsa-contribution" inputmode="decimal" value="0" aria-label="TFSA contribution per month" class="w-28 rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </div>
+              <p id="note-tfsa-contribution" class="plan-note">The most you would contribute. Deposits stay at this amount until the room is used, then they follow the room that is still available.</p>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium" for="rrsp-contribution-slider"><span class="plan-ref plan-ref-control" title="Slider S.11">S.11</span>RRSP contribution, monthly<button type="button" class="plan-tip" data-tip="note-rrsp-contribution" aria-label="How RRSP deposits and the rollover are counted"></button></label>
+              <div class="mt-2 flex items-center gap-4">
+                <input id="rrsp-contribution-slider" type="range" min="0" max="10000" step="50" value="0" class="w-full" />
+                <input id="rrsp-contribution" inputmode="decimal" value="0" aria-label="RRSP contribution per month" class="w-28 rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </div>
+              <div id="note-rrsp-contribution" class="plan-note">
+                <p>The most you would contribute. Combined room for both people is the limit.</p>
+                <p id="rrsp-rollover-note" class="mt-1"></p>
+                <p id="rrsp-rollover-tip" class="mt-1 hidden"></p>
+              </div>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium" for="nonreg-contribution-slider"><span class="plan-ref plan-ref-control" title="Slider S.12">S.12</span>Non-registered contribution, monthly</label>
+              <div class="mt-2 flex items-center gap-4">
+                <input id="nonreg-contribution-slider" type="range" min="0" max="10000" step="50" value="0" class="w-full" />
+                <input id="nonreg-contribution" inputmode="decimal" value="0" aria-label="Non-registered contribution per month" class="w-28 rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              </div>
+            </div>
+            <div class="sm:col-span-2">
+              <div id="ref-fig-f2" data-plan-ref="Fig. F2">
+                <p class="plan-ref plan-ref-fig">Fig. F2</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-inksoft">Balances from this year to the end of the plan</p>
+                <div id="wealth-chart" class="need-chart mt-3"></div>
+                <button type="button" class="plan-tip plan-tip-text mt-2" data-tip="wealth-chart-note">What this chart shows</button>
+                <p id="wealth-chart-note" class="plan-note"></p>
+              </div>
+              <div class="mt-4">
+                <label class="block text-sm font-medium" for="early-death-age"><span class="plan-ref plan-ref-control" title="Slider S.13">S.13</span>Age if death comes at this point
+                  <span id="early-death-readout" class="nums"></span>
+                </label>
+                <input id="early-death-age" type="range" min="1" max="100" step="1" class="mt-2 w-full" />
+                <p id="early-death-note" class="mt-2 text-sm leading-6"></p>
+              </div>
+              <div id="ref-table-f3" data-plan-ref="Table F3" class="mt-4 min-w-0 max-w-full">
+                <p class="plan-ref plan-ref-fig">Table F3</p>
+                <div class="portfolio-scroll no-print mt-2 min-w-0 max-w-full">
+                  <table id="portfolio-table" class="w-max min-w-full text-left text-xs"></table>
+                </div>
+                <div id="portfolio-print" class="portfolio-print print-only mt-2" aria-hidden="true"></div>
+                <button type="button" class="plan-tip plan-tip-text mt-2" data-tip="allocation-note">How each year is calculated</button>
+                <p id="allocation-note" class="plan-note"></p>
+              </div>
+            </div>
+          </div>
+          </div>
+        </section>
+
+        <section id="ref-g" data-plan-ref="G" data-step="g" data-step-title="Tax &amp; probate" class="plan-step scope-insurance rounded-sm border border-line bg-white p-5 md:p-6 shadow-sm">
+          <h2 class="font-serif font-semibold text-2xl text-navydeep"><span class="plan-ref" title="Section G">G</span>Tax and probate on death<button type="button" class="plan-tip" data-tip="note-death-tax-intro" aria-label="What is taxed at death"></button></h2>
+          <p id="note-death-tax-intro" class="plan-note">Canada has no inheritance tax. Probate is a court fee on what actually goes through the estate. A non-registered account, and other assets that move through the estate, can be taxed as a capital gain on death. An RRSP is income on the final return unless it rolls to an eligible beneficiary. Those taxes are added to the life insurance gap, and the chart raises them as the accounts and the estate value grow. This is a screen, not a tax opinion.</p>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <label class="block text-sm font-medium">Province or territory
+              <select id="province" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm"></select>
+            </label>
+            <label class="block text-sm font-medium">Value expected to go through the estate<button type="button" class="plan-tip" data-tip="note-estate-value" aria-label="What to include in the estate value"></button>
+              <input id="estate-value" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              <span id="note-estate-value" class="plan-note">Other than the non-registered balance already entered. The cost base is counted as zero.</span>
+            </label>
+          </div>
+          <label id="qc-verification-wrap" class="mt-4 hidden flex gap-2 text-sm font-medium">
+            <input id="qc-verification" type="checkbox" />
+            The will is not notarial and needs court verification
+          </label>
+          <p id="probate-result" class="mt-3 text-sm leading-6"></p>
+          <button type="button" class="plan-tip plan-tip-text mt-3" data-tip="death-tax-note">How tax at death is figured</button>
+          <p id="death-tax-note" class="plan-note"></p>
+        </section>
+
+        <section id="ref-h" data-plan-ref="H" data-step="h" data-step-title="Assumptions" class="plan-step rounded-sm border border-line bg-white p-5 md:p-6 shadow-sm">
+          <h2 class="font-serif font-semibold text-2xl text-navydeep"><span class="plan-ref" title="Section H">H</span>Assumptions you can change for this case<button type="button" class="plan-tip" data-tip="note-assumptions" aria-label="About these assumptions"></button></h2>
+          <div id="note-assumptions" class="plan-note">
+            <p>These are planning choices for this case. Inflation is the slider in the retirement section. The life insurance gap stays in today's dollars, so that slider does not shrink the insurance number.</p>
+            <p class="scope-planning mt-1">In retirement, CPP and OAS (when they apply) cover part of the after-tax income goal. Any shortfall is taken from Other assets, non-registered accounts, and the RRSP in proportion to those three balances, so they run down together and reach $0 at the same time. Example: if those accounts total $1,000,000 — $500,000 Other, $300,000 non-registered, and $200,000 RRSP — a $100,000 shortfall draws about $50,000, $30,000, and $20,000 from each. The TFSA is not used until Other, non-registered, and the RRSP are gone.</p>
+          </div>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <label class="block text-sm font-medium">Dependant independence age
+              <input id="independence-age" inputmode="numeric" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+            </label>
+            <label class="block text-sm font-medium">Figure used for life expectancy
+              <select id="client-sex" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm">
+                <option value="both">Canadian average</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+              </select>
+            </label>
+            <label class="scope-planning block text-sm font-medium">Retirement income as % of household income
+              <input id="retirement-replacement" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
+            </label>
+          </div>
+        </section>
+
+        <section id="ref-print" data-step="print" data-step-title="Print" class="plan-step no-print rounded-sm border border-line bg-white p-5 md:p-6 shadow-sm">
+          <h2 class="font-serif font-semibold text-2xl text-navydeep">The plan is ready</h2>
+          <p class="mt-2 text-sm leading-6 text-inksoft">Print it for the file, or go back to any step to adjust. The printed plan carries the summary, every entry, each chart and table, and the note behind each one.</p>
+          <div class="mt-4 rounded-sm border border-line bg-paperdim px-4 py-3.5">
+            <p class="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-golddim">How this information is handled</p>
+            <p class="mt-2 text-[13px] leading-6 text-inksoft">If you opened this page from a plan link, your details are in that web address. Anyone with the link can open the same entries. Printing the plan gives you a copy to keep. These entries are emailed to me, Ethan Marchand at Advisor Strategies, only when you submit the client intake. This website does not keep an account for you, and closing the tab leaves nothing saved in the browser.</p>
+          </div>
+          <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <button id="print-plan" type="button" class="inline-flex w-full sm:w-auto min-h-12 items-center justify-center px-5 py-2.5 rounded-sm bg-navydeep text-white text-sm font-semibold hover:bg-navy transition">Print plan</button>
+            <button id="new-case" type="button" class="inline-flex w-full sm:w-auto min-h-12 items-center justify-center px-5 py-2.5 rounded-sm border border-navydeep text-navydeep text-sm font-semibold hover:bg-navydeep hover:text-white transition">Clear plan</button>
+          </div>
+        </section>
+
+        <div id="plan-step-nav" class="no-print flex items-center justify-between gap-3">
+          <button id="plan-step-back" type="button" class="inline-flex min-h-12 items-center justify-center gap-2 px-5 py-2.5 rounded-sm border border-navydeep text-navydeep text-sm font-semibold hover:bg-navydeep hover:text-white transition disabled:invisible">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M9 2 L4 7 L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Back
+          </button>
+          <button id="plan-step-next" type="button" class="inline-flex min-h-12 items-center justify-center gap-2 px-5 py-2.5 rounded-sm bg-navydeep text-white text-sm font-semibold hover:bg-navy transition">
+            <span id="plan-step-next-label">Next</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M5 2 L10 7 L5 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </form>
+
+      <aside id="meeting-pane" data-plan-ref="Summary" class="plan-summary h-max rounded-sm border border-line bg-white p-5 md:p-6 shadow-sm lg:sticky lg:top-24 lg:h-auto lg:min-h-0 lg:max-h-[calc(100vh-7.5rem)] lg:self-start lg:overflow-y-auto lg:overscroll-y-contain">
+        <div class="plan-summary-head">
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-golddim">Plan summary</p>
+          <p id="plan-prepared" class="mt-2 text-sm leading-6 text-inksoft"></p>
+        </div>
+        <div class="scope-insurance plan-summary-group">
+          <div class="plan-figure plan-figure-lead">
+            <p id="meeting-person-life-label" class="text-sm font-medium text-golddim">Person 1, life insurance gap</p>
+            <p data-out="life" class="figure nums font-serif text-4xl">$0</p>
+            <p id="meeting-years" class="mt-1 text-sm leading-6 text-inksoft"></p>
+            <ul id="life-waterfall" class="mt-3 space-y-1 text-sm"></ul>
+          </div>
+          <div class="plan-figure">
+            <p id="meeting-person-di-label" class="text-sm font-medium text-golddim">Person 1, disability gap, monthly</p>
+            <p id="meeting-di" class="figure nums font-serif text-3xl">$0</p>
+          </div>
+          <div class="plan-figure">
+            <p id="meeting-person-ci-label" class="text-sm font-medium text-golddim">Person 1, critical illness gap</p>
+            <p id="meeting-ci" class="figure nums font-serif text-3xl">$0</p>
+          </div>
+          <div id="meeting-partner" class="person-spouse partner-only plan-summary-group hidden">
+            <div class="plan-figure plan-figure-lead">
+              <p id="meeting-partner-life-label" class="text-sm font-medium text-golddim">Person 2, life insurance gap</p>
+              <p id="meeting-partner-life" class="figure nums font-serif text-4xl">$0</p>
+              <ul id="partner-life-waterfall" class="mt-3 space-y-1 text-sm"></ul>
+            </div>
+            <div class="plan-figure">
+              <p id="meeting-partner-di-label" class="text-sm font-medium text-golddim">Person 2, disability gap, monthly</p>
+              <p id="meeting-partner-di" class="figure nums font-serif text-3xl">$0</p>
+            </div>
+            <div class="plan-figure">
+              <p id="meeting-partner-ci-label" class="text-sm font-medium text-golddim">Person 2, critical illness gap</p>
+              <p id="meeting-partner-ci" class="figure nums font-serif text-3xl">$0</p>
+            </div>
+          </div>
+          <div id="meeting-children" class="plan-figure plan-figure-children space-y-4"></div>
+        </div>
+        <div class="scope-planning plan-summary-group">
+          <div class="plan-figure plan-figure-lead">
+            <p data-out="savings-label" class="text-sm font-medium text-golddim">Monthly contributions</p>
+            <p data-out="savings" class="figure nums font-serif text-4xl">$0</p>
+            <p id="savings-destination" class="mt-2 text-sm font-semibold leading-6 text-ink"></p>
+            <ul id="retirement-waterfall" class="mt-3 space-y-1 text-sm"></ul>
+          </div>
+        </div>
+        <p id="calc-notes" class="mt-4 text-sm leading-6 text-inksoft"></p>
+      </aside>
+      </div>
+
+    </main>
+
+    <section class="no-print border-t border-line bg-paperdim">
+      <div class="mx-auto max-w-6xl space-y-3 px-6 md:px-8 py-10 text-sm leading-6 text-inksoft">
+      <p>
+        This is an illustration for a conversation. It does not choose a policy, and it is not a tax opinion.
+        Disability is shown as a monthly benefit. Critical illness is shown as a lump sum.
+        A Life and A&amp;S licence does not by itself authorize a securities or mutual fund recommendation.
+      </p>
+      <p>
+        The entries are not written to this browser. They exist in this tab, and in the web address if you opened a plan link. Nothing is submitted from this page.
+      </p>
+    </div>
+    </section>
+
+<section class="no-print bg-navydeep py-12 border-t border-white/10">
+  <div class="max-w-6xl mx-auto px-6 md:px-8 flex flex-wrap items-center justify-between gap-4">
+    <p class="text-cream m-0 text-[15px]">Already a client? Continue to Advisor Strategies.</p>
+    <a href="https://advisorstrategies.ca/" class="inline-flex items-center justify-center px-6 py-3 rounded-full bg-gold text-navydeep text-sm font-semibold hover:bg-golddim hover:text-cream transition">I'm a client</a>
+  </div>
+</section>
+
+<footer class="bg-navydeep text-cream/70 pt-12 pb-7 border-t border-white/10">
+  <div class="max-w-6xl mx-auto px-6 md:px-8">
+    <div class="flex flex-wrap justify-between gap-10 pb-8 border-b border-white/10">
+      <div class="max-w-xs">
+        <img src="/assets/logo-light.png" alt="Advisor Strategies" width="407" height="76" class="h-10 w-auto mb-4">
+        <p class="text-cream text-sm font-medium m-0">Ethan Marchand</p>
+        <p class="text-cream/60 text-[13px] m-0 mt-1">Managing Advisor, Client Services</p>
+      </div>
+      <div>
+        <h2 class="text-cream text-[15px] font-medium mb-3.5">Tools</h2>
+        <div class="flex flex-col gap-2 text-sm">
+          <a href="/life-insurance-quote.html" class="hover:text-cream">Get a Quote</a>
+          <a href="/tfsa-calculator.html" class="hover:text-cream">TFSA Calculator</a>
+          <a href="/needs-analysis.html" class="hover:text-cream">Financial Plan</a>
+          <a href="/client-intake.html" class="hover:text-cream">Client Intake</a>
+          <a href="/investor-questionnaire.html" class="hover:text-cream">Investor Questionnaire</a>
+        </div>
+      </div>
+      <div>
+        <h2 class="text-cream text-[15px] font-medium mb-3.5">Clients</h2>
+        <div class="flex flex-col gap-2 text-sm">
+          <a href="https://advisorstrategies.ca/" class="hover:text-cream">advisorstrategies.ca</a>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-wrap justify-between gap-2.5 pt-5 text-[12.5px] text-cream/40">
+      <span>&copy; <span id="year"></span> Ethan Marchand · Advisor Strategies Inc.</span>
+      <span>Planning tools. Not an application for insurance.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script src="investor-profiles.js"></script>
+<script type="module" src="needs-analysis/js/app.js"></script>
+</body>
+</html>

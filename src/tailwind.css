@@ -1,0 +1,1307 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; }
+
+/* Shared site header. Dark bar, same markup on every page. */
+.site-nav-link.is-active,
+.site-nav-dropdown-trigger.is-active {
+  color: #e8e4df;
+  border-bottom: 2px solid #618986;
+  padding-bottom: 0.15rem;
+}
+.site-nav-dropdown {
+  padding-bottom: 0.85rem;
+  margin-bottom: -0.85rem;
+}
+.site-nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% - 0.85rem);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 13.5rem;
+  padding: 0.45rem;
+  background: #12343c;
+  border: 1px solid rgba(232, 228, 223, 0.14);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 140ms ease, visibility 140ms ease;
+  z-index: 60;
+}
+.site-nav-dropdown.is-open .site-nav-dropdown-menu,
+.site-nav-dropdown:hover .site-nav-dropdown-menu,
+.site-nav-dropdown:focus-within .site-nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.site-nav-dropdown-menu a {
+  display: block;
+  padding: 0.65rem 0.8rem;
+  color: #e8e4df;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 120ms ease, background-color 120ms ease;
+}
+.site-nav-dropdown-menu a:hover,
+.site-nav-dropdown-menu a.is-active {
+  color: #ffffff;
+  background: rgba(97, 137, 134, 0.28);
+}
+.site-nav-dropdown-trigger .site-nav-chevron {
+  transition: transform 140ms ease;
+}
+.site-nav-dropdown.is-open .site-nav-chevron,
+.site-nav-dropdown:hover .site-nav-chevron,
+.site-nav-dropdown:focus-within .site-nav-chevron {
+  transform: rotate(180deg);
+}
+#mobile-menu a.is-active {
+  color: #e8e4df;
+  font-weight: 600;
+}
+
+/* Client intake — Person 2 blocks match the financial plan spouse treatment */
+.intake-person-2 {
+  background: #f3f6f5;
+  border: 1px solid #618986;
+}
+.intake-person-2 input,
+.intake-person-2 select {
+  background: #fbfcfb;
+}
+
+/* Client intake — “more below” control on the current question */
+.intake-next-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: fit-content;
+  margin: 1rem auto 0;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid #618986;
+  background: rgba(97, 137, 134, 0.14);
+  color: #0d232a;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+.intake-next-arrow:hover:not(:disabled),
+.intake-next-arrow:focus-visible:not(:disabled) {
+  background: #618986;
+  color: #0d232a;
+  outline: none;
+}
+.intake-next-arrow svg {
+  animation: intake-next-bounce 1.6s ease-in-out infinite;
+}
+.intake-next-arrow.is-waiting,
+.intake-next-arrow:disabled {
+  opacity: 0.55;
+  cursor: default;
+  animation: none;
+}
+.intake-next-arrow.is-waiting svg,
+.intake-next-arrow:disabled svg {
+  animation: none;
+}
+@keyframes intake-next-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+/* Investor questionnaire */
+.iq-option:has(input:checked) {
+  border-color: #618986;
+  background: #f4f8f7;
+  box-shadow: inset 3px 0 0 #618986;
+}
+.iq-option:focus-within {
+  border-color: #618986;
+}
+.iq-step:not(.hidden) {
+  animation: iq-reveal 360ms ease both;
+}
+@keyframes iq-reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.iq-profile {
+  transition: filter 200ms ease, opacity 200ms ease, box-shadow 200ms ease;
+}
+.iq-profile.is-muted {
+  filter: grayscale(1);
+  opacity: 0.42;
+}
+.iq-profile.is-active {
+  border-color: #618986;
+  box-shadow: 0 0 0 1px #618986, 0 12px 26px rgba(13, 35, 42, 0.12);
+}
+@media (prefers-reduced-motion: reduce) {
+  .iq-step:not(.hidden) { animation: none; }
+  body.needs-worksheet #worksheet > section,
+  body.needs-worksheet .plan-step { animation: none !important; }
+}
+
+/* Ensure the native `hidden` attribute always wins over Tailwind's display
+   utilities (flex/grid/block), regardless of class source order. Used by the
+   intake form's personal/business toggle so `el.hidden = true/false` works
+   reliably no matter what display utility an element also carries. */
+[hidden] { display: none !important; }
+
+@media print {
+  .no-print,
+  body > footer { display: none !important; }
+}
+
+/* FAQ accordions (homepage + TFSA calculator) */
+.faq-answer { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+.faq-item.open .faq-answer { max-height: 600px; }
+.faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+/* Form controls (intake form + TFSA calculator) */
+input[type=radio], input[type=checkbox] { accent-color: #0d232a; width: 16px; height: 16px; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: #618986; box-shadow: 0 0 0 3px rgba(97, 137, 134, 0.22); }
+
+/* Range sliders (TFSA calculator), styled to match the site's gold / navy palette */
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 999px; background: #d5dedc; outline: none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #618986; border: 3px solid #0d232a; cursor: pointer; }
+input[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #618986; border: 3px solid #0d232a; cursor: pointer; }
+
+/* Needs analysis worksheet. Scoped so print and section rules stay on this page. */
+body.needs-worksheet .nums { font-variant-numeric: tabular-nums; }
+body.needs-worksheet .figure { font-weight: 600; color: #0d232a; }
+body.needs-worksheet .person-spouse {
+  background: #f3f6f5;
+  border: 1px solid #618986;
+}
+body.needs-worksheet #meeting-partner.person-spouse {
+  margin-right: -1.25rem;
+  margin-left: -1.25rem;
+  border-right: 0;
+  border-left: 0;
+  border-radius: 0;
+  padding: 1.25rem 1.25rem 1.5rem;
+}
+body.needs-worksheet:not([data-scope="insurance"]):not([data-scope="both"]) .scope-insurance,
+body.needs-worksheet:not([data-scope="planning"]):not([data-scope="both"]) .scope-planning {
+  display: none !important;
+}
+body.needs-worksheet .need-chart { position: relative; }
+body.needs-worksheet .need-guide-y,
+body.needs-worksheet .need-guide-x {
+  position: absolute;
+  pointer-events: none;
+  background: #0d232a;
+  opacity: 0;
+  transition: left 90ms linear, top 90ms linear, width 90ms linear, opacity 120ms linear;
+}
+body.needs-worksheet .need-guide-y { width: 1px; top: 0; }
+body.needs-worksheet .need-guide-x { height: 1px; left: 0; }
+body.needs-worksheet .need-tip {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: left 90ms linear, top 90ms linear, opacity 120ms linear;
+}
+/* The site range rule is width: 100%. Beside a number field the slider shares the row. */
+body.needs-worksheet input[type=range] { width: 100%; max-width: 100%; min-width: 0; }
+body.needs-worksheet .flex > input[type=range] { width: auto; flex: 1 1 auto; }
+
+/* A nowrap table or date control must not set the width of the page. */
+body.needs-worksheet {
+  overflow-wrap: break-word;
+}
+body.needs-worksheet input,
+body.needs-worksheet select,
+body.needs-worksheet textarea {
+  max-width: 100%;
+  min-width: 0;
+}
+/* iOS draws the meeting date wider than the other fields in the stack and
+   centers the date. The fit wrapper is the column width, same as those fields. */
+body.needs-worksheet .meeting-date-fit {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+body.needs-worksheet input[type="date"] {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-inline-size: 0;
+  text-align: left;
+}
+/* Table F3: scroll inside this box so Year + header stay in view until you leave the table. */
+body.needs-worksheet .portfolio-scroll {
+  min-width: 0;
+  max-width: 100%;
+  max-height: min(28rem, 70vh);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #d5dedc;
+  border-radius: 0.125rem;
+  background: #ffffff;
+}
+body.needs-worksheet #portfolio-table {
+  width: max-content;
+  min-width: 100%;
+  max-width: none;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+body.needs-worksheet #portfolio-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  max-width: 5.25rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  background: #f3f6f5;
+  box-shadow: inset 0 -1px 0 #d5dedc;
+  white-space: normal;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.2;
+  vertical-align: bottom;
+  text-align: left;
+  font-size: 0.7rem;
+}
+body.needs-worksheet #portfolio-table .portfolio-sticky-year {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: #ffffff;
+  box-shadow: inset -1px 0 0 #d5dedc;
+}
+body.needs-worksheet #portfolio-table thead th.portfolio-sticky-year {
+  z-index: 3;
+  max-width: 3.25rem;
+  background: #f3f6f5;
+  white-space: nowrap;
+}
+body.needs-worksheet #portfolio-table tr.portfolio-early-row .portfolio-sticky-year,
+body.needs-worksheet #portfolio-table tr.portfolio-early-row td {
+  background: #fef2f2;
+}
+body.needs-worksheet .need-chart,
+body.needs-worksheet .need-chart svg {
+  max-width: 100%;
+}
+body.needs-worksheet .need-tip {
+  max-width: min(12rem, calc(100% - 0.5rem));
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+}
+body.needs-worksheet #meeting-pane.plan-summary {
+  border-color: #618986;
+  background:
+    linear-gradient(180deg, rgba(193, 165, 123, 0.10), transparent 7rem),
+    #ffffff;
+}
+
+/* Stable plan references for screen and print (A, Fig. D1, S.1, …). */
+body.needs-worksheet .plan-ref {
+  display: inline-block;
+  margin-right: 0.45rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #4d736f;
+  vertical-align: 0.12em;
+  white-space: nowrap;
+}
+body.needs-worksheet .plan-ref-fig {
+  display: block;
+  margin: 0 0 0.35rem;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4d736f;
+  vertical-align: baseline;
+}
+body.needs-worksheet .plan-ref-control {
+  margin-right: 0.4rem;
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #8a929c;
+  vertical-align: 0.05em;
+}
+
+/* Financial plan — one step at a time. The step classes only act on screen, so the
+   printed plan always carries every section. */
+@media screen {
+  body.needs-worksheet:not(.plan-show-all) .plan-step-off {
+    display: none !important;
+  }
+  body.needs-worksheet:not(.plan-show-all) #worksheet > section:not(.plan-step-off),
+  body.needs-worksheet:not(.plan-show-all) .plan-step:not(.plan-step-off) {
+    animation: iq-reveal 320ms ease both;
+  }
+  body.needs-worksheet.plan-show-all #plan-step-nav {
+    display: none !important;
+  }
+}
+body.needs-worksheet .plan-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: #d5dedc;
+  overflow: hidden;
+}
+body.needs-worksheet .plan-progress-bar {
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: #618986;
+  transition: width 260ms ease;
+}
+body.needs-worksheet .plan-step-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+body.needs-worksheet .plan-step-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid #d5dedc;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #3e5558;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+body.needs-worksheet .plan-step-pill::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: #d5dedc;
+  flex: 0 0 auto;
+}
+body.needs-worksheet .plan-step-pill.is-done::before { background: #618986; }
+body.needs-worksheet .plan-step-pill.is-done { color: #0d232a; }
+body.needs-worksheet .plan-step-pill:hover,
+body.needs-worksheet .plan-step-pill:focus-visible {
+  border-color: #618986;
+  color: #0d232a;
+  outline: none;
+}
+body.needs-worksheet .plan-step-pill.is-active,
+body.needs-worksheet .plan-step-pill.is-active:hover {
+  border-color: #0d232a;
+  background: #0d232a;
+  color: #ffffff;
+}
+body.needs-worksheet .plan-step-pill.is-active::before { background: #618986; }
+@media (max-width: 767px) {
+  body.needs-worksheet .plan-step-list { display: none; }
+}
+
+/* Notes behind each entry. On screen they open from a small trigger; in print they
+   appear in place under the entry they explain. */
+body.needs-worksheet .plan-note {
+  display: none;
+}
+body.needs-worksheet .plan-tip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-left: 0.4rem;
+  border: 1px solid #4d736f;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #4d736f;
+  font: 600 0.62rem/1 Georgia, "Times New Roman", serif;
+  vertical-align: 0.15em;
+  cursor: help;
+  flex: 0 0 auto;
+  min-height: 0;
+  position: relative;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+body.needs-worksheet .plan-tip::before {
+  content: "i";
+  font-style: italic;
+}
+/* The circle stays small; on touch screens an invisible halo gives it a finger-sized target. */
+@media (max-width: 767px) {
+  body.needs-worksheet .plan-tip::after {
+    content: "";
+    position: absolute;
+    inset: -0.8rem;
+  }
+}
+body.needs-worksheet h2 .plan-tip,
+body.needs-worksheet h3 .plan-tip {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-left: 0.55rem;
+  vertical-align: 0.25em;
+}
+body.needs-worksheet .plan-tip:hover,
+body.needs-worksheet .plan-tip[aria-expanded="true"] {
+  background: #618986;
+  border-color: #618986;
+  color: #0d232a;
+}
+body.needs-worksheet .plan-tip:focus-visible {
+  outline: 2px solid #618986;
+  outline-offset: 2px;
+}
+body.needs-worksheet .plan-tip.plan-tip-text {
+  display: inline-flex;
+  width: auto;
+  height: auto;
+  margin-left: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #4d736f;
+  font: 500 0.75rem/1.4 Inter, system-ui, sans-serif;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  vertical-align: baseline;
+  gap: 0.35rem;
+}
+body.needs-worksheet .plan-tip.plan-tip-text::before {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.95rem;
+  height: 0.95rem;
+  border: 1px solid #4d736f;
+  border-radius: 50%;
+  font: 600 0.58rem/1 Georgia, "Times New Roman", serif;
+  font-style: italic;
+}
+body.needs-worksheet .plan-tip.plan-tip-text:hover,
+body.needs-worksheet .plan-tip.plan-tip-text[aria-expanded="true"] {
+  color: #0d232a;
+}
+body.needs-worksheet .plan-tip.plan-tip-text:hover::before,
+body.needs-worksheet .plan-tip.plan-tip-text[aria-expanded="true"]::before {
+  background: #618986;
+  border-color: #618986;
+  color: #0d232a;
+}
+.plan-tip-popover {
+  position: fixed;
+  z-index: 70;
+  box-sizing: border-box;
+  max-width: min(23rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  padding: 0.85rem 2.1rem 0.9rem 1rem;
+  border: 1px solid #618986;
+  border-radius: 0.125rem;
+  background: #ffffff;
+  box-shadow: 0 16px 36px rgba(35, 42, 53, 0.16);
+  color: #0d232a;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+.plan-tip-popover[hidden] { display: none; }
+.plan-tip-popover.is-sheet {
+  left: 0.75rem !important;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  top: auto !important;
+  width: auto !important;
+  max-width: none;
+  max-height: 60vh;
+}
+.plan-tip-popover p + p,
+.plan-tip-popover div + p,
+.plan-tip-popover p + div,
+.plan-tip-popover div + div { margin-top: 0.45rem; }
+.plan-tip-popover ul { margin: 0.35rem 0 0; padding: 0; }
+.plan-tip-popover .hidden { display: none; }
+.plan-tip-popover .nums { font-variant-numeric: tabular-nums; }
+.plan-tip-popover-close {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.35rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  color: #3e5558;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.plan-tip-popover-close:hover { background: #f2f2f2; color: #0d232a; }
+
+/* Summary figures. Stacked on screen, a grid in print. */
+body.needs-worksheet .plan-figure + .plan-figure { margin-top: 1rem; }
+body.needs-worksheet .plan-summary-group { margin-top: 1rem; }
+body.needs-worksheet .plan-figure-children:empty { display: none; }
+body.needs-worksheet #meeting-partner.plan-summary-group { margin-top: 1.5rem; }
+
+@media (max-width: 1023px) {
+  body.needs-worksheet main > .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body.needs-worksheet main,
+  body.needs-worksheet main > .grid,
+  body.needs-worksheet form,
+  body.needs-worksheet section,
+  body.needs-worksheet aside,
+  body.needs-worksheet article,
+  body.needs-worksheet label,
+  body.needs-worksheet .grid,
+  body.needs-worksheet .grid > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+  body.needs-worksheet #meeting-partner.person-spouse {
+    margin-left: 0;
+    margin-right: 0;
+    border-left: 1px solid #618986;
+    border-right: 1px solid #618986;
+    border-radius: 0.125rem;
+  }
+  body.needs-worksheet .worksheet-sticky-summary > div {
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  body.needs-worksheet .worksheet-sticky-summary > div > div {
+    min-width: 0;
+    flex: 1 1 8.5rem;
+  }
+}
+
+@media (max-width: 767px) {
+  body.needs-worksheet input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  body.needs-worksheet select,
+  body.needs-worksheet textarea {
+    font-size: 16px;
+    min-height: 3rem;
+  }
+  body.needs-worksheet .meeting-date-fit {
+    overflow: hidden;
+  }
+  body.needs-worksheet input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    line-height: 1.25;
+    overflow: hidden;
+  }
+  body.needs-worksheet input[type="date"]::-webkit-datetime-edit,
+  body.needs-worksheet input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+  body.needs-worksheet input[type="date"]::-webkit-date-and-time-value {
+    display: inline-block;
+    min-width: 0;
+    max-width: 100%;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+  }
+  body.needs-worksheet input[type="date"]::-webkit-calendar-picker-indicator {
+    margin: 0 0 0 0.35rem;
+  }
+  body.needs-worksheet .flex.items-center > input:not([type="range"]) {
+    width: 6.75rem;
+    flex: 0 0 6.75rem;
+    max-width: 46%;
+  }
+  body.needs-worksheet input[type="checkbox"],
+  body.needs-worksheet input[type="radio"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: 0 0 1.25rem;
+    margin-top: 0.15rem;
+  }
+  body.needs-worksheet label.flex {
+    align-items: flex-start;
+    min-height: 2.75rem;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+  }
+  body.needs-worksheet button {
+    min-height: 2.75rem;
+  }
+  body.needs-worksheet input[type="range"] {
+    height: 28px;
+    background: transparent;
+  }
+  body.needs-worksheet input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    background: #d5dedc;
+    border-radius: 999px;
+  }
+  body.needs-worksheet input[type="range"]::-moz-range-track {
+    height: 6px;
+    background: #d5dedc;
+    border-radius: 999px;
+  }
+  body.needs-worksheet input[type="range"]::-webkit-slider-thumb {
+    width: 28px;
+    height: 28px;
+    margin-top: -11px;
+  }
+  body.needs-worksheet input[type="range"]::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+  }
+  body.needs-worksheet .need-chart svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* Print-only pieces stay out of the interactive page. */
+body.needs-worksheet .print-only {
+  display: none !important;
+}
+
+@media print {
+  @page {
+    size: letter landscape;
+    margin: 0.4in 0.45in 0.55in;
+    @bottom-left {
+      content: "Advisor Strategies Inc.  ·  advisorstrategies.ca  ·  Ethan Marchand, Managing Advisor, Client Services";
+      font: 7.5pt Poppins, Helvetica, Arial, sans-serif;
+      color: #3e5558;
+    }
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+      font: 7.5pt Poppins, Helvetica, Arial, sans-serif;
+      color: #3e5558;
+    }
+  }
+
+  body.needs-worksheet .plan-ref,
+  body.needs-worksheet .plan-ref-fig,
+  body.needs-worksheet .plan-ref-control {
+    color: #4d736f !important;
+  }
+
+  body.needs-worksheet .no-print,
+  body.needs-worksheet > header.sticky,
+  body.needs-worksheet footer,
+  body.needs-worksheet .worksheet-sticky-summary {
+    display: none !important;
+  }
+
+  body.needs-worksheet .print-only {
+    display: block !important;
+  }
+
+  body.needs-worksheet {
+    background: white !important;
+    color: #0d232a !important;
+    font-size: 10.5pt;
+    line-height: 1.45;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body.needs-worksheet .print-masthead {
+    display: flex !important;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0 0 0.75rem;
+    padding: 0 0 0.55rem;
+    border-bottom: 2px solid #618986;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  body.needs-worksheet .print-masthead-logo {
+    display: block;
+    height: 2rem !important;
+    width: auto !important;
+    max-width: 12rem !important;
+  }
+  body.needs-worksheet .print-masthead-kicker {
+    margin: 0;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #4d736f;
+  }
+  body.needs-worksheet .print-masthead-title {
+    margin: 0.15rem 0 0;
+    font-family: Poppins, Helvetica, Arial, sans-serif;
+    font-size: 16pt;
+    font-weight: 600;
+    color: #0d232a;
+    line-height: 1.15;
+  }
+  body.needs-worksheet .print-masthead-meta {
+    margin: 0.15rem 0 0;
+    font-size: 9pt;
+    color: #3e5558;
+  }
+
+  body.needs-worksheet main {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  /* Grid areas — not flex order — so print engines do not leave a blank first page. */
+  body.needs-worksheet main > .grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "summary"
+      "form" !important;
+    gap: 0 !important;
+  }
+  body.needs-worksheet #meeting-pane {
+    grid-area: summary;
+  }
+  body.needs-worksheet #worksheet {
+    grid-area: form;
+    display: block !important;
+  }
+
+  body.needs-worksheet #meeting-pane {
+    position: static !important;
+    max-height: none !important;
+    overflow: visible !important;
+    width: 100% !important;
+    margin: 0 0 0.85rem !important;
+    padding: 0 0 0.6rem !important;
+    border: 0 !important;
+    border-bottom: 1px solid #d5dedc !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+  /* Summary figures as a card grid across the landscape page. */
+  body.needs-worksheet .plan-summary-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.45rem;
+  }
+  body.needs-worksheet .plan-summary-head p { margin: 0 !important; }
+  body.needs-worksheet .plan-summary-group {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem 0.7rem;
+    margin: 0 0 0.45rem !important;
+  }
+  body.needs-worksheet .plan-summary-group.scope-planning {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body.needs-worksheet #meeting-partner.plan-summary-group {
+    grid-column: 1 / -1;
+    margin: 0 !important;
+    padding: 0.4rem 0.55rem 0.5rem !important;
+    border: 1px solid #618986 !important;
+    border-radius: 0.125rem !important;
+  }
+  body.needs-worksheet .plan-figure {
+    margin: 0 !important;
+    padding: 0.3rem 0.55rem 0.4rem;
+    border-top: 2px solid #618986;
+    background: #fbfaf7;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  body.needs-worksheet .plan-figure-children {
+    grid-column: 1 / -1;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem 0.7rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  body.needs-worksheet .plan-figure-children > div {
+    padding: 0.3rem 0.55rem 0.4rem;
+    border-top: 2px solid #618986;
+    background: #fbfaf7;
+    margin: 0 !important;
+  }
+  body.needs-worksheet .plan-figure > p:first-child {
+    margin: 0 !important;
+    font-size: 7.5pt !important;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #4d736f !important;
+  }
+  body.needs-worksheet .plan-figure ul {
+    margin-top: 0.3rem !important;
+    font-size: 8pt !important;
+  }
+  body.needs-worksheet .plan-figure ul li { line-height: 1.35; }
+  body.needs-worksheet .plan-figure ul li > span { white-space: nowrap; }
+  body.needs-worksheet .plan-figure ul li > .flex-1 { flex: 0 0 auto; }
+  /* The life figure carries the waterfall, so it takes two of the three columns; the
+     disability and critical illness figures stack beside it. */
+  body.needs-worksheet .plan-summary-group > .plan-figure-lead {
+    grid-column: 1 / 3;
+    grid-row: span 2;
+  }
+  body.needs-worksheet .plan-summary-group > .plan-figure:not(.plan-figure-lead):not(.plan-figure-children) {
+    grid-column: 3;
+  }
+  body.needs-worksheet .plan-summary-group.scope-planning > .plan-figure-lead {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+  body.needs-worksheet .plan-figure-lead ul {
+    columns: 2;
+    column-gap: 1.2rem;
+  }
+  body.needs-worksheet .plan-figure-lead ul li { break-inside: avoid; }
+  body.needs-worksheet #meeting-pane .figure {
+    font-size: 16pt !important;
+    line-height: 1.15;
+  }
+  body.needs-worksheet #meeting-pane .text-4xl,
+  body.needs-worksheet #meeting-pane .text-3xl {
+    font-size: 15pt !important;
+  }
+  body.needs-worksheet #meeting-pane #meeting-years,
+  body.needs-worksheet #meeting-pane #savings-destination {
+    margin-top: 0.1rem !important;
+    font-size: 8pt !important;
+    line-height: 1.35;
+  }
+  body.needs-worksheet #calc-notes {
+    margin-top: 0.2rem !important;
+    font-size: 7.5pt !important;
+    line-height: 1.35;
+  }
+
+  body.needs-worksheet #worksheet > section,
+  body.needs-worksheet #worksheet > details {
+    break-inside: auto;
+    page-break-inside: auto;
+    margin: 0 0 0.65rem !important;
+    padding: 0.5rem 0 0.65rem !important;
+    border: 0 !important;
+    border-top: 1px solid #eeeae3 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+  body.needs-worksheet #worksheet > section:first-of-type {
+    border-top: 0 !important;
+    padding-top: 0 !important;
+  }
+  body.needs-worksheet #worksheet h2 {
+    font-size: 12pt !important;
+    margin: 0 0 0.3rem !important;
+    padding-bottom: 0.12rem;
+    border-bottom: 1px solid #618986;
+    break-after: avoid;
+    page-break-after: avoid;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  body.needs-worksheet #worksheet h3 {
+    font-size: 10pt !important;
+    margin: 0.5rem 0 0.25rem !important;
+    break-after: avoid;
+    page-break-after: avoid;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  body.needs-worksheet #worksheet h2 + p,
+  body.needs-worksheet #worksheet h3 + p,
+  body.needs-worksheet .plan-ref-fig {
+    break-after: avoid;
+    page-break-after: avoid;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  body.needs-worksheet #worksheet .text-sm {
+    font-size: 8.5pt !important;
+  }
+  body.needs-worksheet #worksheet .mt-8,
+  body.needs-worksheet #worksheet .mt-6,
+  body.needs-worksheet #worksheet .mt-4,
+  body.needs-worksheet #worksheet .mt-5 {
+    margin-top: 0.5rem !important;
+  }
+  body.needs-worksheet #worksheet .p-4 {
+    padding: 0.35rem 0.5rem 0.45rem !important;
+  }
+  body.needs-worksheet #worksheet .space-y-4 > * + * {
+    margin-top: 0.4rem !important;
+  }
+  body.needs-worksheet #worksheet .grid {
+    gap: 0.3rem 0.9rem !important;
+  }
+  /* Person 1 and Person 2 side by side; the print page is narrower than the lg breakpoint. */
+  body.needs-worksheet #worksheet .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  body.needs-worksheet #worksheet .grid > .rounded-sm.border {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  body.needs-worksheet #worksheet .figure.text-2xl {
+    font-size: 13pt !important;
+    line-height: 1.2;
+  }
+
+  /* Notes behind each entry print in place; the on-screen triggers do not. */
+  body.needs-worksheet .plan-tip,
+  .plan-tip-popover {
+    display: none !important;
+  }
+  body.needs-worksheet .plan-note {
+    display: block !important;
+    margin: 0.1rem 0 0 !important;
+    font-size: 7.4pt !important;
+    font-weight: 400 !important;
+    line-height: 1.35 !important;
+    color: #3e5558 !important;
+  }
+  body.needs-worksheet .plan-note .hidden {
+    display: none !important;
+  }
+  body.needs-worksheet .plan-note p,
+  body.needs-worksheet .plan-note li {
+    font-size: 7.4pt !important;
+    line-height: 1.35 !important;
+  }
+  body.needs-worksheet .plan-note p + p,
+  body.needs-worksheet .plan-note div + p,
+  body.needs-worksheet .plan-note p + div {
+    margin-top: 0.15rem !important;
+  }
+  body.needs-worksheet #worksheet h2 + .plan-note,
+  body.needs-worksheet #worksheet h3 + .plan-note {
+    margin: 0 0 0.35rem !important;
+    font-size: 8pt !important;
+  }
+  body.needs-worksheet .plan-callout {
+    margin-top: 0.3rem !important;
+    padding: 0.25rem 0.5rem !important;
+    font-size: 7.8pt !important;
+    line-height: 1.35 !important;
+    background: #f3f6f5 !important;
+  }
+
+  /* Only the chosen scope prints in Section A. */
+  body.needs-worksheet #ref-a fieldset label:has(input[type="radio"]:not(:checked)) {
+    display: none !important;
+  }
+  body.needs-worksheet #ref-a fieldset label {
+    margin-top: 0 !important;
+  }
+
+  /* Form controls read as document values, not widgets. */
+  body.needs-worksheet input[type="range"],
+  body.needs-worksheet button,
+  body.needs-worksheet .sr-only {
+    display: none !important;
+  }
+  body.needs-worksheet input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  body.needs-worksheet select,
+  body.needs-worksheet textarea {
+    display: block !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    margin-top: 0.15rem !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #0d232a !important;
+    font-size: 9.5pt !important;
+    font-weight: 600;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+  }
+  body.needs-worksheet textarea {
+    resize: none !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  body.needs-worksheet input[type="checkbox"],
+  body.needs-worksheet input[type="radio"] {
+    width: 0.85rem !important;
+    height: 0.85rem !important;
+    margin: 0.1rem 0.35rem 0 0 !important;
+    accent-color: #0d232a;
+  }
+  /* Each entry prints as a statement row: label on the left, value on the right. */
+  body.needs-worksheet #worksheet label.block {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 0 0.6rem;
+    margin-top: 0.15rem !important;
+    padding: 0.1rem 0 0.12rem;
+    border-bottom: 0.4pt dotted #cfc8b9;
+    font-size: 8.2pt !important;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  body.needs-worksheet #worksheet label.block > input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  body.needs-worksheet #worksheet label.block > select,
+  body.needs-worksheet #worksheet label.block > .meeting-date-fit {
+    flex: 0 1 auto;
+    width: auto !important;
+    max-width: 55%;
+    margin: 0 0 0 auto !important;
+    text-align: right;
+  }
+  body.needs-worksheet #worksheet select:has(option[value=""]:checked) {
+    color: transparent !important;
+  }
+  body.needs-worksheet #worksheet label.block > .meeting-date-fit input {
+    width: auto !important;
+    margin: 0 !important;
+    text-align: right;
+  }
+  body.needs-worksheet #worksheet label.block > .plan-note {
+    flex: 1 1 100%;
+    text-align: left;
+  }
+  /* Slider entries: the label and its number field sit on one line, the note underneath,
+     then the dotted rule. Anything else in the wrapper (a result line, a figure) follows. */
+  body.needs-worksheet #worksheet div:has(> label.block + .flex.items-center.gap-4) {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0 0.6rem;
+    max-width: none !important;
+    margin-top: 0.15rem !important;
+  }
+  body.needs-worksheet #worksheet div:has(> label.block + .flex.items-center.gap-4)::after {
+    content: "";
+    order: 2;
+    flex: 1 1 100%;
+    border-bottom: 0.4pt dotted #cfc8b9;
+  }
+  /* :where() keeps this low enough for the label and value-row rules below to win. */
+  body.needs-worksheet #worksheet :where(div:has(> label.block + .flex.items-center.gap-4)) > * {
+    order: 3;
+    flex: 1 1 100%;
+  }
+  body.needs-worksheet #worksheet div:has(> label.block + .flex.items-center.gap-4) > .plan-note {
+    order: 1;
+    margin-top: 0 !important;
+  }
+  body.needs-worksheet #worksheet label.block:has(+ .flex.items-center.gap-4) {
+    order: 0;
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    border-bottom: 0;
+    margin: 0 !important;
+    padding-bottom: 0;
+  }
+  body.needs-worksheet #worksheet label.block + .flex.items-center.gap-4 {
+    order: 0;
+    flex: 0 0 auto;
+    display: flex !important;
+    justify-content: flex-end;
+    margin-top: 0 !important;
+    padding-bottom: 0;
+  }
+  body.needs-worksheet #worksheet label.block + .flex.items-center.gap-4 > input:not([type="range"]) {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    text-align: right;
+  }
+  /* The early-death slider has no number field; the readout in the label carries the value. */
+  body.needs-worksheet #worksheet label[for="early-death-age"] {
+    border-bottom: 0.4pt dotted #cfc8b9;
+  }
+  body.needs-worksheet #early-death-readout {
+    margin-left: auto;
+    font-weight: 600;
+  }
+  /* Fig. D1 and Fig. D2 share a row when there are two people. */
+  body.needs-worksheet .plan-figures {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+  body.needs-worksheet .plan-figures > [data-plan-ref] {
+    flex: 1 1 0;
+    min-width: 0;
+    margin-top: 0.35rem !important;
+  }
+  body.needs-worksheet #worksheet .plan-figures > #ref-fig-d2 {
+    padding: 0.35rem 0.5rem 0.45rem !important;
+  }
+  /* The row of notes that follows an early-death or income line keeps its size. */
+  body.needs-worksheet #income-translation,
+  body.needs-worksheet #early-death-note,
+  body.needs-worksheet #probate-result,
+  body.needs-worksheet #investor-profile-note,
+  body.needs-worksheet #house-plan-note {
+    font-size: 8pt !important;
+    line-height: 1.4 !important;
+  }
+
+  /*
+    Illustrations (Fig. D1, D2, F1, F2): keep the figure block on one page when it fits.
+    Browsers still split if the block is taller than the page.
+    Table F3 is excluded — it can run longer than one page.
+  */
+  body.needs-worksheet [data-plan-ref^="Fig."] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    break-before: auto;
+    page-break-before: auto;
+  }
+  body.needs-worksheet .need-chart {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-top: 0.35rem !important;
+    max-height: 2.6in;
+    overflow: hidden;
+  }
+  body.needs-worksheet .need-chart svg {
+    display: block !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: 2.4in;
+  }
+  body.needs-worksheet .need-tip {
+    display: none !important;
+  }
+  /* Table F3 print: start on a fresh page so a long year path is not stranded mid-page. */
+  body.needs-worksheet #ref-table-f3 {
+    break-before: page;
+    page-break-before: always;
+  }
+  body.needs-worksheet .portfolio-print {
+    display: block !important;
+    width: 100%;
+    max-width: 100%;
+  }
+  body.needs-worksheet .portfolio-print-block {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+  body.needs-worksheet .portfolio-print-caption {
+    margin: 0.2rem 0 0.15rem;
+    font-size: 7pt;
+    font-weight: 600;
+    color: #4d736f !important;
+    break-after: avoid;
+    page-break-after: avoid;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  /* Caption on the print block is the Table F3 heading; avoid a lone label on the prior page. */
+  body.needs-worksheet #ref-table-f3 > .plan-ref-fig {
+    display: none !important;
+  }
+  body.needs-worksheet .portfolio-print-table {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 6pt;
+    line-height: 1.15;
+  }
+  body.needs-worksheet .portfolio-print-table thead {
+    display: table-header-group;
+  }
+  body.needs-worksheet .portfolio-print-table tbody {
+    display: table-row-group;
+  }
+  body.needs-worksheet .portfolio-print-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  body.needs-worksheet .portfolio-print-table th,
+  body.needs-worksheet .portfolio-print-table td {
+    padding: 0.05rem 0.08rem !important;
+    border-bottom: 0.4pt solid #d5dedc !important;
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: clip;
+    vertical-align: middle;
+  }
+  body.needs-worksheet .portfolio-print-table thead th {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    z-index: auto !important;
+    max-width: none !important;
+    font-size: 5.5pt !important;
+    font-weight: 600;
+    line-height: 1.1 !important;
+    background: #f3f6f5 !important;
+    box-shadow: none !important;
+  }
+  body.needs-worksheet .portfolio-print-table .portfolio-sticky-year {
+    position: static !important;
+    left: auto !important;
+    box-shadow: none !important;
+  }
+  body.needs-worksheet .portfolio-print-table tr.portfolio-early-row td {
+    background: #fef2f2 !important;
+  }
+  body.needs-worksheet details > summary {
+    list-style: none;
+  }
+  body.needs-worksheet details > summary::-webkit-details-marker {
+    display: none;
+  }
+  body.needs-worksheet .person-spouse {
+    background: #f3f6f5 !important;
+    border-color: #618986 !important;
+  }
+
+  body.needs-worksheet #worksheet label.block {
+    max-width: none !important;
+  }
+  /* Anything the page has hidden (no spouse, no corporation, no legacy) stays out of the print. */
+  body.needs-worksheet #worksheet .hidden.hidden,
+  body.needs-worksheet #meeting-pane .hidden.hidden,
+  body.needs-worksheet:not([data-scope="insurance"]):not([data-scope="both"]) #worksheet .scope-insurance,
+  body.needs-worksheet:not([data-scope="planning"]):not([data-scope="both"]) #worksheet .scope-planning {
+    display: none !important;
+  }
+
+  body.needs-worksheet::after {
+    content: "Illustration for a conversation. Not a policy, tax opinion, or securities recommendation.";
+    display: block;
+    margin-top: 1rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid #d5dedc;
+    font-size: 8.5pt;
+    color: #3e5558;
+  }
+}
