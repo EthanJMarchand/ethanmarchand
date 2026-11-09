@@ -4,4 +4,4 @@ Planning tools for Ethan Marchand, Managing Advisor, Client Services at Advisor 
 
 Clients of the firm belong at https://advisorstrategies.ca/.
 
-Tools on this site: life insurance quote, TFSA calculator, financial plan, client intake, and investor questionnaire. A completed plan or questionnaire is reopened from the page address. The query string is the record. There is no client database on this site.
+Tools on this site: life insurance quote, TFSA calculator, financial plan, client intake, investor questionnaire, and advanced case intake. A completed plan, questionnaire, or advanced case is reopened from the page address. The query string is the record. The advanced case does not take document uploads. The client is asked to email those documents. There is no client database on this site.

@@ -144,8 +144,12 @@ html { scroll-behavior: smooth; }
   border-color: #618986;
   box-shadow: 0 0 0 1px #618986, 0 12px 26px rgba(13, 35, 42, 0.12);
 }
+.ac-step:not(.hidden) {
+  animation: iq-reveal 360ms ease both;
+}
 @media (prefers-reduced-motion: reduce) {
-  .iq-step:not(.hidden) { animation: none; }
+  .iq-step:not(.hidden),
+  .ac-step:not(.hidden) { animation: none; }
   body.needs-worksheet #worksheet > section,
   body.needs-worksheet .plan-step { animation: none !important; }
 }
@@ -415,6 +419,69 @@ body.needs-worksheet .plan-step-pill.is-active::before { background: #618986; }
 @media (max-width: 767px) {
   body.needs-worksheet .plan-step-list { display: none; }
 }
+
+/* Advanced case uses the same step pills, including on a phone, because the
+   wizard is the whole page and Back is not enough. */
+.ac-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: #d5dedc;
+  overflow: hidden;
+}
+.ac-progress-bar {
+  height: 100%;
+  width: 16.666%;
+  border-radius: 999px;
+  background: #618986;
+  transition: width 260ms ease;
+}
+.ac-step-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ac-step-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid #d5dedc;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #3e5558;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+.ac-step-pill::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: #d5dedc;
+  flex: 0 0 auto;
+}
+.ac-step-pill.is-done::before { background: #618986; }
+.ac-step-pill.is-done { color: #0d232a; }
+.ac-step-pill:hover,
+.ac-step-pill:focus-visible {
+  border-color: #618986;
+  color: #0d232a;
+  outline: none;
+}
+.ac-step-pill.is-active,
+.ac-step-pill.is-active:hover {
+  border-color: #0d232a;
+  background: #0d232a;
+  color: #ffffff;
+}
+.ac-step-pill.is-active::before { background: #618986; }
 
 /* Notes behind each entry. On screen they open from a small trigger; in print they
    appear in place under the entry they explain. */

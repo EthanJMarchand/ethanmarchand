@@ -657,6 +657,7 @@
   };
 
   let cursor = 0;
+  let intakeLinkToken = 0;
   let completedDate = todayIso();
   let reviewMode = false;
   let pointerAnswer = false;
@@ -718,7 +719,12 @@
     if (complete) renderResults(a);
     const finished = complete && cursor >= STEPS.length - 1;
     submitStep.classList.toggle("hidden", !finished);
-    if (finished) intakeLink.href = intakeUrl(a);
+    if (finished) {
+      const token = ++intakeLinkToken;
+      intakeUrl(a).then((href) => {
+        if (token === intakeLinkToken) intakeLink.href = href;
+      });
+    }
     syncNextArrow(a);
   }
 
@@ -829,26 +835,33 @@
 
   /* Link, submission, and PDF */
 
-  function reviewUrl(a) {
-    const params = new URLSearchParams();
-    params.set("name", nameInput.value.trim());
-    if (phoneInput.value.trim()) params.set("client-phone", phoneInput.value.trim());
-    if (emailInput.value.trim()) params.set("client-email", emailInput.value.trim());
-    if (preferredContactInput.value.trim()) params.set("preferred-contact", preferredContactInput.value.trim());
-    params.set("date", completedDate);
-    QUESTIONS.forEach((q) => { if (a[q.id]) params.set(q.id, a[q.id]); });
-    return `${window.location.origin}/investor-questionnaire.html?${params.toString()}`;
+  function answerRecord(a) {
+    const data = {
+      name: nameInput.value.trim(),
+      date: completedDate,
+    };
+    if (phoneInput.value.trim()) data["client-phone"] = phoneInput.value.trim();
+    if (emailInput.value.trim()) data["client-email"] = emailInput.value.trim();
+    if (preferredContactInput.value.trim()) data["preferred-contact"] = preferredContactInput.value.trim();
+    QUESTIONS.forEach((q) => { if (a[q.id]) data[q.id] = a[q.id]; });
+    return data;
   }
 
-  function intakeUrl(a) {
-    const params = new URLSearchParams();
-    params.set("client-name", nameInput.value.trim());
-    params.set("client-phone", phoneInput.value.trim());
-    params.set("client-email", emailInput.value.trim());
-    params.set("preferred-contact", preferredContactInput.value.trim());
-    params.set("investor-profile", scoreAnswers(a).profile.key);
-    params.set("iq-link", reviewUrl(a));
-    return `/client-intake.html?${params.toString()}`;
+  async function reviewUrl(a) {
+    const packed = await MarchandLink.pack(answerRecord(a));
+    return `${window.location.origin}/investor-questionnaire.html?iq=${packed}`;
+  }
+
+  async function intakeUrl(a) {
+    const packed = await MarchandLink.pack({
+      "client-name": nameInput.value.trim(),
+      "client-phone": phoneInput.value.trim(),
+      "client-email": emailInput.value.trim(),
+      "preferred-contact": preferredContactInput.value.trim(),
+      "investor-profile": scoreAnswers(a).profile.key,
+      "iq-link": await reviewUrl(a),
+    });
+    return `/client-intake.html?in=${packed}`;
   }
 
   function submissionBody(a, link) {
@@ -888,7 +901,7 @@
       const res = await fetch("/", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: submissionBody(a, reviewUrl(a)).toString(),
+        body: submissionBody(a, await reviewUrl(a)).toString(),
       });
       if (!res.ok) throw new Error("Submission failed");
       statusEl.textContent = "Submitted. Your answers were sent to your advisor.";
@@ -911,7 +924,7 @@
   copyBtn.addEventListener("click", async () => {
     const a = answers();
     if (!nameReady() || !contactReady() || !allAnswered(a)) return;
-    const link = reviewUrl(a);
+    const link = await reviewUrl(a);
     clearTimeout(copyReset);
     try {
       await navigator.clipboard.writeText(link);
@@ -986,17 +999,28 @@
   });
 
   /* Opened from a submitted link: restore every answer. */
-  const params = new URLSearchParams(window.location.search);
-  if (
-    params.has("name")
-    || params.has("client-name")
-    || params.has("client-phone")
-    || params.has("phone")
-    || params.has("client-email")
-    || params.has("email")
-    || params.has("preferred-contact")
-    || QUESTIONS.some((q) => params.has(q.id))
-  ) {
+  function linkHasAnswers(params) {
+    return params.has("name")
+      || params.has("client-name")
+      || params.has("client-phone")
+      || params.has("phone")
+      || params.has("client-email")
+      || params.has("email")
+      || params.has("preferred-contact")
+      || QUESTIONS.some((q) => params.has(q.id));
+  }
+
+  async function restoreFromLink() {
+    const search = new URLSearchParams(window.location.search);
+    let params = search;
+    if (search.has("iq")) {
+      try {
+        params = MarchandLink.toParams(await MarchandLink.unpack(search.get("iq")));
+      } catch {
+        return;
+      }
+    }
+    if (!linkHasAnswers(params)) return;
     nameInput.value = (params.get("name") || params.get("client-name") || "").trim();
     phoneInput.value = (params.get("client-phone") || params.get("phone") || "").trim();
     emailInput.value = (params.get("client-email") || params.get("email") || "").trim();
@@ -1014,14 +1038,15 @@
     reviewMode = firstOpen === -1;
   }
 
-  if (reviewMode) {
-    reviewBanner.classList.remove("hidden");
-    document.getElementById("iq-review-text").textContent = `Answers from ${nameInput.value.trim()}, completed ${formatDate(completedDate)}.`;
-    submitBtn.classList.add("hidden");
-    doneEl.classList.remove("hidden");
-    nextStepCard.classList.remove("hidden");
-    document.getElementById("iq-done-text").textContent = "These answers were loaded from a submitted link. Download the PDF for your records.";
-  }
-
-  render();
+  restoreFromLink().then(() => {
+    if (reviewMode) {
+      reviewBanner.classList.remove("hidden");
+      document.getElementById("iq-review-text").textContent = `Answers from ${nameInput.value.trim()}, completed ${formatDate(completedDate)}.`;
+      submitBtn.classList.add("hidden");
+      doneEl.classList.remove("hidden");
+      nextStepCard.classList.remove("hidden");
+      document.getElementById("iq-done-text").textContent = "These answers were loaded from a submitted link. Download the PDF for your records.";
+    }
+    render();
+  });
 })();

@@ -2599,8 +2599,16 @@ function clearLegacyStorage() {
   }
 }
 
-function applyPrefillFromUrl() {
-  const params = new URLSearchParams(window.location.search);
+async function applyPrefillFromUrl() {
+  const search = new URLSearchParams(window.location.search);
+  let params = search;
+  if (search.has("plan")) {
+    try {
+      params = window.MarchandLink.toParams(await window.MarchandLink.unpack(search.get("plan")));
+    } catch {
+      return false;
+    }
+  }
   if (![...params.keys()].length) return false;
 
   const textFields = [
@@ -2749,14 +2757,14 @@ function printPlan() {
   window.print();
 }
 
-function init() {
+async function init() {
   clearLegacyStorage();
   initProvinces();
   fillDefaults();
   $("advisor-name").value = DEFAULT_ADVISOR.name;
   $("advisor-firm").value = DEFAULT_ADVISOR.firm;
   defaultProfileNote = $("investor-profile-note").textContent;
-  applyPrefillFromUrl();
+  await applyPrefillFromUrl();
   syncInvestorProfileNote();
   initSteps();
   initTips();

@@ -72,10 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
     'tfsa-calculator.html': 'tfsa',
     'needs-analysis.html': 'plan',
     'client-intake.html': 'intake',
-    'investor-questionnaire.html': 'iq'
+    'investor-questionnaire.html': 'iq',
+    'advanced-case.html': 'advanced'
   };
   let activeKey = navKeyByFile[file] || null;
-  const toolKeys = new Set(['quote', 'tfsa', 'plan', 'intake', 'iq']);
+  const toolKeys = new Set(['quote', 'tfsa', 'plan', 'intake', 'iq', 'advanced']);
   document.querySelectorAll('[data-nav]').forEach((link) => {
     if (link.getAttribute('data-nav') === activeKey) {
       link.classList.add('is-active');

@@ -84,6 +84,12 @@
   force = true
 
 [[redirects]]
+  from = "/advanced-case"
+  to = "/advanced-case.html"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/needs-analysis"
   to = "/needs-analysis.html"
   status = 301

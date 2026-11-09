@@ -43,6 +43,7 @@
           <a href="/needs-analysis.html" data-nav="plan" role="menuitem">Financial Plan</a>
           <a href="/client-intake.html" data-nav="intake" role="menuitem">Client Intake</a>
           <a href="/investor-questionnaire.html" data-nav="iq" role="menuitem">Investor Questionnaire</a>
+          <a href="/advanced-case.html" data-nav="advanced" role="menuitem">Advanced Case</a>
         </div>
       </div>
     </div>
@@ -61,6 +62,7 @@
     <a href="/needs-analysis.html" data-nav="plan" class="py-2 pl-2">Financial Plan</a>
     <a href="/client-intake.html" data-nav="intake" class="py-2 pl-2">Client Intake</a>
     <a href="/investor-questionnaire.html" data-nav="iq" class="py-2 pl-2">Investor Questionnaire</a>
+    <a href="/advanced-case.html" data-nav="advanced" class="py-2 pl-2">Advanced Case</a>
     <a href="https://advisorstrategies.ca/" class="py-2">I'm a client</a>
   </div>
 </header>
@@ -116,8 +118,8 @@
       </div>
 
       <div class="intake-step hidden" data-step="household" data-requires="income">
-        <fieldset>
-          <legend class="text-sm font-medium text-navydeep">Would you like your file to be householded with a spouse?</legend>
+        <fieldset data-question>
+          <legend data-question-title class="text-sm font-medium text-navydeep">Would you like your file to be householded with a spouse?</legend>
           <div class="mt-3 grid gap-3 sm:grid-cols-2">
             <label class="flex items-center gap-3 border border-line bg-white/90 px-4 py-3.5 cursor-pointer hover:border-gold transition">
               <input type="radio" name="has-partner" value="yes" class="accent-golddim">
@@ -144,8 +146,8 @@
         </label>
       </div>
 
-      <div class="intake-step hidden" data-step="dependants" data-requires="household">
-        <label class="block text-sm font-medium text-navydeep" for="intake-dependants">Number of dependants
+      <div class="intake-step hidden" data-step="dependants" data-requires="household" data-question>
+        <label data-question-title class="block text-sm font-medium text-navydeep" for="intake-dependants">Number of dependants
           <input id="intake-dependants" name="dependant-count" inputmode="numeric" class="mt-2 w-full rounded-sm border border-line bg-white/90 px-3.5 py-3 text-base shadow-sm focus:border-gold focus:outline-none" />
         </label>
         <div id="intake-dependant-ages" class="mt-4 space-y-4"></div>
@@ -160,8 +162,8 @@
         </label>
       </div>
 
-      <div class="intake-step hidden space-y-5" data-step="coverage-p1" data-requires="debts">
-        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-inksoft">Person 1 — coverage already in force</p>
+      <div class="intake-step hidden space-y-5" data-step="coverage-p1" data-requires="debts" data-question>
+        <p data-question-title class="text-xs font-semibold uppercase tracking-[0.14em] text-inksoft">Person 1 — coverage already in force</p>
         <label class="block text-sm font-medium text-navydeep" for="intake-life-p1">In-force life insurance
           <input id="intake-life-p1" name="existing-coverage" inputmode="decimal" class="mt-2 w-full rounded-sm border border-line bg-white/90 px-3.5 py-3 text-base shadow-sm focus:border-gold focus:outline-none" />
         </label>
@@ -173,8 +175,8 @@
         </label>
       </div>
 
-      <div class="intake-step intake-person-2 hidden space-y-5 rounded-sm p-4" data-step="coverage-p2" data-requires="coverage-p1" data-when="partner">
-        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-olive">Person 2 — coverage already in force</p>
+      <div class="intake-step intake-person-2 hidden space-y-5 rounded-sm p-4" data-step="coverage-p2" data-requires="coverage-p1" data-when="partner" data-question>
+        <p data-question-title class="text-xs font-semibold uppercase tracking-[0.14em] text-olive">Person 2 — coverage already in force</p>
         <label class="block text-sm font-medium text-navydeep" for="intake-life-p2">In-force life insurance
           <input id="intake-life-p2" name="partner-existing-coverage" inputmode="decimal" class="mt-2 w-full rounded-sm border border-line bg-white/90 px-3.5 py-3 text-base shadow-sm focus:border-gold focus:outline-none" />
         </label>
@@ -192,8 +194,8 @@
         </label>
       </div>
 
-      <div class="intake-step hidden space-y-5" data-step="accounts-p1" data-requires="retirement">
-        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-inksoft">Person 1 accounts</p>
+      <div class="intake-step hidden space-y-5" data-step="accounts-p1" data-requires="retirement" data-question>
+        <p data-question-title class="text-xs font-semibold uppercase tracking-[0.14em] text-inksoft">Person 1 accounts</p>
         <label class="block text-sm font-medium text-navydeep" for="intake-tfsa-balance">TFSA balance
           <input id="intake-tfsa-balance" name="tfsa-balance" inputmode="decimal" class="mt-2 w-full rounded-sm border border-line bg-white/90 px-3.5 py-3 text-base shadow-sm focus:border-gold focus:outline-none" />
         </label>
@@ -220,8 +222,8 @@
         </label>
       </div>
 
-      <div class="intake-step intake-person-2 hidden space-y-5 rounded-sm p-4" data-step="accounts-p2" data-requires="accounts-p1" data-when="partner">
-        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-olive">Person 2 accounts</p>
+      <div class="intake-step intake-person-2 hidden space-y-5 rounded-sm p-4" data-step="accounts-p2" data-requires="accounts-p1" data-when="partner" data-question>
+        <p data-question-title class="text-xs font-semibold uppercase tracking-[0.14em] text-olive">Person 2 accounts</p>
         <label class="block text-sm font-medium text-navydeep" for="intake-partner-tfsa-balance">TFSA balance
           <input id="intake-partner-tfsa-balance" name="partner-tfsa-balance" inputmode="decimal" class="mt-2 w-full rounded-sm border border-line bg-white/90 px-3.5 py-3 text-base shadow-sm focus:border-gold focus:outline-none" />
         </label>
@@ -346,6 +348,7 @@
           <a href="/needs-analysis.html" class="hover:text-cream">Financial Plan</a>
           <a href="/client-intake.html" class="hover:text-cream">Client Intake</a>
           <a href="/investor-questionnaire.html" class="hover:text-cream">Investor Questionnaire</a>
+          <a href="/advanced-case.html" class="hover:text-cream">Advanced Case</a>
         </div>
       </div>
       <div>
@@ -364,6 +367,7 @@
 
 <script src="script.js"></script>
 <script src="investor-profiles.js"></script>
+<script src="link-codec.js"></script>
 <script src="client-intake.js"></script>
 </body>
 </html>

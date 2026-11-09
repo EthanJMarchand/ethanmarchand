@@ -2,7 +2,7 @@
 
 Planning tools for Ethan Marchand, Managing Advisor, Client Services at [Advisor Strategies](https://advisorstrategies.ca/).
 
-The homepage asks one question. Clients continue to the firm. Everyone else opens one tool. The five tools are the ones from Marchand Wealth: quote, TFSA calculator, financial plan, client intake, and investor questionnaire. Query strings, Netlify fields, and PDFs still work. The investor questionnaire is ten questions and six profiles.
+The homepage asks one question. Clients continue to the firm. Everyone else opens one tool. The tools are the ones from Marchand Wealth, plus an advanced case intake: quote, TFSA calculator, financial plan, client intake, investor questionnaire, and advanced case. Query strings, Netlify fields, and PDFs still work. The investor questionnaire is ten questions and six profiles.
 
 This repository does not modify [marchandwealth](https://github.com/ethanjmarchand/marchandwealth).
 
@@ -18,12 +18,13 @@ This repository does not modify [marchandwealth](https://github.com/ethanjmarcha
 | [`needs-analysis.html`](needs-analysis.html) | Financial plan, one step at a time |
 | [`client-intake.html`](client-intake.html) | Intake. Submit builds a plan link |
 | [`investor-questionnaire.html`](investor-questionnaire.html) | 10 questions, one of six profiles, reopen link, PDF |
+| [`advanced-case.html`](advanced-case.html) | Corporate intake. Reopen link and PDF. Documents are emailed, not uploaded |
 
 `contact.html`, `schedule.html`, `insights.html`, and old article addresses send people to advisorstrategies.ca. On Netlify that is a 301 in [`netlify.toml`](netlify.toml). Locally those files redirect in the browser.
 
 ## Stack
 
-Plain HTML, vanilla JavaScript, and Tailwind CSS compiled to [`assets/css/site.css`](assets/css/site.css). No framework. jsPDF is vendored and loaded only when someone downloads the questionnaire PDF.
+Plain HTML, vanilla JavaScript, and Tailwind CSS compiled to [`assets/css/site.css`](assets/css/site.css). No framework. jsPDF is vendored and loaded only when someone downloads a questionnaire or advanced case PDF.
 
 Colours and type match Advisor Strategies: deep `#0d232a`, sage `#618986`, cream `#e8e4df`, Poppins. The class names in the tools (`bg-gold`, `text-navydeep`, `font-serif`) still work. Their values are redefined in [`tailwind.config.js`](tailwind.config.js).
 
@@ -43,12 +44,12 @@ A new Tailwind class does nothing until the CSS is rebuilt. Netlify runs `npm ru
 
 There is no database and nothing is written to the browser for a plan.
 
-- **Financial plan.** Entries live in the open tab. A link such as `/needs-analysis.html?client-name=...&client-age=...` refills the same fields. The intake builds that link with `URLSearchParams` and stores it in the Netlify field `plan-link`. Anyone with the link can open the entries. The page says so.
-- **Investor questionnaire.** Every answer is in `iq-link`. Opening it restores the answers, shows the result, and allows the PDF without submitting again. The same link is handed to the intake, and the profile's return rates come from [`investor-profiles.js`](investor-profiles.js).
-- **PDF and print.** The questionnaire PDF is drawn with jsPDF from `/assets/logo.png` (the dark wordmark, so it prints on white). The plan prints to `YYYY-MM-DD-Financial-Plan-<names>`. Both footers read Advisor Strategies.
-- **Forms.** `client-intake`, `investor-questionnaire`, and `tfsa-consultation` post `application/x-www-form-urlencoded` to the current page, the way Netlify Forms expects. Each has `data-netlify="true"` and a honeypot. The questionnaire fields are built in JavaScript, so the hidden form at the bottom of `investor-questionnaire.html` is what registers the field names. Add a new field there too, or Netlify drops it.
-
-Submissions do nothing useful until the site is on Netlify. Turn on form notifications then. If a submit fails before that, the page keeps the reopen link and points at `ethan@marchandwealth.ca`. Change that address in `script.js`, `client-intake.js`, and `investor-questionnaire.js` when the Advisor Strategies mailbox should receive it instead.
+- **Financial plan.** Entries live in the open tab. The intake stores them as one compressed `?plan=` value, the same packing as an advanced case, and puts that link in the Netlify field `plan-link`. An older link that still lists each field, such as `?client-name=...&client-age=...`, also refills the plan. Anyone with the link can open the entries. The page says so.
+- **Investor questionnaire.** Every answer is compressed into `?iq=` on `iq-link`. Opening it restores the answers, shows the result, and allows the PDF without submitting again. An older link that lists each answer still opens. The handoff to the intake is compressed into `?in=`, and the profile's return rates come from [`investor-profiles.js`](investor-profiles.js).
+- **Advanced case.** Text answers are compressed into `?case=`. Opening that link refills the intake and allows the PDF. Documents are not collected on the form. The last step asks the client to email them.
+- **PDF and print.** The questionnaire and advanced case PDFs are drawn with jsPDF from `/assets/logo.png` (the dark wordmark, so it prints on white). The plan prints to `YYYY-MM-DD-Financial-Plan-<names>`. Footers read Advisor Strategies.
+- **Forms.** `client-intake`, `investor-questionnaire`, `tfsa-consultation`, and `advanced-case` post `application/x-www-form-urlencoded` to the current page, the way Netlify Forms expects. Each has `data-netlify="true"` and a honeypot. Fields built in JavaScript are also listed on a hidden form, or Netlify drops them.
+Submissions do nothing useful until the site is on Netlify, with form notifications turned on for `advanced-case`. If a submit fails before that, the page keeps the reopen link and points at `ethan@marchandwealth.ca`. Change that address in `script.js`, `client-intake.js`, `investor-questionnaire.js`, and `advanced-case.js` when the Advisor Strategies mailbox should receive it instead.
 
 The old Marchand Wealth analytics tag is not on these pages. If a new tag is added, strip the query string from the page address before it is sent. That string is the client's plan.
 
@@ -77,4 +78,4 @@ Profile return rates live only in `investor-profiles.js`. Change them there and 
 
 ## Header
 
-The header and footer are copied on each tool page. There is no shared template. Change the markup in every page when the navigation changes: `index.html` and the five tool pages.
+The header and footer are copied on each tool page. There is no shared template. Change the markup in every page when the navigation changes: `index.html` and the tool pages.

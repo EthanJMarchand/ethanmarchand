@@ -408,60 +408,78 @@
     syncProfileNote();
   });
 
-  const incoming = new URLSearchParams(window.location.search);
   const nextStepCard = document.getElementById("intake-iq-card");
   let questionnaireAlreadyDone = false;
-  let iqParams = null;
-  try {
-    const iqLink = new URL(incoming.get("iq-link") || "");
-    if (iqLink.pathname === "/investor-questionnaire.html") {
-      document.getElementById("iq-link-field").value = iqLink.href;
-      questionnaireAlreadyDone = true;
-      nextStepCard?.classList.add("hidden");
-      iqParams = iqLink.searchParams;
+
+  async function incomingParams() {
+    const search = new URLSearchParams(window.location.search);
+    if (!search.has("in")) return search;
+    try {
+      return MarchandLink.toParams(await MarchandLink.unpack(search.get("in")));
+    } catch {
+      return new URLSearchParams();
     }
-  } catch {
-    // No questionnaire link to carry forward.
   }
 
-  const incomingName = incoming.get("client-name") || incoming.get("name") || iqParams?.get("name") || iqParams?.get("client-name") || "";
-  if (filled(incomingName)) form.elements["client-name"].value = incomingName.trim();
+  async function applyIncoming() {
+    const incoming = await incomingParams();
+    let iqParams = null;
+    try {
+      const iqLink = new URL(incoming.get("iq-link") || "");
+      if (iqLink.pathname === "/investor-questionnaire.html") {
+        document.getElementById("iq-link-field").value = iqLink.href;
+        questionnaireAlreadyDone = true;
+        nextStepCard?.classList.add("hidden");
+        iqParams = iqLink.searchParams.has("iq")
+          ? MarchandLink.toParams(await MarchandLink.unpack(iqLink.searchParams.get("iq")))
+          : iqLink.searchParams;
+      }
+    } catch {
+      // No questionnaire link to carry forward.
+    }
 
-  const incomingPhone = incoming.get("client-phone") || incoming.get("phone") || iqParams?.get("client-phone") || iqParams?.get("phone") || "";
-  if (filled(incomingPhone)) form.elements["client-phone"].value = incomingPhone.trim();
+    const incomingName = incoming.get("client-name") || incoming.get("name") || iqParams?.get("name") || iqParams?.get("client-name") || "";
+    if (filled(incomingName)) form.elements["client-name"].value = incomingName.trim();
 
-  const incomingEmail = incoming.get("client-email") || incoming.get("email") || iqParams?.get("client-email") || iqParams?.get("email") || "";
-  if (filled(incomingEmail)) form.elements["client-email"].value = incomingEmail.trim();
+    const incomingPhone = incoming.get("client-phone") || incoming.get("phone") || iqParams?.get("client-phone") || iqParams?.get("phone") || "";
+    if (filled(incomingPhone)) form.elements["client-phone"].value = incomingPhone.trim();
 
-  const incomingPreferred = normalizePreferredContact(
-    incoming.get("preferred-contact") || iqParams?.get("preferred-contact")
-  );
-  if (incomingPreferred) form.elements["preferred-contact"].value = incomingPreferred;
+    const incomingEmail = incoming.get("client-email") || incoming.get("email") || iqParams?.get("client-email") || iqParams?.get("email") || "";
+    if (filled(incomingEmail)) form.elements["client-email"].value = incomingEmail.trim();
 
-  questionnaireProfile = Profiles.profileByKey(incoming.get("investor-profile"));
-  if (questionnaireProfile) {
-    profileSelect.value = questionnaireProfile.key;
-    form.elements["real-return"].value = String(questionnaireProfile.saving);
-    form.elements["retirement-return"].value = String(questionnaireProfile.retirement);
-    syncProfileNote();
-  }
+    const incomingPreferred = normalizePreferredContact(
+      incoming.get("preferred-contact") || iqParams?.get("preferred-contact")
+    );
+    if (incomingPreferred) form.elements["preferred-contact"].value = incomingPreferred;
 
-  syncIqLinks();
+    questionnaireProfile = Profiles.profileByKey(incoming.get("investor-profile"));
+    if (questionnaireProfile) {
+      profileSelect.value = questionnaireProfile.key;
+      form.elements["real-return"].value = String(questionnaireProfile.saving);
+      form.elements["retirement-return"].value = String(questionnaireProfile.retirement);
+      syncProfileNote();
+    }
 
-  const visibleOnLoad = visibleStepNames();
-  while (
-    cursor < visibleOnLoad.length - 1
-    && requiredGate(visibleOnLoad[cursor])
-    && stepComplete(visibleOnLoad[cursor])
-  ) {
-    cursor += 1;
+    syncIqLinks();
+
+    const visibleOnLoad = visibleStepNames();
+    while (
+      cursor < visibleOnLoad.length - 1
+      && requiredGate(visibleOnLoad[cursor])
+      && stepComplete(visibleOnLoad[cursor])
+    ) {
+      cursor += 1;
+    }
+
+    updateVisibility();
+    if (cursor > 0) {
+      const nextField = firstControl(visibleOnLoad[cursor]);
+      if (nextField) nextField.focus();
+    }
   }
 
   updateVisibility();
-  if (cursor > 0) {
-    const nextField = firstControl(visibleOnLoad[cursor]);
-    if (nextField) nextField.focus();
-  }
+  applyIncoming();
 
   const statusEl = document.getElementById("intake-status");
   const successEl = document.getElementById("intake-success");
@@ -548,8 +566,9 @@
     return params;
   }
 
-  function planUrl() {
-    return `${window.location.origin}/needs-analysis.html?${buildPlanParams().toString()}`;
+  async function planUrl() {
+    const packed = await MarchandLink.pack(Object.fromEntries(buildPlanParams()));
+    return `${window.location.origin}/needs-analysis.html?plan=${packed}`;
   }
 
   form.addEventListener("submit", async (event) => {
@@ -568,7 +587,7 @@
     cursor = visibleStepNames().length - 1;
     updateVisibility();
 
-    const link = planUrl();
+    const link = await planUrl();
     planLinkField.value = link;
     planLinkEl.href = link;
 
