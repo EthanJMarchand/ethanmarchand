@@ -71,12 +71,6 @@ export function taxOnIncome(income, provinceCode, year = latestTaxYear(), { age 
   return Math.round((federal + provincial) * 100) / 100;
 }
 
-export function marginalRate(income, provinceCode, year = latestTaxYear(), person = {}) {
-  const base = taxOnIncome(income, provinceCode, year, person);
-  const up = taxOnIncome(income + 1000, provinceCode, year, person);
-  if (base == null || up == null) return null;
-  return Math.round(((up - base) / 1000) * 10000) / 10000;
-}
 
 // Tax added by an inclusion on top of base income. basePension is eligible pension
 // income already in the base; inclusionIsPension adds the inclusion to it.

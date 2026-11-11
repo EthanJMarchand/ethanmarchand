@@ -1,9 +1,10 @@
 (function () {
   "use strict";
 
-  const { PROFILES } = typeof module === "object" && module.exports
-    ? require("./investor-profiles.js")
-    : window.MarchandInvestorProfiles;
+  const { PROFILES } = window.MarchandInvestorProfiles;
+  const {
+    CONTACT_EMAIL, CONTACT_METHODS, normalizePreferredContact, todayIso, pdfSafe, loadJsPdf, loadLogo, syncNextArrowButton,
+  } = window.MarchandShared;
 
   // Manulife's four profiles were scored out of 64 across eight questions.
   // Three of those questions are not asked here. The five that remain score at most 43
@@ -189,28 +190,15 @@
     return trimmed;
   }
 
-  function todayIso() {
-    const now = new Date();
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-  }
-
   /* ---------- PDF ---------- */
 
   const PDF = {
-    navydeep: [13, 35, 42], gold: [97, 137, 134], golddim: [77, 115, 111], goldlight: [232, 228, 223],
+    navydeep: [13, 35, 42], gold: [97, 137, 134], golddim: [77, 115, 111],
     ink: [13, 35, 42], inksoft: [62, 85, 88], line: [213, 222, 220], paper: [244, 242, 239], track: [232, 228, 223],
     mutedDark: [196, 196, 196], mutedLight: [230, 230, 230], mutedText: [168, 168, 168], white: [255, 255, 255],
   };
 
   const hexRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
-
-  // Standard PDF fonts only cover Latin-1, so typographic punctuation is flattened.
-  const pdfSafe = (s) => String(s)
-    .replace(/[\u2018\u2019]/g, "'")
-    .replace(/[\u201C\u201D]/g, '"')
-    .replace(/[\u2013\u2014\u2212]/g, "-")
-    .replace(/\u2026/g, "...");
 
   function buildPdf(JsPDF, report, logoDataUrl) {
     const doc = new JsPDF({ unit: "pt", format: "letter" });
@@ -474,11 +462,6 @@
     return doc;
   }
 
-  if (typeof module === "object" && module.exports) {
-    module.exports = { QUESTIONS, PROFILES, MANULIFE_PROFILES, scoreAnswers, buildPdf };
-  }
-  if (typeof document === "undefined") return;
-
   /* ---------- Illustrations ---------- */
 
   function waveSvg([amp, drift]) {
@@ -650,12 +633,6 @@
   const downloadStatus = document.getElementById("iq-download-status");
   const reviewBanner = document.getElementById("iq-review-banner");
 
-  const CONTACT_METHODS = ["Call", "Text", "Email"];
-  const normalizePreferredContact = (value) => {
-    const clean = String(value ?? "").trim().toLowerCase();
-    return CONTACT_METHODS.find((m) => m.toLowerCase() === clean) || "";
-  };
-
   let cursor = 0;
   let intakeLinkToken = 0;
   let completedDate = todayIso();
@@ -736,27 +713,9 @@
     });
     if (!el) return;
 
-    const ready = stepDone(frontier, a);
-    let button = el.querySelector(":scope > .intake-next-arrow");
-    if (!button) {
-      button = document.createElement("button");
-      button.type = "button";
-      button.innerHTML = `
-        <span class="intake-next-arrow-label"></span>
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-          <path d="M5 8.5 L11 14.5 L17 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      `;
-      button.addEventListener("click", () => {
-        if (advance(frontier)) scrollToStep(STEPS[cursor]);
-      });
-      el.append(button);
-    }
-    button.className = `intake-next-arrow${ready ? "" : " is-waiting"}`;
-    button.setAttribute("aria-label", ready ? "Show the next question" : "Answer this question to continue");
-    button.disabled = !ready;
-    const label = button.querySelector(".intake-next-arrow-label");
-    if (label) label.textContent = ready ? "Next" : "More below";
+    syncNextArrowButton(el, stepDone(frontier, a), () => {
+      if (advance(frontier)) scrollToStep(STEPS[cursor]);
+    });
   }
 
   function scrollToStep(name) {
@@ -908,7 +867,7 @@
       statusEl.className = "text-[13.5px] text-green-700";
       submitBtn.textContent = "Submit again";
     } catch {
-      statusEl.textContent = "Your answers could not be sent automatically. Please download the PDF below and email it to ethan@marchandwealth.ca.";
+      statusEl.textContent = `Your answers could not be sent automatically. Please download the PDF below and email it to ${CONTACT_EMAIL}.`;
       statusEl.className = "text-[13.5px] text-red-700";
     } finally {
       submitBtn.disabled = false;
@@ -934,40 +893,6 @@
     }
     copyReset = setTimeout(() => { copyLabel.textContent = "Copy link to answers"; }, 1800);
   });
-
-  let jsPdfLoading = null;
-  function loadJsPdf() {
-    if (window.jspdf?.jsPDF) return Promise.resolve(window.jspdf.jsPDF);
-    if (!jsPdfLoading) {
-      jsPdfLoading = new Promise((resolve, reject) => {
-        const script = document.createElement("script");
-        script.src = "/assets/vendor/jspdf.umd.min.js";
-        script.onload = () => (window.jspdf?.jsPDF ? resolve(window.jspdf.jsPDF) : reject(new Error("jsPDF missing")));
-        script.onerror = () => {
-          jsPdfLoading = null;
-          reject(new Error("jsPDF failed to load"));
-        };
-        document.head.append(script);
-      });
-    }
-    return jsPdfLoading;
-  }
-
-  async function loadLogo() {
-    try {
-      const res = await fetch("/assets/logo.png");
-      if (!res.ok) return null;
-      const blob = await res.blob();
-      return await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => resolve(null);
-        reader.readAsDataURL(blob);
-      });
-    } catch {
-      return null;
-    }
-  }
 
   downloadBtn.addEventListener("click", async () => {
     const a = answers();

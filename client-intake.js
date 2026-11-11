@@ -18,11 +18,7 @@
 
   const dependantCount = () => Math.max(0, Math.min(12, Math.floor(money(form.elements["dependant-count"]?.value))));
 
-  const CONTACT_METHODS = ["Call", "Text", "Email"];
-  const normalizePreferredContact = (value) => {
-    const clean = String(value ?? "").trim().toLowerCase();
-    return CONTACT_METHODS.find((m) => m.toLowerCase() === clean) || "";
-  };
+  const { CONTACT_EMAIL, CONTACT_METHODS, normalizePreferredContact, syncNextArrowButton } = window.MarchandShared;
 
   // How far the client has walked. Optional money fields unlock on leave, even if blank.
   let cursor = 0;
@@ -153,28 +149,10 @@
     if (maxIndex >= visible.length - 1) return;
     if (!el || el.classList.contains("hidden")) return;
 
-    const ready = canAdvance(frontier);
-    let button = el.querySelector(":scope > .intake-next-arrow");
-    if (!button) {
-      button = document.createElement("button");
-      button.type = "button";
-      button.innerHTML = `
-        <span class="intake-next-arrow-label"></span>
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-          <path d="M5 8.5 L11 14.5 L17 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      `;
-      button.addEventListener("click", () => {
-        const next = advanceFrom(frontier);
-        if (next) focusStep(next);
-      });
-      el.append(button);
-    }
-    button.className = `intake-next-arrow${ready ? "" : " is-waiting"}`;
-    button.setAttribute("aria-label", ready ? "Show the next question" : "Answer this question to continue");
-    button.disabled = !ready;
-    const label = button.querySelector(".intake-next-arrow-label");
-    if (label) label.textContent = ready ? "Next" : "More below";
+    syncNextArrowButton(el, canAdvance(frontier), () => {
+      const next = advanceFrom(frontier);
+      if (next) focusStep(next);
+    });
   }
 
   function updateVisibility() {
@@ -426,7 +404,7 @@
     let iqParams = null;
     try {
       const iqLink = new URL(incoming.get("iq-link") || "");
-      if (iqLink.pathname === "/investor-questionnaire.html") {
+      if (iqLink.origin === window.location.origin && iqLink.pathname === "/investor-questionnaire.html") {
         document.getElementById("iq-link-field").value = iqLink.href;
         questionnaireAlreadyDone = true;
         nextStepCard?.classList.add("hidden");
@@ -587,14 +565,21 @@
     cursor = visibleStepNames().length - 1;
     updateVisibility();
 
-    const link = await planUrl();
-    planLinkField.value = link;
-    planLinkEl.href = link;
-
+    const submitBtn = document.getElementById("intake-submit");
+    if (submitBtn.disabled) return;
+    submitBtn.disabled = true;
     statusEl.textContent = "Submitting…";
     statusEl.className = "text-[13.5px] text-inksoft";
 
     try {
+      const link = await planUrl();
+      planLinkField.value = link;
+      planLinkEl.href = link;
+      // Netlify drops field names that are not in the static form, so the
+      // JavaScript-built dependant-age-N inputs travel as one list.
+      document.getElementById("dependant-ages-field").value = [...form.querySelectorAll("[data-dep-age]")]
+        .map((input, index) => `Dependant ${index + 1}: ${input.value.trim() || "?"}`)
+        .join(", ");
       const body = new URLSearchParams(new FormData(form));
       const res = await fetch(window.location.pathname, {
         method: "POST",
@@ -606,9 +591,11 @@
       statusEl.className = "text-[13.5px] text-green-700";
       successEl.classList.remove("hidden");
     } catch (err) {
-      statusEl.textContent = "Something went wrong submitting this. Please email ethan@marchandwealth.ca, or use the plan link below.";
+      statusEl.textContent = `Something went wrong submitting this. Please email ${CONTACT_EMAIL}, or use the plan link below.`;
       statusEl.className = "text-[13.5px] text-red-700";
       successEl.classList.remove("hidden");
+    } finally {
+      submitBtn.disabled = false;
     }
     if (!questionnaireAlreadyDone) nextStepCard?.classList.remove("hidden");
     (nextStepCard && !nextStepCard.classList.contains("hidden") ? nextStepCard : successEl)

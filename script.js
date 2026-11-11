@@ -42,7 +42,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // Auto-updates the copyright year so I don't have to remember to, like flossing.
-  document.querySelectorAll('#year').forEach(el => {
+  document.querySelectorAll('.js-year').forEach(el => {
     el.textContent = new Date().getFullYear();
   });
 
@@ -412,15 +412,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const rateRetire = parseFloat(el.rateRetire.value);
       el.rateRetireVal.textContent = rateRetire;
 
-      // Catch an over-contribution: nobody can have contributed more than
-      // the total room that's existed since they turned 18.
+      // Catch an over-contribution: net contributions (deposits minus earlier
+      // withdrawals) can't exceed the total room that's existed since 18.
       const lifetimeRoom = lifetimeRoomForAge(age);
       const rawContributed = Math.max(0, parseFloat(el.balance.value) || 0);
       const isOverContributed = rawContributed > lifetimeRoom;
 
       if (el.balanceError) {
         if (isOverContributed) {
-          el.balanceError.textContent = `That's more than the estimated ${currency(lifetimeRoom)} someone age ${age} could have contributed by now — double check the number, or your exact room in CRA My Account.`;
+          el.balanceError.textContent = `Net contributions can't be more than the estimated ${currency(lifetimeRoom)} of room someone age ${age} has had by now — subtract any withdrawals made before this year, or check your exact room in CRA My Account.`;
           el.balanceError.classList.remove('hidden');
           el.balance.classList.add('border-red-500');
           el.balance.classList.remove('border-line');
@@ -686,6 +686,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const statusEl = document.getElementById('tfsa-consult-status');
       const body = new URLSearchParams(new FormData(tfsaConsultForm));
 
+      const submitBtn = tfsaConsultForm.querySelector('[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       statusEl.textContent = 'Submitting…';
       statusEl.className = 'text-[13.5px] min-h-0 text-inksoft';
 
@@ -700,8 +702,10 @@ document.addEventListener('DOMContentLoaded', () => {
         statusEl.className = 'text-[13.5px] min-h-0 text-green-700';
         tfsaConsultForm.reset();
       } catch (err) {
-        statusEl.textContent = 'Something went wrong submitting this. Please email ethan@marchandwealth.ca directly.';
+        statusEl.textContent = `Something went wrong submitting this. Please email ${window.MarchandShared.CONTACT_EMAIL} directly.`;
         statusEl.className = 'text-[13.5px] min-h-0 text-red-700';
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
   }

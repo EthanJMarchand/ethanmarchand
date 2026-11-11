@@ -50,7 +50,7 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    { "@type": "Question", "name": "How long will it take me to max out my TFSA?", "acceptedAnswer": { "@type": "Answer", "text": "It depends on your available contribution room and how much you can contribute each month, compared to how much new room the CRA adds each year. Enter your age, estimated contributions to date, and a monthly contribution amount into the calculator above — it tells you the exact year you'll be fully caught up, or lets you know if that pace won't fully catch up before retirement." } },
+    { "@type": "Question", "name": "How long will it take me to max out my TFSA?", "acceptedAnswer": { "@type": "Answer", "text": "It depends on your available contribution room and how much you can contribute each month, compared to how much new room the CRA adds each year. Enter your age, net contributions to date, and a monthly contribution amount into the calculator above — it tells you the exact year you'll be fully caught up, or lets you know if that pace won't fully catch up before retirement." } },
     { "@type": "Question", "name": "What is the TFSA contribution limit for 2026?", "acceptedAnswer": { "@type": "Answer", "text": "The TFSA dollar limit for 2026 is $7,000. If you were 18 or older in 2009 and have never contributed, your total lifetime TFSA contribution room by 2026 is $109,000." } },
     { "@type": "Question", "name": "How much can I contribute to my TFSA every year?", "acceptedAnswer": { "@type": "Answer", "text": "The CRA sets a new annual TFSA dollar limit each year, usually indexed to inflation and rounded to the nearest $500. For 2026, that limit is $7,000. Unused room carries forward indefinitely, so your total available room is usually larger than just one year's limit." } },
     { "@type": "Question", "name": "What happens if I over-contribute to my TFSA?", "acceptedAnswer": { "@type": "Answer", "text": "The CRA charges a penalty tax of 1% per month on the excess amount for as long as it stays in the account. It's worth double-checking your available room in your CRA My Account before contributing if you're not sure." } },
@@ -152,9 +152,9 @@
         </label>
 
         <label class="flex flex-col gap-1.5">
-          <span class="text-[13px] font-semibold text-navydeep">Estimated contributions made to-date</span>
+          <span class="text-[13px] font-semibold text-navydeep">Net contributions to date</span>
           <input type="number" id="tfsa-balance" min="0" step="100" value="59000" class="bg-paperdim text-[14.5px] px-3.5 py-2.5 border-2 border-line rounded-sm w-full">
-          <span class="text-[12px] text-inksoft">The total you've deposited, not including growth. We'll estimate your available room from your age.</span>
+          <span class="text-[12px] text-inksoft">Total deposits minus withdrawals made before this year, not including growth. Withdrawals from this year are added back to your room next January. We'll estimate your available room from your age.</span>
           <p id="tfsa-error-contributions" class="hidden text-red-600 text-[12.5px] mt-0.5"></p>
         </label>
 
@@ -229,7 +229,7 @@
         </div>
       </div>
       <p id="tfsa-catchup-note" class="text-white/70 text-[14px] leading-relaxed mb-3">&mdash;</p>
-      <p class="text-white/50 text-[12.5px]">You've contributed an estimated <span id="tfsa-contributed-est" class="text-white font-semibold">$0</span> of your <span id="tfsa-lifetime-room" class="text-white font-semibold">$0</span> lifetime TFSA room so far. Income assumes withdrawals are structured to last until age 95.</p>
+      <p class="text-white/50 text-[12.5px]">You've used an estimated <span id="tfsa-contributed-est" class="text-white font-semibold">$0</span> of your <span id="tfsa-lifetime-room" class="text-white font-semibold">$0</span> lifetime TFSA room so far, net of earlier withdrawals. Income assumes withdrawals are structured to last until age 95.</p>
     </div>
 
     <div class="bg-white border border-line rounded-sm p-8 mb-8">
@@ -314,7 +314,7 @@
         <input type="hidden" name="resultsAge" id="results-age">
         <input type="hidden" name="resultsRetireAge" id="results-retire-age">
         <input type="hidden" name="resultsTfsaCurrentBalance" id="results-tfsa-current-balance">
-        <input type="hidden" name="resultsTfsaBalance" id="results-tfsa-balance">
+        <input type="hidden" name="resultsNetContributions" id="results-tfsa-balance">
         <input type="hidden" name="resultsContributionMode" id="results-contribution-mode">
         <input type="hidden" name="resultsMonthlyContribution" id="results-monthly-contribution">
         <input type="hidden" name="resultsProjectedTfsaValue" id="results-fv-total">
@@ -448,7 +448,7 @@
           How long will it take me to max out my TFSA?
           <svg class="faq-chevron flex-shrink-0 transition-transform text-golddim" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1 L7 8 L13 1" stroke="currentColor" stroke-width="2"/></svg>
         </button>
-        <div class="faq-answer px-6"><p class="text-[14.5px] text-inksoft leading-relaxed pb-5">It depends on your available contribution room and how much you can contribute each month, compared to how much new room the CRA adds each year. Enter your age, estimated contributions to date, and a monthly contribution amount into the calculator above &mdash; it tells you the exact year you'll be fully caught up, or lets you know if that pace won't fully catch up before retirement.</p></div>
+        <div class="faq-answer px-6"><p class="text-[14.5px] text-inksoft leading-relaxed pb-5">It depends on your available contribution room and how much you can contribute each month, compared to how much new room the CRA adds each year. Enter your age, net contributions to date, and a monthly contribution amount into the calculator above &mdash; it tells you the exact year you'll be fully caught up, or lets you know if that pace won't fully catch up before retirement.</p></div>
       </div>
       <div class="faq-item border border-line rounded-sm bg-white">
         <button class="faq-toggle w-full flex items-center justify-between gap-4 text-left px-6 py-5 font-semibold text-navydeep text-[15px]">
@@ -530,13 +530,19 @@
       </div>
     </div>
     <div class="flex flex-wrap justify-between gap-2.5 pt-5 text-[12.5px] text-cream/40">
-      <span>&copy; <span id="year"></span> Ethan Marchand · Advisor Strategies Inc.</span>
+      <span>&copy; <span class="js-year"></span> Ethan Marchand · Advisor Strategies Inc.</span>
       <span>Planning tools. Not an application for insurance.</span>
     </div>
   </div>
 </footer>
 
-<script src="tfsa-limits.js"></script>
+<script src="assets/js/shared.js"></script>
+<script type="module">
+  // The plan's TFSA table is the only copy. Modules run before DOMContentLoaded,
+  // which is when script.js starts the calculator.
+  import { tfsaAnnualLimits } from "./needs-analysis/data/tfsa-contribution-limit.js";
+  window.TFSA_ANNUAL_LIMITS = tfsaAnnualLimits;
+</script>
 <script src="script.js"></script>
 </body>
 </html>

@@ -17,18 +17,23 @@ export function incomeYearsAtAge(age, chosenYears, retirementAge) {
   return Math.min(chosen, Math.max(0, retirementAge - age));
 }
 
-function mortgageRemaining(balance, yearsLeft, elapsed) {
+// A level-payment loan: balance left after `elapsed` of `yearsLeft` years at
+// `rate` a year. Early payments are mostly interest, so the balance falls slowly
+// at first. A zero rate pays down in a straight line.
+export function mortgageRemaining(balance, yearsLeft, elapsed, rate = 0) {
   const principal = Math.max(0, balance);
   const term = Math.max(0, yearsLeft);
   if (principal === 0) return 0;
   if (term === 0) return principal;
   if (elapsed >= term) return 0;
-  return principal * ((term - elapsed) / term);
+  if (!(rate > 0)) return principal * ((term - elapsed) / term);
+  const growth = (years) => (1 + rate) ** years;
+  return principal * ((growth(term) - growth(elapsed)) / (growth(term) - 1));
 }
 
-function futureMortgageRemaining(amount, startYear, amortization, elapsed) {
+function futureMortgageRemaining(amount, startYear, amortization, elapsed, rate) {
   if (amount <= 0 || elapsed < startYear) return 0;
-  return mortgageRemaining(amount, amortization, elapsed - startYear);
+  return mortgageRemaining(amount, amortization, elapsed - startYear, rate);
 }
 
 export function lifeNeedAtYear({
@@ -49,6 +54,7 @@ export function lifeNeedAtYear({
   futureMortgage,
   yearsUntilPurchase,
   amortizationYears,
+  mortgageRate = 0,
   finalExpenses,
   probateFee = 0,
   deathTax = 0,
@@ -64,8 +70,8 @@ export function lifeNeedAtYear({
   const annual = Math.max(0, personalIncome) * Math.max(0, replacementRatio);
   const priceRise = elapsed > 0 ? inflate(1, inflationPercent, elapsed) : 1;
   const incomeCapital = annual * years * priceRise;
-  const mortgageLeft = mortgageRemaining(mortgage, mortgageYears, elapsed);
-  const plannedLeft = futureMortgageRemaining(futureMortgage, yearsUntilPurchase, amortizationYears, elapsed);
+  const mortgageLeft = mortgageRemaining(mortgage, mortgageYears, elapsed, mortgageRate);
+  const plannedLeft = futureMortgageRemaining(futureMortgage, yearsUntilPurchase, amortizationYears, elapsed, mortgageRate);
   let educationCount = dependantAges.filter((childAge) => Number.isFinite(childAge) && childAge + elapsed < independenceAge).length;
   const spacing = 2;
   for (let index = 0; index < plannedChildren; index += 1) {

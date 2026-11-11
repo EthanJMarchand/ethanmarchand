@@ -80,6 +80,7 @@
       <input type="hidden" name="form-name" value="client-intake">
       <input type="hidden" name="plan-link" id="plan-link-field" value="">
       <input type="hidden" name="iq-link" id="iq-link-field" value="">
+      <input type="hidden" name="dependant-ages" id="dependant-ages-field" value="">
       <p class="hidden" aria-hidden="true"><label>Don't fill this out if you're human: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
 
       <div class="intake-step" data-step="name">
@@ -359,7 +360,7 @@
       </div>
     </div>
     <div class="flex flex-wrap justify-between gap-2.5 pt-5 text-[12.5px] text-cream/40">
-      <span>&copy; <span id="year"></span> Ethan Marchand · Advisor Strategies Inc.</span>
+      <span>&copy; <span class="js-year"></span> Ethan Marchand · Advisor Strategies Inc.</span>
       <span>Planning tools. Not an application for insurance.</span>
     </div>
   </div>
@@ -368,6 +369,7 @@
 <script src="script.js"></script>
 <script src="investor-profiles.js"></script>
 <script src="link-codec.js"></script>
+<script src="assets/js/shared.js"></script>
 <script src="client-intake.js"></script>
 </body>
 </html>

@@ -8,16 +8,15 @@ import { rrspLimits } from "../data/rrsp-limits.js";
 import { tfsaContributionLimit } from "../data/tfsa-contribution-limit.js";
 import { deathTaxAtYear } from "./calc/death-tax.js";
 import { projectFutureRoom } from "./calc/contribution-room.js";
-import { deflate, inflate, purchasingPowerPath, roundPercent, trailingAverage } from "./calc/inflation.js";
+import { inflate, purchasingPowerPath, roundPercent, trailingAverage } from "./calc/inflation.js";
 import { calculateLifeNeed } from "./calc/life-need.js";
 import { formatDollars, formatMoney, readMoney } from "./calc/money.js";
 import { incomeYearsAtAge, projectLifeNeed } from "./calc/need-path.js";
 import { cppCareerShare, estimateCpp, estimateOas, residenceYearsFromAge } from "./calc/pensions.js";
 import { calculateProbate } from "./calc/probate.js";
-import { criticalIllnessLumpSum, disabilityMonthlyBenefit } from "./calc/protection.js";
-import { calculateRetirement } from "./calc/retirement.js";
+import { DISABILITY_REPLACEMENT_CEILING, criticalIllnessLumpSum, disabilityMonthlyBenefit } from "./calc/protection.js";
 import { describeDeposits, projectPortfolio } from "./calc/portfolio-path.js";
-import { latestTaxYear, marginalRate } from "./calc/tax.js";
+import { latestTaxYear } from "./calc/tax.js";
 import { formatYearSpan, groupLimitYears, tfsaRoomEarned } from "./calc/tfsa-room.js";
 
 const DEFAULT_ADVISOR = {
@@ -27,6 +26,7 @@ const DEFAULT_ADVISOR = {
 
 const $ = (id) => document.getElementById(id);
 
+// Suggested fields the plan fills in until someone types over them.
 const dirty = {
   desired: false,
   deathAge: false,
@@ -41,10 +41,10 @@ const dirty = {
   disabilityMonths: false,
 };
 
+const DISABILITY_CAP_PERCENT = DISABILITY_REPLACEMENT_CEILING * 100;
+
 const inflationHistory = trailingAverage(canadaInflation.annualPercent, 100);
 const defaultInflation = roundPercent(inflationHistory.average);
-
-let incomeMode = "today";
 
 const investorProfiles = window.MarchandInvestorProfiles;
 let questionnaireProfile = null;
@@ -466,7 +466,7 @@ function partnerName() {
 }
 
 function childLabels() {
-  const count = Math.min(12, dependantCount());
+  const count = dependantCount();
   return Array.from({ length: count }, (_, index) => `Child ${index + 1}`);
 }
 
@@ -517,6 +517,9 @@ function applyNames() {
   $("partner-rrsp-balance-label").textContent = `${partner}'s RRSP balance`;
   $("partner-rrsp-room-label").textContent = `${partner}'s RRSP room available now`;
   $("partner-nonreg-label").textContent = `${partner}'s non-registered balance`;
+  $("partner-nonreg-acb-label").textContent = `${partner}'s non-registered cost base, if known`;
+  $("client-sex-label").textContent = `Life expectancy figure for ${person}`;
+  $("partner-sex-label").textContent = `Life expectancy figure for ${partner}`;
   $("partner-other-label").textContent = `${partner}'s other assets`;
   $("partner-canada-label").textContent = `Years ${partner} will have lived in Canada from 18 to 65`;
   $("partner-cpp-label").textContent = `${partner} CPP, yearly`;
@@ -529,10 +532,6 @@ function householdIncome() {
   const personal = readMoney($("personal-income").value);
   const partner = hasPartner() ? readMoney($("partner-income").value) : 0;
   return personal + partner;
-}
-
-function incomeModeValue() {
-  return document.querySelector('input[name="income-mode"]:checked')?.value === "future" ? "future" : "today";
 }
 
 function inflationPercent() {
@@ -571,8 +570,6 @@ function registeredTotals() {
     partnerTfsaRoom,
     clientRrspRoom,
     partnerRrspRoom,
-    tfsaRoomCapped: clientTfsaRoom < clientTfsaEntered || partnerTfsaRoom < partnerTfsaEntered,
-    total: tfsaBalance + rrspBalance + other,
   };
 }
 
@@ -586,16 +583,12 @@ function roomWithinLifetime(entered, ageId) {
 function retirementTarget(years) {
   const entered = readMoney($("desired-income").value);
   const inflation = inflationPercent();
-  const mode = incomeModeValue();
-  if (mode === "future") {
-    return { mode, entered, today: deflate(entered, inflation, years), nominal: entered, years, inflation };
-  }
-  return { mode, entered, today: entered, nominal: inflate(entered, inflation, years), years, inflation };
+  return { entered, today: entered, nominal: inflate(entered, inflation, years), years, inflation };
 }
 
-function expectancyAge() {
+function expectancyAge(sexId = "client-sex") {
   const row = lifeExpectancy.canada[lifeExpectancy.year];
-  const sex = $("client-sex").value;
+  const sex = $(sexId).value;
   const years = sex === "male" || sex === "female" ? row[sex] : row.both;
   return Math.round(years);
 }
@@ -612,6 +605,15 @@ function retirementAgeValue() {
   if (blank("retirement-age")) return null;
   const age = readMoney($("retirement-age").value);
   return Number.isFinite(age) ? age : null;
+}
+
+// The spouse retires in the same calendar year as Person 1, as in the retirement plan.
+function partnerRetirementAge() {
+  const clientAge = ageOrNull("client-age");
+  const partnerAge = ageOrNull("partner-age");
+  const retirementAge = retirementAgeValue();
+  if (clientAge == null || partnerAge == null || retirementAge == null) return null;
+  return partnerAge + (retirementAge - clientAge);
 }
 
 function incomeYearsForAge(age) {
@@ -635,7 +637,7 @@ function chartUntil(currentAge, deathAgeId = "death-age") {
 
 function applySuggestions() {
   if (!dirty.deathAge) $("death-age").value = String(expectancyAge());
-  if (hasPartner() && !dirty.partnerDeathAge) $("partner-death-age").value = String(expectancyAge());
+  if (hasPartner() && !dirty.partnerDeathAge) $("partner-death-age").value = String(expectancyAge("partner-sex"));
   const currentAge = ageOrNull("client-age");
   const retirementAge = blank("retirement-age") ? null : readMoney($("retirement-age").value);
   // CPP builds until the person stops working, at most 70. OAS residence counts to 65.
@@ -656,9 +658,7 @@ function applySuggestions() {
   }
   if (hasPartner()) {
     const partnerAge = ageOrNull("partner-age");
-    const partnerStopAge = partnerAge != null && currentAge != null && retirementAge != null
-      ? Math.min(70, partnerAge + retirementAge - currentAge)
-      : 65;
+    const partnerStopAge = Math.min(70, partnerRetirementAge() ?? 65);
     if (!dirty.partnerCanadaYears && partnerAge != null) {
       $("partner-canada-years").value = String(residenceYearsFromAge(65));
     }
@@ -716,26 +716,8 @@ function householdTfsa() {
   return { client, partner, lifetime };
 }
 
-function retirementQuote() {
-  const horizon = retirementHorizon();
-  if (horizon.missing || horizon.invalid) return null;
-  const partner = hasPartner();
-  const target = retirementTarget(horizon.years || 0);
-  return calculateRetirement({
-    years: horizon.years,
-    desiredRetirementIncome: target.today,
-    cppAnnual: readMoney($("cpp-annual").value),
-    oasAnnual: readMoney($("oas-annual").value),
-    partnerCppAnnual: partner ? readMoney($("partner-cpp").value) : 0,
-    partnerOasAnnual: partner ? readMoney($("partner-oas").value) : 0,
-    retirementAssets: registeredTotals().total,
-    savingsReturn: rateFrom("real-return"),
-    retirementReturn: rateFrom("retirement-return"),
-    retirementYears: Math.max(0, readMoney($("death-age").value) - readMoney($("retirement-age").value)),
-    legacyAtDeath: $("leave-legacy").checked ? readMoney($("legacy-amount").value) : 0,
-    recoveryThreshold: oasAmounts.recoveryThreshold,
-    recoveryTaxRate: oasAmounts.recoveryTaxRate,
-  });
+function legacyGoal() {
+  return $("leave-legacy").checked ? readMoney($("legacy-amount").value) : 0;
 }
 
 function planSpanYears() {
@@ -796,23 +778,10 @@ function rolloverChosen() {
 
 function syncRolloverNote() {
   const note = $("rrsp-rollover-note");
-  const tip = $("rrsp-rollover-tip");
   if (!note) return;
-  if (hasPartner()) {
-    note.textContent =
-      "An eligible TFSA & RRSP successor holder is on this plan, so Tax if death (Table F3) and Fig. D1 / D2 treat the TFSA as continuing to that person and the RRSP or RRIF as rolling over. Those balances are not taxed at death.";
-    if (tip) {
-      tip.classList.add("hidden");
-      tip.textContent = "";
-    }
-    return;
-  }
-  note.textContent =
-    "No eligible TFSA & RRSP successor holder is on this plan, so Tax if death includes the full RRSP or RRIF on the final return.";
-  if (tip) {
-    tip.classList.add("hidden");
-    tip.textContent = "";
-  }
+  note.textContent = hasPartner()
+    ? "An eligible TFSA & RRSP successor holder is on this plan, so Tax if death (Table F3) and Fig. D1 / D2 treat the TFSA as continuing to that person and the RRSP or RRIF as rolling over. Those balances are not taxed at death."
+    : "No eligible TFSA & RRSP successor holder is on this plan, so Tax if death includes the full RRSP or RRIF on the final return.";
 }
 
 // Fig. D1 / D2 tax at death is per person: that person's share of the plan
@@ -826,6 +795,7 @@ function deathTaxForNeedChart({
   income,
   rrsp,
   nonReg,
+  nonRegAcb = 0,
   other,
   household,
 }) {
@@ -841,8 +811,8 @@ function deathTaxForNeedChart({
       ...deathTaxInput,
       income,
       rrsp: (row.rrspAtDeath || 0) * rrspShare,
-      // deathTaxAtYear treats non-reg as fully gain; pass twice the gain so inclusion matches.
-      nonReg: personNonRegGain / 0.5,
+      // The row already measures the gain, so pass it as a balance with no cost base.
+      nonReg: personNonRegGain,
       otherGain: (row.otherGainAtDeath || 0) * otherShare,
       savingsReturn: 0,
       years: elapsed,
@@ -853,6 +823,7 @@ function deathTaxForNeedChart({
     income,
     rrsp,
     nonReg,
+    nonRegAcb,
     years: elapsed,
   }).total;
 }
@@ -882,6 +853,8 @@ function buildModel() {
   const clientNonReg = readMoney($("nonreg-balance").value);
   const partnerRrsp = partner ? readMoney($("partner-rrsp-balance").value) : 0;
   const partnerNonReg = partner ? readMoney($("partner-nonreg-balance").value) : 0;
+  const clientNonRegAcb = readMoney($("nonreg-acb").value);
+  const partnerNonRegAcb = partner ? readMoney($("partner-nonreg-acb").value) : 0;
   const deathTaxInput = {
     estate: estateValue,
     rollover,
@@ -894,6 +867,7 @@ function buildModel() {
     income: personalIncome,
     rrsp: clientRrsp,
     nonReg: clientNonReg,
+    nonRegAcb: clientNonRegAcb,
     years: 0,
   });
   const partnerDeathTaxBill = partner
@@ -902,6 +876,7 @@ function buildModel() {
         income: partnerIncome,
         rrsp: partnerRrsp,
         nonReg: partnerNonReg,
+        nonRegAcb: partnerNonRegAcb,
         years: 0,
       })
     : null;
@@ -939,7 +914,7 @@ function buildModel() {
     : null;
   const ciMonths = Math.max(0, readMoney($("ci-months").value));
   const ciRatio = rateFrom("ci-ratio");
-  const disabilityRatio = Math.min(0.7, rateFrom("disability-ratio"));
+  const disabilityRatio = Math.min(DISABILITY_REPLACEMENT_CEILING, rateFrom("disability-ratio"));
   const clientDisabilityGross = disabilityMonthlyBenefit(personalIncome, disabilityRatio);
   const spouseDisabilityGross = partner ? disabilityMonthlyBenefit(partnerIncome, disabilityRatio) : 0;
   const clientCriticalGross = criticalIllnessLumpSum(personalIncome, ciRatio, ciMonths);
@@ -960,7 +935,7 @@ function buildModel() {
   const horizon = retirementHorizon();
   const target = retirementTarget(horizon.years || 0);
   const tfsa = householdTfsa();
-  let retirement = retirementQuote();
+  const legacy = legacyGoal();
 
   const room = projectFutureRoom({
     yearsOfWork: horizon.years || 0,
@@ -976,7 +951,6 @@ function buildModel() {
     rrspPercent: rrspLimits.earnedIncomePercent,
   });
 
-  const marginalNow = marginalRate(personalIncome, province);
   syncEarlyDeathSlider();
   const portfolio = ageOrNull("client-age") == null || planSpanYears() <= 0 ? null : projectPortfolio({
     currentAge: ageOrNull("client-age") ?? 0,
@@ -993,6 +967,7 @@ function buildModel() {
     tfsaOpening: accounts.tfsaBalance,
     rrspOpening: accounts.rrspBalance,
     nonRegOpening: accounts.nonReg,
+    nonRegAcbOpening: clientNonRegAcb + partnerNonRegAcb,
     otherOpening: accounts.other,
     tfsaRoomNow: accounts.tfsaRoom,
     rrspRoomNow: accounts.rrspRoom,
@@ -1006,6 +981,7 @@ function buildModel() {
     partnerAge: partner ? ageOrNull("partner-age") : null,
     oasRecoveryThreshold: oasAmounts.recoveryThreshold,
     oasRecoveryRate: oasAmounts.recoveryTaxRate,
+    clientRrspShare: clientRrsp + partnerRrsp > 0 ? clientRrsp / (clientRrsp + partnerRrsp) : 0.5,
     workingIncomeToday: personalIncome,
     rollover,
     startYear: tfsaContributionLimit.taxYear,
@@ -1034,6 +1010,7 @@ function buildModel() {
     futureMortgage: planHouse ? readMoney($("future-mortgage").value) : 0,
     yearsUntilPurchase: planHouse ? readMoney($("years-until-purchase").value) : 0,
     amortizationYears: planHouse ? readMoney($("future-amortization").value) || 25 : 0,
+    mortgageRate: assumptions.mortgageRate,
     finalExpenses: readMoney($("final-expenses").value),
     probateFee: probate.fee,
     inflationPercent: inflation,
@@ -1044,6 +1021,7 @@ function buildModel() {
       income: personalIncome,
       rrsp: clientRrsp,
       nonReg: clientNonReg,
+      nonRegAcb: clientNonRegAcb,
       other: readMoney($("other-assets").value),
       household: {
         rrsp: accounts.rrspBalance,
@@ -1060,7 +1038,7 @@ function buildModel() {
     ? projectLifeNeed({
         ...pathInput,
         currentAge: partnerAge ?? 0,
-        retirementAge: partnerAge == null ? null : retirementAgeValue(),
+        retirementAge: partnerRetirementAge(),
         personalIncome: partnerIncome,
         taxAtYear: (elapsed) => deathTaxForNeedChart({
           portfolio,
@@ -1069,6 +1047,7 @@ function buildModel() {
           income: partnerIncome,
           rrsp: partnerRrsp,
           nonReg: partnerNonReg,
+          nonRegAcb: partnerNonRegAcb,
           other: readMoney($("partner-other-assets").value),
           household: {
             rrsp: accounts.rrspBalance,
@@ -1090,7 +1069,7 @@ function buildModel() {
     partnerChartUsesAge: partnerAge != null,
     partnerNeedPath,
     protection,
-    retirement,
+    legacy,
     horizon,
     tfsa,
     target,
@@ -1109,7 +1088,6 @@ function buildModel() {
     rollover,
     deathTaxBill,
     partnerDeathTaxBill,
-    marginalNow,
     earlyAge,
   };
 }
@@ -1258,16 +1236,13 @@ function portfolioRow(model, age) {
 
 function legacyGap(model) {
   const ending = model.portfolio?.ending ?? 0;
-  const goal = model.retirement?.legacyAtDeath || 0;
+  const goal = model.legacy;
   return { ending, goal, delta: ending - goal };
 }
 
 function incomeTranslation(target) {
   if (!target || target.years <= 0) {
     return "Enter age and retirement age to translate the income target across the years until retirement.";
-  }
-  if (target.mode === "future") {
-    return `The yearly amount at retirement is ${formatDollars(target.nominal)}. At ${formatPercent(target.inflation / 100)} inflation over ${target.years} years, that is ${formatDollars(target.today)} in today's dollars.`;
   }
   return `The yearly amount in today's dollars is ${formatDollars(target.today)}. At ${formatPercent(target.inflation / 100)} inflation over ${target.years} years, that is ${formatDollars(target.nominal)} in the year of retirement.`;
 }
@@ -1296,7 +1271,7 @@ function deathTaxSentence(model) {
     deathTaxPiece(personName(), model.deathTaxBill),
   ];
   if (model.partnerDeathTaxBill) parts.push(deathTaxPiece(partnerName(), model.partnerDeathTaxBill));
-  parts.push(`The cost base of the non-registered account and of the estate property is counted as zero, and half of each amount is included as a capital gain. Leave the non-registered balance out of the estate value. An RRSP that does not roll over is included in full. Today's tax figure stays in the life insurance gap. On Fig. D1 and Fig. D2, tax at death follows Table F3 for that year of the retirement plan — remaining account balances after withdrawals, with a rolled RRSP left out. Brackets are the ${latestTaxYear()} combined federal and provincial rates. The basic personal credit is subtracted, plus the age and pension income credits in retirement years.`);
+  parts.push(`The non-registered gain is the balance minus the cost base entered (zero when blank). The estate property is counted with a zero cost base. Half of each gain is included as a capital gain. Leave the non-registered balance out of the estate value. An RRSP that does not roll over is included in full. Today's tax figure stays in the life insurance gap. On Fig. D1 and Fig. D2, tax at death follows Table F3 for that year of the retirement plan — remaining account balances after withdrawals, with a rolled RRSP left out. Brackets are the ${latestTaxYear()} combined federal and provincial rates. The basic personal credit is subtracted, plus the age and pension income credits in retirement years.`);
   if (model.portfolio && !$("early-death-age").disabled) {
     const row = portfolioRow(model, model.earlyAge);
     if (row) {
@@ -1348,10 +1323,10 @@ function pathSentence(points, chosenYears, usesAge, name, deathAgeId = "death-ag
     return `${opening} This age is already at retirement, so the chart does not include years of income.${deathSentence}`;
   }
   if (today.years < chosenYears) {
-    return `${opening} Income replacement is ${today.years} years because retirement is that close, and it steps down by one year each year of age. Those dollars rise with inflation. The mortgage pays down in a straight line. ${ending}${deathSentence}`;
+    return `${opening} Income replacement is ${today.years} years because retirement is that close, and it steps down by one year each year of age. Those dollars rise with inflation. The mortgage pays down with level payments at ${formatPercent(assumptions.mortgageRate)}, slowly at first. ${ending}${deathSentence}`;
   }
   const holdThrough = retirementAge - chosenYears;
-  return `${opening} Income replacement stays at ${chosenYears} years through age ${holdThrough}, then steps down by one year each year of age. Those dollars rise with inflation. The mortgage pays down in a straight line. ${ending}${deathSentence}`;
+  return `${opening} Income replacement stays at ${chosenYears} years through age ${holdThrough}, then steps down by one year each year of age. Those dollars rise with inflation. The mortgage pays down with level payments at ${formatPercent(assumptions.mortgageRate)}, slowly at first. ${ending}${deathSentence}`;
 }
 
 function futureRoomSentence(model) {
@@ -1454,7 +1429,7 @@ function render() {
       ...contributionSchedule(model),
       ["Yearly income today", formatDollars(model.target.today)],
       ["Yearly income at retirement", formatDollars(model.target.nominal)],
-      ["CPP and OAS at retirement", formatDollars(model.portfolio.rows.find((row) => row.retired)?.pension || 0)],
+      ["CPP and OAS at retirement, after tax", formatDollars(model.portfolio.rows.find((row) => row.retired)?.pensionNet || 0)],
       ["From the accounts at retirement", formatDollars(model.portfolio.rows.find((row) => row.retired)?.withdrawal || 0)],
     ];
     if (model.portfolio.depletedAge != null) {
@@ -1550,7 +1525,7 @@ function svgText(x, y, text, anchor) {
   return node;
 }
 
-function appendNeedSeries(svg, points, xFor, yFor, key, { stroke, width = 2, dash = null }) {
+function appendSeries(svg, points, xFor, yFor, key, { stroke, width = 2, dash = null }) {
   const line = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
   line.setAttribute("fill", "none");
   line.setAttribute("stroke", stroke);
@@ -1563,170 +1538,21 @@ function appendNeedSeries(svg, points, xFor, yFor, key, { stroke, width = 2, das
   return line;
 }
 
-function drawNeedChart({ root, points, usesAge, sentence, empty }) {
-  if (points.length < 2) {
-    root.textContent = empty;
-    return;
-  }
-  const { width, height, padLeft, padRight, padTop, padBottom } = chartFrame(root);
-  const maxNeed = Math.max(
-    ...points.map((point) => Math.max(
-      point.capitalNeed || 0,
-      point.mortgageLeft || 0,
-      point.educationCapital || 0,
-      point.deathTax || 0,
-    )),
-    1,
-  );
-  const xFor = (index) => padLeft + (index / (points.length - 1)) * (width - padLeft - padRight);
-  const yFor = (need) => padTop + (1 - need / maxNeed) * (height - padTop - padBottom);
+// The frame, scale, gridlines, and dollar labels every plan chart shares.
+function chartCanvas(root, { count, maxValue, label }) {
+  const frame = chartFrame(root);
+  const { width, height, padLeft, padRight, padTop, padBottom } = frame;
+  const xFor = (index) => padLeft + (index / (count - 1)) * (width - padLeft - padRight);
+  const yFor = (value) => padTop + (1 - value / maxValue) * (height - padTop - padBottom);
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
   svg.setAttribute("width", String(width));
   svg.setAttribute("height", String(height));
   svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", sentence);
+  svg.setAttribute("aria-label", label);
   svg.classList.add("w-full", "h-64");
   for (let step = 0; step <= 4; step += 1) {
-    const need = (maxNeed * step) / 4;
-    const y = yFor(need);
-    const grid = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    grid.setAttribute("x1", String(padLeft));
-    grid.setAttribute("x2", String(width - padRight));
-    grid.setAttribute("y1", String(y));
-    grid.setAttribute("y2", String(y));
-    grid.setAttribute("stroke", "#d5dedc");
-    svg.append(grid, svgText(padLeft - 8, y + 4, compactDollars(need), "end"));
-  }
-  const ageMarks = [points[0], points[Math.floor(points.length / 2)], points[points.length - 1]];
-  ageMarks.forEach((point) => {
-    const index = points.indexOf(point);
-    const label = usesAge ? String(point.age) : (point.elapsed === 0 ? "Now" : `+${Math.round(point.elapsed)}`);
-    svg.append(svgText(xFor(index), height - 10, label, "middle"));
-  });
-  const hasMortgage = points.some((point) => point.mortgageLeft > 0);
-  const hasEducation = points.some((point) => point.educationCapital > 0);
-  const hasTax = points.some((point) => point.deathTax > 0);
-  if (hasTax) {
-    appendNeedSeries(svg, points, xFor, yFor, "deathTax", {
-      stroke: "#7a3b2e",
-      width: 2,
-      dash: "2 3",
-    });
-  }
-  if (hasEducation) {
-    appendNeedSeries(svg, points, xFor, yFor, "educationCapital", {
-      stroke: "#6b7c5c",
-      width: 2,
-      dash: "7 5",
-    });
-  }
-  if (hasMortgage) {
-    appendNeedSeries(svg, points, xFor, yFor, "mortgageLeft", {
-      stroke: "#618986",
-      width: 2,
-      dash: "5 4",
-    });
-  }
-  appendNeedSeries(svg, points, xFor, yFor, "capitalNeed", {
-    stroke: "#0d232a",
-    width: 3,
-  });
-  const hit = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  hit.setAttribute("x", "0");
-  hit.setAttribute("y", "0");
-  hit.setAttribute("width", String(width));
-  hit.setAttribute("height", String(height));
-  hit.setAttribute("fill", "transparent");
-  svg.append(hit);
-  const guideY = document.createElement("div");
-  guideY.className = "need-guide-y";
-  const guideX = document.createElement("div");
-  guideX.className = "need-guide-x";
-  const tip = document.createElement("div");
-  tip.className = "need-tip rounded-sm bg-navydeep px-3 py-2 text-xs text-white shadow";
-  const place = (index) => {
-    const point = points[Math.max(0, Math.min(points.length - 1, index))];
-    const x = xFor(points.indexOf(point));
-    const y = yFor(point.capitalNeed);
-    const box = svg.getBoundingClientRect();
-    const scaleX = box.width / width;
-    const scaleY = box.height / height;
-    guideY.style.opacity = "1";
-    guideX.style.opacity = "1";
-    tip.style.opacity = "1";
-    guideY.style.left = `${x * scaleX}px`;
-    guideY.style.height = `${(height - padBottom) * scaleY}px`;
-    guideX.style.top = `${y * scaleY}px`;
-    guideX.style.left = `${padLeft * scaleX}px`;
-    guideX.style.width = `${(x - padLeft) * scaleX}px`;
-    placeChartTip(tip, box, x * scaleX, Math.max(0, y * scaleY - 48), 176);
-    tip.replaceChildren();
-    const age = document.createElement("p");
-    age.textContent = usesAge
-      ? `Age ${point.age}`
-      : (point.elapsed === 0 ? "Today" : `${Math.round(point.elapsed)} years from now`);
-    const yearsOfIncome = document.createElement("p");
-    const roundedYears = Math.round(point.years);
-    yearsOfIncome.textContent = roundedYears === 1 ? "1 year of income" : `${roundedYears} years of income`;
-    const amount = document.createElement("p");
-    amount.className = "text-base font-bold text-white";
-    amount.textContent = formatDollars(point.capitalNeed);
-    tip.append(age, yearsOfIncome, amount);
-    const mortgageDue = point.mortgageLeft || 0;
-    if (mortgageDue > 0) {
-      const mortgage = document.createElement("p");
-      mortgage.textContent = `Mortgage ${formatDollars(mortgageDue)}`;
-      tip.append(mortgage);
-    }
-    const educationDue = point.educationCapital || 0;
-    if (educationDue > 0 || hasEducation) {
-      const education = document.createElement("p");
-      const kids = Math.round(point.educationCount || 0);
-      education.textContent = kids > 0
-        ? `Education ${formatDollars(educationDue)} (${kids === 1 ? "1 child" : `${kids} children`})`
-        : `Education ${formatDollars(0)}`;
-      tip.append(education);
-    }
-    const finalAndProbate = Math.max(0, (point.floor || 0) - (point.deathTax || 0));
-    const expenses = document.createElement("p");
-    expenses.textContent = `Final expenses and probate ${formatDollars(finalAndProbate)}`;
-    tip.append(expenses);
-    if ((point.deathTax || 0) > 0 || hasTax) {
-      const tax = document.createElement("p");
-      tax.textContent = `Tax at death ${formatDollars(point.deathTax || 0)}`;
-      tip.append(tax);
-    }
-  };
-  bindChartPointer(hit, svg, { width, padLeft, padRight, count: points.length }, place, () => {
-    guideY.style.opacity = "0";
-    guideX.style.opacity = "0";
-    tip.style.opacity = "0";
-  });
-  const legendParts = ["Solid line: life insurance gap"];
-  if (hasMortgage) legendParts.push("gold dashed: mortgage");
-  if (hasEducation) legendParts.push("olive dashed: education until independence age");
-  if (hasTax) legendParts.push("dotted: tax at death");
-  const legend = document.createElement("p");
-  legend.className = "mt-2 text-xs text-inksoft";
-  legend.textContent = `${legendParts.join(". ")}.`;
-  root.replaceChildren(svg, guideY, guideX, tip, legend);
-}
-
-function drawErosionChart({ root, points, sentence }) {
-  const { width, height, padLeft, padRight, padTop, padBottom } = chartFrame(root);
-  const maxPower = Math.max(...points.map((point) => point.buyingPower), 1);
-  const xFor = (index) => padLeft + (index / (points.length - 1)) * (width - padLeft - padRight);
-  const yFor = (value) => padTop + (1 - value / maxPower) * (height - padTop - padBottom);
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  svg.setAttribute("width", String(width));
-  svg.setAttribute("height", String(height));
-  svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", sentence);
-  svg.classList.add("w-full", "h-64");
-  for (let step = 0; step <= 4; step += 1) {
-    const value = (maxPower * step) / 4;
+    const value = (maxValue * step) / 4;
     const y = yFor(value);
     const grid = document.createElementNS("http://www.w3.org/2000/svg", "line");
     grid.setAttribute("x1", String(padLeft));
@@ -1736,19 +1562,14 @@ function drawErosionChart({ root, points, sentence }) {
     grid.setAttribute("stroke", "#d5dedc");
     svg.append(grid, svgText(padLeft - 8, y + 4, compactDollars(value), "end"));
   }
-  const ageMarks = [points[0], points[Math.floor(points.length / 2)], points[points.length - 1]];
-  ageMarks.forEach((point) => {
-    const index = points.indexOf(point);
-    svg.append(svgText(xFor(index), height - 10, String(point.age), "middle"));
-  });
-  const line = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-  line.setAttribute("fill", "none");
-  line.setAttribute("stroke", "#0d232a");
-  line.setAttribute("stroke-width", "3");
-  line.setAttribute("stroke-linejoin", "round");
-  line.setAttribute("stroke-linecap", "round");
-  line.setAttribute("points", points.map((point, index) => `${xFor(index)},${yFor(point.buyingPower)}`).join(" "));
-  svg.append(line);
+  return { frame, svg, xFor, yFor, count };
+}
+
+// Pointer hover: guide lines to the point and a tip. `describe(index)` returns the
+// tip's lines; a line given as { strong } is the bold amount. Mounts everything in root.
+function finishChart(root, canvas, { valueAt, describe, tipLift, tipWidth, after = [] }) {
+  const { frame, svg, xFor, yFor, count } = canvas;
+  const { width, height, padLeft, padRight, padBottom } = frame;
   const hit = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   hit.setAttribute("x", "0");
   hit.setAttribute("y", "0");
@@ -1762,10 +1583,10 @@ function drawErosionChart({ root, points, sentence }) {
   guideX.className = "need-guide-x";
   const tip = document.createElement("div");
   tip.className = "need-tip rounded-sm bg-navydeep px-3 py-2 text-xs text-white shadow";
-  const place = (index) => {
-    const point = points[Math.max(0, Math.min(points.length - 1, index))];
-    const x = xFor(points.indexOf(point));
-    const y = yFor(point.buyingPower);
+  const place = (rawIndex) => {
+    const index = Math.max(0, Math.min(count - 1, rawIndex));
+    const x = xFor(index);
+    const y = yFor(valueAt(index));
     const box = svg.getBoundingClientRect();
     const scaleX = box.width / width;
     const scaleY = box.height / height;
@@ -1777,26 +1598,112 @@ function drawErosionChart({ root, points, sentence }) {
     guideX.style.top = `${y * scaleY}px`;
     guideX.style.left = `${padLeft * scaleX}px`;
     guideX.style.width = `${(x - padLeft) * scaleX}px`;
-    placeChartTip(tip, box, x * scaleX, Math.max(0, y * scaleY - 56), 168);
-    tip.replaceChildren();
-    const age = document.createElement("p");
-    age.textContent = `Age ${point.age}`;
-    const amount = document.createElement("p");
-    amount.className = "text-base font-bold text-white";
-    amount.textContent = formatDollars(point.buyingPower);
-    const meaning = document.createElement("p");
-    meaning.textContent = "today's buying power";
-    tip.append(age, amount, meaning);
+    placeChartTip(tip, box, x * scaleX, Math.max(0, y * scaleY - tipLift), tipWidth);
+    tip.replaceChildren(...describe(index).map((line) => {
+      const node = document.createElement("p");
+      if (typeof line === "object") {
+        node.className = "text-base font-bold text-white";
+        node.textContent = line.strong;
+      } else {
+        node.textContent = line;
+      }
+      return node;
+    }));
   };
-  bindChartPointer(hit, svg, { width, padLeft, padRight, count: points.length }, place, () => {
+  bindChartPointer(hit, svg, { width, padLeft, padRight, count }, place, () => {
     guideY.style.opacity = "0";
     guideX.style.opacity = "0";
     tip.style.opacity = "0";
   });
+  root.replaceChildren(svg, guideY, guideX, tip, ...after);
+}
+
+function chartLegend(text) {
   const legend = document.createElement("p");
   legend.className = "mt-2 text-xs text-inksoft";
-  legend.textContent = "Solid line: what that yearly income buys, in today's dollars, if it never rises.";
-  root.replaceChildren(svg, guideY, guideX, tip, legend);
+  legend.textContent = text;
+  return legend;
+}
+
+function drawNeedChart({ root, points, usesAge, sentence, empty }) {
+  if (points.length < 2) {
+    root.textContent = empty;
+    return;
+  }
+  const maxNeed = Math.max(
+    ...points.map((point) => Math.max(
+      point.capitalNeed || 0,
+      point.mortgageLeft || 0,
+      point.educationCapital || 0,
+      point.deathTax || 0,
+    )),
+    1,
+  );
+  const canvas = chartCanvas(root, { count: points.length, maxValue: maxNeed, label: sentence });
+  const { svg, xFor, yFor } = canvas;
+  const { height } = canvas.frame;
+  const ageMarks = [points[0], points[Math.floor(points.length / 2)], points[points.length - 1]];
+  ageMarks.forEach((point) => {
+    const index = points.indexOf(point);
+    const label = usesAge ? String(point.age) : (point.elapsed === 0 ? "Now" : `+${Math.round(point.elapsed)}`);
+    svg.append(svgText(xFor(index), height - 10, label, "middle"));
+  });
+  const hasMortgage = points.some((point) => point.mortgageLeft > 0);
+  const hasEducation = points.some((point) => point.educationCapital > 0);
+  const hasTax = points.some((point) => point.deathTax > 0);
+  if (hasTax) appendSeries(svg, points, xFor, yFor, "deathTax", { stroke: "#7a3b2e", width: 2, dash: "2 3" });
+  if (hasEducation) appendSeries(svg, points, xFor, yFor, "educationCapital", { stroke: "#6b7c5c", width: 2, dash: "7 5" });
+  if (hasMortgage) appendSeries(svg, points, xFor, yFor, "mortgageLeft", { stroke: "#618986", width: 2, dash: "5 4" });
+  appendSeries(svg, points, xFor, yFor, "capitalNeed", { stroke: "#0d232a", width: 3 });
+  const legendParts = ["Solid line: life insurance gap"];
+  if (hasMortgage) legendParts.push("gold dashed: mortgage");
+  if (hasEducation) legendParts.push("olive dashed: education until independence age");
+  if (hasTax) legendParts.push("dotted: tax at death");
+  finishChart(root, canvas, {
+    valueAt: (index) => points[index].capitalNeed,
+    tipLift: 48,
+    tipWidth: 176,
+    describe: (index) => {
+      const point = points[index];
+      const roundedYears = Math.round(point.years);
+      const lines = [
+        usesAge ? `Age ${point.age}` : (point.elapsed === 0 ? "Today" : `${Math.round(point.elapsed)} years from now`),
+        roundedYears === 1 ? "1 year of income" : `${roundedYears} years of income`,
+        { strong: formatDollars(point.capitalNeed) },
+      ];
+      const mortgageDue = point.mortgageLeft || 0;
+      if (mortgageDue > 0) lines.push(`Mortgage ${formatDollars(mortgageDue)}`);
+      const educationDue = point.educationCapital || 0;
+      if (educationDue > 0 || hasEducation) {
+        const kids = Math.round(point.educationCount || 0);
+        lines.push(kids > 0
+          ? `Education ${formatDollars(educationDue)} (${kids === 1 ? "1 child" : `${kids} children`})`
+          : `Education ${formatDollars(0)}`);
+      }
+      lines.push(`Final expenses and probate ${formatDollars(Math.max(0, (point.floor || 0) - (point.deathTax || 0)))}`);
+      if ((point.deathTax || 0) > 0 || hasTax) lines.push(`Tax at death ${formatDollars(point.deathTax || 0)}`);
+      return lines;
+    },
+    after: [chartLegend(`${legendParts.join(". ")}.`)],
+  });
+}
+
+function drawErosionChart({ root, points, sentence }) {
+  const maxPower = Math.max(...points.map((point) => point.buyingPower), 1);
+  const canvas = chartCanvas(root, { count: points.length, maxValue: maxPower, label: sentence });
+  const { svg, xFor, yFor } = canvas;
+  const ageMarks = [points[0], points[Math.floor(points.length / 2)], points[points.length - 1]];
+  ageMarks.forEach((point) => {
+    svg.append(svgText(xFor(points.indexOf(point)), canvas.frame.height - 10, String(point.age), "middle"));
+  });
+  appendSeries(svg, points, xFor, yFor, "buyingPower", { stroke: "#0d232a", width: 3 });
+  finishChart(root, canvas, {
+    valueAt: (index) => points[index].buyingPower,
+    tipLift: 56,
+    tipWidth: 168,
+    describe: (index) => [`Age ${points[index].age}`, { strong: formatDollars(points[index].buyingPower) }, "today's buying power"],
+    after: [chartLegend("Solid line: what that yearly income buys, in today's dollars, if it never rises.")],
+  });
 }
 
 function renderIncomeErosion(model) {
@@ -1910,7 +1817,7 @@ function renderProtection(model) {
   $("meeting-partner-ci").textContent = formatDollars(protection.spouseCritical);
   renderChildren(model);
   const enteredMonths = Math.round(protection.disabilityMonths);
-  $("disability-hint").textContent = `The monthly disability benefit replaces ${formatPercent(protection.disabilityRatio)} of earned income for ${enteredMonths} months, capped at 70%.`;
+  $("disability-hint").textContent = `The monthly disability benefit replaces ${formatPercent(protection.disabilityRatio)} of earned income for ${enteredMonths} months, capped at ${formatPercent(DISABILITY_REPLACEMENT_CEILING)}.`;
   const spouseLine = model.spouseLife
     ? ` ${partnerName()}'s lump sum is ${formatDollars(protection.spouseCritical)}, from ${partnerName()}'s earned income for the same months.`
     : "";
@@ -1955,7 +1862,7 @@ function renderWealthChart(model) {
   }
   drawPortfolioChart(root, rows, model);
   const retire = retirementAgeValue();
-  const goal = model.retirement?.legacyAtDeath || 0;
+  const goal = model.legacy;
   if (note) {
     const legacy = goal > 0 ? ` The gold line is the legacy goal of ${formatDollars(goal)}.` : "";
     const ages = hasPartner() ? ` Ages on the chart are ${personName()}'s age. The plan ends at the later death.` : "";
@@ -1964,29 +1871,11 @@ function renderWealthChart(model) {
 }
 
 function drawPortfolioChart(root, rows, model) {
-  const { width, height, padLeft, padRight, padTop, padBottom } = chartFrame(root);
-  const goal = model.retirement?.legacyAtDeath || 0;
+  const goal = model.legacy;
   const maxWealth = Math.max(...rows.map((row) => row.total), goal, 1);
-  const xFor = (index) => padLeft + (index / (rows.length - 1)) * (width - padLeft - padRight);
-  const yFor = (value) => padTop + (1 - value / maxWealth) * (height - padTop - padBottom);
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  svg.setAttribute("width", String(width));
-  svg.setAttribute("height", String(height));
-  svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", "Combined balance from this year to the end of the plan");
-  svg.classList.add("w-full", "h-64");
-  for (let step = 0; step <= 4; step += 1) {
-    const value = (maxWealth * step) / 4;
-    const y = yFor(value);
-    const grid = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    grid.setAttribute("x1", String(padLeft));
-    grid.setAttribute("x2", String(width - padRight));
-    grid.setAttribute("y1", String(y));
-    grid.setAttribute("y2", String(y));
-    grid.setAttribute("stroke", "#d5dedc");
-    svg.append(grid, svgText(padLeft - 8, y + 4, compactDollars(value), "end"));
-  }
+  const canvas = chartCanvas(root, { count: rows.length, maxValue: maxWealth, label: "Combined balance from this year to the end of the plan" });
+  const { svg, xFor, yFor } = canvas;
+  const { width, height, padLeft, padRight } = canvas.frame;
   if (goal > 0) {
     const legacy = document.createElementNS("http://www.w3.org/2000/svg", "line");
     legacy.setAttribute("x1", String(padLeft));
@@ -1998,14 +1887,7 @@ function drawPortfolioChart(root, rows, model) {
     legacy.setAttribute("stroke-dasharray", "6 4");
     svg.append(legacy);
   }
-  const line = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-  line.setAttribute("fill", "none");
-  line.setAttribute("stroke", "#0d232a");
-  line.setAttribute("stroke-width", "3");
-  line.setAttribute("stroke-linejoin", "round");
-  line.setAttribute("stroke-linecap", "round");
-  line.setAttribute("points", rows.map((row, index) => `${xFor(index)},${yFor(row.total)}`).join(" "));
-  svg.append(line);
+  appendSeries(svg, rows, xFor, yFor, "total", { stroke: "#0d232a", width: 3 });
   const early = portfolioRow(model, model.earlyAge);
   const deathIndex = early ? rows.indexOf(early) : -1;
   if (deathIndex >= 0) {
@@ -2038,54 +1920,20 @@ function drawPortfolioChart(root, rows, model) {
   for (const row of labeled) {
     svg.append(svgText(xFor(rows.indexOf(row)), height - 10, String(Math.round(row.age)), "middle"));
   }
-  const hit = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  hit.setAttribute("x", "0");
-  hit.setAttribute("y", "0");
-  hit.setAttribute("width", String(width));
-  hit.setAttribute("height", String(height));
-  hit.setAttribute("fill", "transparent");
-  svg.append(hit);
-  const guideY = document.createElement("div");
-  guideY.className = "need-guide-y";
-  const guideX = document.createElement("div");
-  guideX.className = "need-guide-x";
-  const tip = document.createElement("div");
-  tip.className = "need-tip rounded-sm bg-navydeep px-3 py-2 text-xs text-white shadow";
-  const place = (index) => {
-    const row = rows[Math.max(0, Math.min(rows.length - 1, index))];
-    const x = xFor(rows.indexOf(row));
-    const y = yFor(row.total);
-    const box = svg.getBoundingClientRect();
-    const scaleX = box.width / width;
-    const scaleY = box.height / height;
-    guideY.style.opacity = "1";
-    guideX.style.opacity = "1";
-    tip.style.opacity = "1";
-    guideY.style.left = `${x * scaleX}px`;
-    guideY.style.height = `${(height - padBottom) * scaleY}px`;
-    guideX.style.top = `${y * scaleY}px`;
-    guideX.style.left = `${padLeft * scaleX}px`;
-    guideX.style.width = `${(x - padLeft) * scaleX}px`;
-    placeChartTip(tip, box, x * scaleX, Math.max(0, y * scaleY - 88), 188);
-    tip.replaceChildren();
-    const age = document.createElement("p");
-    age.textContent = `Age ${Math.round(row.age)}`;
-    const sum = document.createElement("p");
-    sum.className = "text-base font-bold text-white";
-    sum.textContent = formatDollars(row.total);
-    tip.append(age, sum);
-    for (const [label, value] of [["TFSA", row.tfsa], ["RRSP", row.rrsp], ["Non-registered", row.nonReg], ["Other", row.other]]) {
-      const lineItem = document.createElement("p");
-      lineItem.textContent = `${label} ${formatDollars(value)}`;
-      tip.append(lineItem);
-    }
-  };
-  bindChartPointer(hit, svg, { width, padLeft, padRight, count: rows.length }, place, () => {
-    guideY.style.opacity = "0";
-    guideX.style.opacity = "0";
-    tip.style.opacity = "0";
+  finishChart(root, canvas, {
+    valueAt: (index) => rows[index].total,
+    tipLift: 88,
+    tipWidth: 188,
+    describe: (index) => {
+      const row = rows[index];
+      return [
+        `Age ${Math.round(row.age)}`,
+        { strong: formatDollars(row.total) },
+        ...[["TFSA", row.tfsa], ["RRSP", row.rrsp], ["Non-registered", row.nonReg], ["Other", row.other]]
+          .map(([label, value]) => `${label} ${formatDollars(value)}`),
+      ];
+    },
   });
-  root.replaceChildren(svg, guideY, guideX, tip);
 }
 
 function portfolioMetaCells(row, partnerStart, clientStart) {
@@ -2232,9 +2080,10 @@ function renderPortfolioTable(model) {
   }
 
   if (note) {
-    note.textContent = hasPartner()
-      ? "Each year shows the deposit the room allows, up to the monthly slider. At retirement the deposits stop. Retirement income requested is the after-tax amount chosen at the start of retirement, raised with inflation each year. CPP and OAS are shown after tax, with each person's taxed on that person's own return. Taxable withdrawals are split evenly between both returns when a spouse is on the plan. Tax subtracts the basic personal, age, and pension income credits; RRIF withdrawals from age 65 count as pension income. CPP and OAS are kept in full even when they exceed the request, and nothing is taken from the accounts in those years. When they fall short, the shortfall is taken from Other, non-registered, and the RRSP in proportion to those balances so they run down together. The TFSA is used only after that pool is gone. OAS is reduced by the recovery tax when a person's CPP, OAS, and share of taxable withdrawals pass the threshold. Tax if death is the tax on that year's balances before the retirement withdrawal: with a spouse on the plan the RRSP rolls over and is not taxed, non-registered and other assets tax only the gain, and the TFSA is not taxed. The red row is the age on the early-death slider."
-      : "Each year shows the deposit the room allows, up to the monthly slider. At retirement the deposits stop. Retirement income requested is the after-tax amount chosen at the start of retirement, raised with inflation each year. CPP and OAS are shown after tax, with each person's taxed on that person's own return. Taxable withdrawals are split evenly between both returns when a spouse is on the plan. Tax subtracts the basic personal, age, and pension income credits; RRIF withdrawals from age 65 count as pension income. CPP and OAS are kept in full even when they exceed the request, and nothing is taken from the accounts in those years. When they fall short, the shortfall is taken from Other, non-registered, and the RRSP in proportion to those balances so they run down together. The TFSA is used only after that pool is gone. OAS is reduced by the recovery tax when a person's CPP, OAS, and share of taxable withdrawals pass the threshold. Tax if death is the tax on that year's balances before the retirement withdrawal: with no spouse on the plan the full RRSP is taxed on the final return, non-registered and other assets tax only the gain, and the TFSA is not taxed. The red row is the age on the early-death slider.";
+    const rollover = hasPartner()
+      ? "a spouse on the plan the RRSP rolls over and is not taxed"
+      : "no spouse on the plan the full RRSP is taxed on the final return";
+    note.textContent = `Each year shows the deposit the room allows, up to the monthly slider. At retirement the deposits stop. Retirement income requested is the after-tax amount chosen at the start of retirement, raised with inflation each year. CPP and OAS are shown after tax, with each person's taxed on that person's own return. With a spouse on the plan, Other and non-registered withdrawals are split evenly between both returns. RRSP withdrawals are taxed to each owner in proportion to the RRSP balances entered; from 65 the owner can split up to half with the spouse, so they are then shared evenly. Tax subtracts the basic personal, age, and pension income credits; RRIF withdrawals from age 65 count as pension income. CPP and OAS are kept in full even when they exceed the request, and nothing is taken from the accounts in those years. When they fall short, the shortfall is taken from Other, non-registered, and the RRSP in proportion to those balances so they run down together. The TFSA is used only after that pool is gone. OAS is reduced by the recovery tax when a person's CPP, OAS, and share of taxable withdrawals pass the threshold. Tax if death is the tax on that year's balances before the retirement withdrawal: with ${rollover}, non-registered and other assets tax only the gain, and the TFSA is not taxed. The red row is the age on the early-death slider.`;
   }
 }
 
@@ -2260,20 +2109,7 @@ function resetSession() {
   const advisorName = $("advisor-name").value;
   const advisorFirm = $("advisor-firm").value;
   $("worksheet").reset();
-  incomeMode = "today";
-  Object.assign(dirty, {
-    desired: false,
-      deathAge: false,
-    partnerDeathAge: false,
-    cpp: false,
-    oas: false,
-    partnerCpp: false,
-    partnerOas: false,
-    canadaYears: false,
-    partnerCanadaYears: false,
-    earlyDeath: false,
-    disabilityMonths: false,
-  });
+  Object.keys(dirty).forEach((key) => { dirty[key] = false; });
   fillDefaults();
   $("advisor-name").value = advisorName.trim() || DEFAULT_ADVISOR.name;
   $("advisor-firm").value = advisorFirm.trim() || DEFAULT_ADVISOR.firm;
@@ -2293,6 +2129,7 @@ function fillDefaults() {
   $("education-amount").value = String(assumptions.educationFundPerDependant);
   $("independence-age").value = String(assumptions.dependantIndependenceAge);
   $("client-sex").value = "both";
+  $("partner-sex").value = "both";
   $("retirement-replacement").value = String(assumptions.retirementIncomeReplacement * 100);
   $("planned-children").value = "0";
   $("future-amortization").value = "25";
@@ -2358,6 +2195,7 @@ function loadSample() {
   document.querySelector('input[name="planning-mode"][value="both"]').checked = true;
   $("province").value = "AB";
   $("client-sex").value = "both";
+  $("partner-sex").value = "both";
   $("meeting-date").value = todayISO();
   $("advisor-name").value = DEFAULT_ADVISOR.name;
   $("advisor-firm").value = DEFAULT_ADVISOR.firm;
@@ -2509,21 +2347,18 @@ function syncIncomeYears(target) {
   }
   if (target.id === "disability-ratio-slider") $("disability-ratio").value = target.value;
   if (target.id === "disability-ratio") {
-    const capped = Math.min(70, Math.max(0, readMoney(target.value)));
-    $("disability-ratio").value = String(capped);
+    const capped = Math.min(DISABILITY_CAP_PERCENT, Math.max(0, readMoney(target.value)));
+    if (readMoney(target.value) > DISABILITY_CAP_PERCENT) target.value = String(capped);
     $("disability-ratio-slider").value = String(capped);
   }
 }
 
 function syncReturn(target) {
   if (!target) return;
-  if (target.id === "real-return-slider") $("real-return").value = target.value;
-  if (target.id === "real-return") $("real-return-slider").value = String(Math.min(14, Math.max(0, readMoney(target.value))));
-  if (target.id === "retirement-return-slider") $("retirement-return").value = target.value;
-  if (target.id === "retirement-return") $("retirement-return-slider").value = String(Math.min(8, Math.max(0, readMoney(target.value))));
-  if (target.id === "other-return-slider") $("other-return").value = target.value;
-  if (target.id === "other-return") $("other-return-slider").value = String(Math.min(14, Math.max(0, readMoney(target.value))));
   const pairs = [
+    ["real-return-slider", "real-return", 14],
+    ["retirement-return-slider", "retirement-return", 8],
+    ["other-return-slider", "other-return", 14],
     ["desired-income-slider", "desired-income", 300000],
     ["tfsa-contribution-slider", "tfsa-contribution", 10000],
     ["rrsp-contribution-slider", "rrsp-contribution", 10000],
@@ -2684,14 +2519,14 @@ async function applyPrefillFromUrl() {
   }
 
   if (params.has("disability-ratio")) {
-    const capped = Math.min(70, Math.max(0, readMoney($("disability-ratio").value)));
+    const capped = Math.min(DISABILITY_CAP_PERCENT, Math.max(0, readMoney($("disability-ratio").value)));
     $("disability-ratio").value = String(capped);
     $("disability-ratio-slider").value = String(capped);
   }
 
   if (params.has("planning-mode")) {
     const mode = params.get("planning-mode");
-    const radio = document.querySelector(`input[name="planning-mode"][value="${mode}"]`);
+    const radio = [...document.querySelectorAll('input[name="planning-mode"]')].find((input) => input.value === mode);
     if (radio) radio.checked = true;
   } else {
     const both = document.querySelector('input[name="planning-mode"][value="both"]');
@@ -2714,21 +2549,9 @@ async function applyPrefillFromUrl() {
     setReturnsFromProfile(profile, { saving: !params.has("real-return"), retirement: !params.has("retirement-return") });
   }
 
-  if (params.has("real-return")) {
-    $("real-return-slider").value = String(Math.min(14, Math.max(0, readMoney($("real-return").value))));
-  }
-  if (params.has("retirement-return")) {
-    $("retirement-return-slider").value = String(Math.min(8, Math.max(0, readMoney($("retirement-return").value))));
-  }
-  if (params.has("tfsa-contribution")) {
-    $("tfsa-contribution-slider").value = String(Math.min(10000, Math.max(0, readMoney($("tfsa-contribution").value))));
-  }
-  if (params.has("rrsp-contribution")) {
-    $("rrsp-contribution-slider").value = String(Math.min(10000, Math.max(0, readMoney($("rrsp-contribution").value))));
-  }
-  if (params.has("nonreg-contribution")) {
-    $("nonreg-contribution-slider").value = String(Math.min(10000, Math.max(0, readMoney($("nonreg-contribution").value))));
-  }
+  ["real-return", "retirement-return", "tfsa-contribution", "rrsp-contribution", "nonreg-contribution"]
+    .filter((id) => params.has(id))
+    .forEach((id) => syncReturn($(id)));
 
   return true;
 }
@@ -2740,9 +2563,7 @@ function printPlan() {
   closeTip();
   const title = document.title;
   const names = hasPartner() ? `${personName()}-${partnerName()}` : personName();
-  const now = new Date();
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-  const fileName = [$("meeting-date").value || today, "Financial-Plan", names]
+  const fileName = [$("meeting-date").value || todayISO(), "Financial-Plan", names]
     .filter(Boolean)
     .join("-")
     .replace(/[^\w-]+/g, "-")
@@ -2778,9 +2599,6 @@ async function init() {
     markDirty(event.target);
     render();
   });
-  $("worksheet").addEventListener("change", (event) => {
-    if (event.target.type === "checkbox" || event.target.type === "radio" || event.target.tagName === "SELECT") render();
-  });
   $("worksheet").addEventListener("submit", (event) => event.preventDefault());
 
   $("use-max-cpp").addEventListener("click", () => {
@@ -2807,8 +2625,7 @@ async function init() {
   $("print-plan").addEventListener("click", printPlan);
   $("print-plan-quick").addEventListener("click", printPlan);
   $("new-case").addEventListener("click", () => {
-    const named = $("client-name").value.trim() || $("personal-income").value.trim();
-    if (named && !confirm("Clear every entry on this plan? Closing the tab discards them too, and clearing cannot be undone.")) return;
+    if (planHasEntries() && !confirm("Clear every entry on this plan? Closing the tab discards them too, and clearing cannot be undone.")) return;
     resetSession();
     visitedSteps.clear();
     activeStep = "a";

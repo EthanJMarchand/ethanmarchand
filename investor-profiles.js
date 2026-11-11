@@ -86,5 +86,4 @@
 
   const api = { PROFILES, profileByKey, profileForReturn, describe };
   root.MarchandInvestorProfiles = api;
-  if (typeof module === "object" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

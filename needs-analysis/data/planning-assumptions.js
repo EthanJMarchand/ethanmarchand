@@ -5,6 +5,7 @@
 // realReturnInRetirement is the default estimated rate of return in retirement.
 // Neither rate is reduced by inflation.
 // Life insurance income replacement is income times the percent times the years. It is not discounted.
+// mortgageRate shapes how fast a mortgage balance falls on the need chart (a level-payment loan).
 
 export const planningAssumptions = {
   survivorIncomeReplacement: 0.7,
@@ -16,4 +17,5 @@ export const planningAssumptions = {
   realReturnInRetirement: 0.03,
   childLifeInsuranceNeed: 25000,
   childCriticalIllnessNeed: 25000,
+  mortgageRate: 0.05,
 };

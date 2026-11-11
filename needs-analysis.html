@@ -386,7 +386,7 @@
           </div>
           <div class="plan-step mt-5" data-step="d2" data-step-title="Life insurance chart">
             <h3 class="font-serif font-semibold text-xl text-navydeep">Life insurance gap over time<button type="button" class="plan-tip" data-tip="note-need-chart" aria-label="How to read the life insurance charts"></button></h3>
-            <p id="note-need-chart" class="plan-note">Each chart runs from today to the likely age at death. The solid line is the life insurance gap. Income replacement stays at the years chosen until retirement is that close, then it steps down, and those dollars rise with inflation. The gold dashed line is the mortgage, paid down in a straight line. The olive dashed line is education for each child still under the independence age; it steps off when that child reaches the age. The dotted line is tax at death on the balances that remain in that year of the retirement plan — the same figure as Table F3. Final expenses and probate rise with inflation and stay in the solid line. Amounts are on the left. Age is along the bottom.</p>
+            <p id="note-need-chart" class="plan-note">Each chart runs from today to the likely age at death. The solid line is the life insurance gap. Income replacement stays at the years chosen until retirement is that close, then it steps down, and those dollars rise with inflation. The gold dashed line is the mortgage, paid down with level payments at a 5% rate, so it falls slowly at first. The olive dashed line is education for each child still under the independence age; it steps off when that child reaches the age. The dotted line is tax at death on the balances that remain in that year of the retirement plan — the same figure as Table F3. Final expenses and probate rise with inflation and stay in the solid line. Amounts are on the left. Age is along the bottom.</p>
             <p class="plan-callout mt-3 border-l-2 border-gold bg-paperdim px-4 py-3 text-sm leading-6 text-ink">
               <span class="font-semibold text-navydeep">Important.</span>
               Term life insurance can only run to age 85. After that, any term coverage you did not convert to whole life expires with no value. That can leave a life insurance need beyond age 85 that this chart does not illustrate.
@@ -586,6 +586,10 @@
             <label class="block text-sm font-medium">Non-registered balance
               <input id="nonreg-balance" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
             </label>
+            <label class="block text-sm font-medium">Non-registered cost base, if known
+              <input id="nonreg-acb" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+              <span class="plan-note">What was paid in. Left blank, the whole balance is counted as gain.</span>
+            </label>
             <label class="block text-sm font-medium sm:col-span-2">Other assets<button type="button" class="plan-tip" data-tip="note-other-assets" aria-label="What counts as other assets"></button>
               <input id="other-assets" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
               <span id="note-other-assets" class="plan-note">Real estate or anything outside the TFSA, RRSP, and non-registered accounts. Only the growth is taxed when it is spent.</span>
@@ -609,6 +613,9 @@
             </label>
             <label class="partner-only hidden block text-sm font-medium"><span id="partner-nonreg-label">Person 2's non-registered balance</span>
               <input id="partner-nonreg-balance" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
+            </label>
+            <label class="partner-only hidden block text-sm font-medium"><span id="partner-nonreg-acb-label">Person 2's non-registered cost base, if known</span>
+              <input id="partner-nonreg-acb" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
             </label>
             <label class="partner-only hidden block text-sm font-medium sm:col-span-2"><span id="partner-other-label">Person 2's other assets</span><button type="button" class="plan-tip" data-tip="note-partner-other-assets" aria-label="What counts as other assets"></button>
               <input id="partner-other-assets" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
@@ -676,7 +683,6 @@
               <div id="note-rrsp-contribution" class="plan-note">
                 <p>The most you would contribute. Combined room for both people is the limit.</p>
                 <p id="rrsp-rollover-note" class="mt-1"></p>
-                <p id="rrsp-rollover-tip" class="mt-1 hidden"></p>
               </div>
             </div>
             <div class="sm:col-span-2">
@@ -724,7 +730,7 @@
             </label>
             <label class="block text-sm font-medium">Value expected to go through the estate<button type="button" class="plan-tip" data-tip="note-estate-value" aria-label="What to include in the estate value"></button>
               <input id="estate-value" inputmode="decimal" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" autocomplete="off" />
-              <span id="note-estate-value" class="plan-note">Other than the non-registered balance already entered. The cost base is counted as zero.</span>
+              <span id="note-estate-value" class="plan-note">Other than the non-registered balance already entered. The cost base of this property is counted as zero.</span>
             </label>
           </div>
           <label id="qc-verification-wrap" class="mt-4 hidden flex gap-2 text-sm font-medium">
@@ -746,8 +752,15 @@
             <label class="block text-sm font-medium">Dependant independence age
               <input id="independence-age" inputmode="numeric" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm" />
             </label>
-            <label class="block text-sm font-medium">Figure used for life expectancy
+            <label class="block text-sm font-medium"><span id="client-sex-label">Life expectancy figure for Person 1</span>
               <select id="client-sex" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm">
+                <option value="both">Canadian average</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+              </select>
+            </label>
+            <label class="partner-only hidden block text-sm font-medium"><span id="partner-sex-label">Life expectancy figure for Person 2</span>
+              <select id="partner-sex" class="mt-1 w-full rounded-sm border border-line bg-paperdim px-3.5 py-2.5 text-sm">
                 <option value="both">Canadian average</option>
                 <option value="female">Female</option>
                 <option value="male">Male</option>
@@ -882,7 +895,7 @@
       </div>
     </div>
     <div class="flex flex-wrap justify-between gap-2.5 pt-5 text-[12.5px] text-cream/40">
-      <span>&copy; <span id="year"></span> Ethan Marchand · Advisor Strategies Inc.</span>
+      <span>&copy; <span class="js-year"></span> Ethan Marchand · Advisor Strategies Inc.</span>
       <span>Planning tools. Not an application for insurance.</span>
     </div>
   </div>

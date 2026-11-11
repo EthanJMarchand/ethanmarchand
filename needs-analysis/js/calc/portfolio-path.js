@@ -53,12 +53,19 @@ function inclusionFor(taken, balance, acb, kind) {
   return taken * (gain / balance) * CAPITAL_GAINS_INCLUSION;
 }
 
-// payers share each withdrawal evenly; each payer is { base, pension, age } in nominal dollars.
+// Each payer is { base, pension, age, rrspWeight } in nominal dollars. Other and
+// non-registered withdrawals are shared evenly. RRSP withdrawals follow rrspWeight
+// (see rrspWeights); payers without one share evenly.
+function payerWeight(kind, payer, payers) {
+  if (kind === "rrsp" && Number.isFinite(payer.rrspWeight)) return payer.rrspWeight;
+  return 1 / payers.length;
+}
+
 function takeTaxable({ balance, acb, kind, need, payers, factor, province }) {
   if (need <= 0 || balance <= 0) return { taken: 0, tax: 0, net: 0, balance, acb, payers };
-  const share = (taken) => inclusionFor(taken, balance, acb, kind) / payers.length;
+  const share = (taken, payer) => inclusionFor(taken, balance, acb, kind) * payerWeight(kind, payer, payers);
   const taxOn = (taken) => payers.reduce(
-    (sum, payer) => sum + taxNominal(payer.base, share(taken), factor, province, payer, pensionEligible(kind, payer)),
+    (sum, payer) => sum + taxNominal(payer.base, share(taken, payer), factor, province, payer, pensionEligible(kind, payer)),
     0,
   );
   const netOf = (taken) => taken - taxOn(taken);
@@ -83,8 +90,8 @@ function takeTaxable({ balance, acb, kind, need, payers, factor, province }) {
     acb: acbLeft,
     payers: payers.map((payer) => ({
       ...payer,
-      base: payer.base + share(taken),
-      pension: payer.pension + (pensionEligible(kind, payer) ? share(taken) : 0),
+      base: payer.base + share(taken, payer),
+      pension: payer.pension + (pensionEligible(kind, payer) ? share(taken, payer) : 0),
     })),
   };
 }
@@ -177,6 +184,20 @@ export function withdrawProRataTaxable({
   };
 }
 
+// RRSP/RRIF income is taxed to the person who owns it. From 65, pension income
+// splitting lets that person move up to half of it to a spouse, so the split
+// moves toward even only when the larger owner is 65 or older.
+// clientShare is Person 1's share of the household RRSP. Returns [client, spouse].
+export function rrspWeights(clientShare, clientAge, spouseAge) {
+  const own = Math.min(1, Math.max(0, Number.isFinite(clientShare) ? clientShare : 0.5));
+  if (own > 0.5 && clientAge >= 65) return [Math.max(0.5, own / 2), 1 - Math.max(0.5, own / 2)];
+  if (own < 0.5 && spouseAge >= 65) {
+    const spouse = Math.max(0.5, (1 - own) / 2);
+    return [1 - spouse, spouse];
+  }
+  return [own, 1 - own];
+}
+
 const clampAge = (age, low, high) => Math.min(high, Math.max(low, Math.floor(age)));
 
 // CPP drops 0.6% a month before 65 and rises 0.7% a month after, to age 70.
@@ -239,6 +260,7 @@ export function projectPortfolio({
   tfsaOpening = 0,
   rrspOpening = 0,
   nonRegOpening = 0,
+  nonRegAcbOpening = 0,
   otherOpening = 0,
   tfsaRoomNow = 0,
   rrspRoomNow = 0,
@@ -252,6 +274,7 @@ export function projectPortfolio({
   partnerAge = null,
   oasRecoveryThreshold = 0,
   oasRecoveryRate = 0,
+  clientRrspShare = 0.5,
   workingIncomeToday = 0,
   rollover = false,
   startYear = 2026,
@@ -266,7 +289,7 @@ export function projectPortfolio({
   let tfsa = Math.max(0, tfsaOpening);
   let rrsp = Math.max(0, rrspOpening);
   let nonReg = Math.max(0, nonRegOpening);
-  let nonRegAcb = 0;
+  let nonRegAcb = Math.min(nonReg, Math.max(0, nonRegAcbOpening));
   let other = Math.max(0, otherOpening);
   let otherAcb = other;
   const rows = [];
@@ -325,8 +348,10 @@ export function projectPortfolio({
 
     // Taxable withdrawals count toward each person's OAS recovery screen, and the
     // recovery changes how much must be withdrawn, so settle the two together.
-    // A couple's withdrawals are split evenly between their returns.
+    // A couple's withdrawals are split between their returns (see rrspWeights).
+    const [clientRrspWeight, spouseRrspWeight] = rrspWeights(clientRrspShare, age, spouseAge);
     let extraToday = 0;
+    let spouseExtraToday = 0;
     let clientOas = 0;
     let spouseOas = 0;
     let clientPension = 0;
@@ -341,15 +366,19 @@ export function projectPortfolio({
         oasRecoveryRate,
       );
       spouseOas = couple
-        ? oasAfterRecovery(benefits.spouseOas, benefits.spouseCpp + benefits.spouseOas + extraToday, oasRecoveryThreshold, oasRecoveryRate)
+        ? oasAfterRecovery(benefits.spouseOas, benefits.spouseCpp + benefits.spouseOas + spouseExtraToday, oasRecoveryThreshold, oasRecoveryRate)
         : 0;
       clientPension = (benefits.clientCpp + clientOas) * factor;
       spousePension = (benefits.spouseCpp + spouseOas) * factor;
       const clientTax = incomeTaxNominal(clientPension, factor, province, age);
       const spouseTax = incomeTaxNominal(spousePension, factor, province, spouseAge);
       pensionNet = clientPension - clientTax + spousePension - spouseTax;
-      const payers = [{ base: clientPension, pension: 0, age }];
-      if (couple) payers.push({ base: spousePension, pension: 0, age: spouseAge });
+      const payers = couple
+        ? [
+          { base: clientPension, pension: 0, age, rrspWeight: clientRrspWeight },
+          { base: spousePension, pension: 0, age: spouseAge, rrspWeight: spouseRrspWeight },
+        ]
+        : [{ base: clientPension, pension: 0, age }];
       taxable = withdrawProRataTaxable({
         other,
         otherAcb,
@@ -362,8 +391,10 @@ export function projectPortfolio({
         province,
       });
       const nextExtra = (taxable.payers[0].base - clientPension) / factor;
-      if (Math.abs(nextExtra - extraToday) < 1) break;
+      const nextSpouseExtra = couple ? (taxable.payers[1].base - spousePension) / factor : 0;
+      if (Math.abs(nextExtra - extraToday) < 1 && Math.abs(nextSpouseExtra - spouseExtraToday) < 1) break;
       extraToday = nextExtra;
+      spouseExtraToday = nextSpouseExtra;
     }
     const afterTaxIncome = Math.max(0, pensionNet);
     const pensionNominal = clientPension + spousePension;

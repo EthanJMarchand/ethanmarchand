@@ -49,7 +49,7 @@ There is no database and nothing is written to the browser for a plan.
 - **Advanced case.** Text answers are compressed into `?case=`. Opening that link refills the intake and allows the PDF. Documents are not collected on the form. The last step asks the client to email them.
 - **PDF and print.** The questionnaire and advanced case PDFs are drawn with jsPDF from `/assets/logo.png` (the dark wordmark, so it prints on white). The plan prints to `YYYY-MM-DD-Financial-Plan-<names>`. Footers read Advisor Strategies.
 - **Forms.** `client-intake`, `investor-questionnaire`, `tfsa-consultation`, and `advanced-case` post `application/x-www-form-urlencoded` to the current page, the way Netlify Forms expects. Each has `data-netlify="true"` and a honeypot. Fields built in JavaScript are also listed on a hidden form, or Netlify drops them.
-Submissions do nothing useful until the site is on Netlify, with form notifications turned on for `advanced-case`. If a submit fails before that, the page keeps the reopen link and points at `ethan@marchandwealth.ca`. Change that address in `script.js`, `client-intake.js`, `investor-questionnaire.js`, and `advanced-case.js` when the Advisor Strategies mailbox should receive it instead.
+Submissions do nothing useful until the site is on Netlify, with form notifications turned on for `advanced-case`. If a submit fails before that, the page keeps the reopen link and points at `ethan@marchandwealth.ca`. Change `CONTACT_EMAIL` in [`assets/js/shared.js`](assets/js/shared.js) when the Advisor Strategies mailbox should receive it instead. The `<noscript>` notes in `advanced-case.html` and `investor-questionnaire.html` name it too, since they show without JavaScript.
 
 The old Marchand Wealth analytics tag is not on these pages. If a new tag is added, strip the query string from the page address before it is sent. That string is the client's plan.
 
@@ -57,14 +57,14 @@ The old Marchand Wealth analytics tag is not on these pages. If a new tag is add
 
 ## Figures to update once a year
 
-**TFSA calculator:** add one line to [`tfsa-limits.js`](tfsa-limits.js). Years you have not added yet are projected from the recent average increase, rounded to $500.
+**TFSA calculator:** it reads the same table as the financial plan, `needs-analysis/data/tfsa-contribution-limit.js` (below). One new line there updates both. Years you have not added yet are projected from the recent average increase, rounded to $500.
 
 **Financial plan:** add a year by copying the newest block. Do not change older years.
 
 | File | What to add |
 |---|---|
 | `needs-analysis/data/inflation-canada.js` | The new annual CPI percent |
-| `needs-analysis/data/tfsa-contribution-limit.js` | The new TFSA dollar limit, and `taxYear` |
+| `needs-analysis/data/tfsa-contribution-limit.js` | The new TFSA dollar limit, and `taxYear`. The TFSA calculator uses this table too |
 | `needs-analysis/data/rrsp-limits.js` | The new RRSP dollar limit |
 | `needs-analysis/data/cpp-amounts.js` | Maximum monthly CPP at 65, YMPE, and YAMPE |
 | `needs-analysis/data/oas-amounts.js` | OAS maximums and the recovery-tax threshold |

@@ -1,9 +1,7 @@
-/* Same packing the advanced case uses for ?case=: deflate, then base64url.
+/* One packing for ?case=, ?plan=, ?iq=, and ?in=: deflate, then base64url.
    Anyone with the link can still open it. The address bar is not a list of answers. */
 (function (root, factory) {
-  const api = factory();
-  if (typeof module === "object" && module.exports) module.exports = api;
-  root.MarchandLink = api;
+  root.MarchandLink = factory();
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
@@ -48,6 +46,7 @@
     const bytes = b64urlToBytes(String(payload || "").slice(1));
     let jsonBytes = bytes;
     if (kind === "z") {
+      if (typeof DecompressionStream !== "function") throw new Error("This browser cannot open compressed links");
       const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
       jsonBytes = new Uint8Array(await new Response(stream).arrayBuffer());
     }

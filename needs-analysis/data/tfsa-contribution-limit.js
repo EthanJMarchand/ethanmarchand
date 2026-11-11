@@ -1,6 +1,7 @@
 // TFSA dollar limits from the year the account was introduced.
 // Add a new year here when CRA announces it. Room for a person is the sum of
 // every year from the later of 2009 and the year they turn 18, through taxYear.
+// The TFSA calculator (tfsa-calculator.html) reads tfsaAnnualLimits from here too.
 // Source: https://www.canada.ca/en/revenue-agency/services/tax/registered-plans-administrators/pspa/mp-rrsp-dpsp-tfsa-limits-ympe.html
 
 export const tfsaAnnualLimits = {

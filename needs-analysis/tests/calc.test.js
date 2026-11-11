@@ -11,13 +11,12 @@ import { deflate, inflate, purchasingPowerPath, roundPercent, trailingAverage } 
 import { groupLimitYears, tfsaRoomEarned } from "../js/calc/tfsa-room.js";
 import { deathTaxAtYear } from "../js/calc/death-tax.js";
 import { calculateLifeNeed, endOfLifeFloor } from "../js/calc/life-need.js";
-import { annuityPayment, presentValue, presentValueOfAnnuity, readMoney, savingsForFutureValue } from "../js/calc/money.js";
-import { incomeReplacementYears, incomeYearsAtAge, projectLifeNeed } from "../js/calc/need-path.js";
+import { readMoney } from "../js/calc/money.js";
+import { incomeReplacementYears, incomeYearsAtAge, mortgageRemaining, projectLifeNeed } from "../js/calc/need-path.js";
 import { cppCareerShare, estimateCpp, estimateOas } from "../js/calc/pensions.js";
 import { calculateProbate } from "../js/calc/probate.js";
 import { criticalIllnessLumpSum, disabilityMonthlyBenefit } from "../js/calc/protection.js";
-import { calculateRetirement } from "../js/calc/retirement.js";
-import { depositsOverYears, describeDeposits, projectPortfolio, withdrawProRataTaxable } from "../js/calc/portfolio-path.js";
+import { depositsOverYears, describeDeposits, projectPortfolio, rrspWeights, withdrawProRataTaxable } from "../js/calc/portfolio-path.js";
 import { taxOnIncome, taxOnInclusion } from "../js/calc/tax.js";
 
 let failed = 0;
@@ -71,10 +70,6 @@ test("reads money typed with dollars and commas", () => {
   assert.equal(readMoney("$95,000"), 95000);
   assert.equal(readMoney(""), 0);
   assert.equal(readMoney("nope"), 0);
-});
-
-test("present value is payment times years when the rate is zero", () => {
-  assert.equal(presentValueOfAnnuity(1000, 0, 10), 10000);
 });
 
 test("income replacement is income times the percent times the years", () => {
@@ -155,6 +150,16 @@ test("existing coverage can reduce the life insurance gap to zero, including fin
   assert.equal(covered.capitalNeed, 0);
   assert.equal(covered.surplus, 200000 - 15750);
   assert.equal(endOfLifeFloor(15000, 750, 3, 10), inflate(15000, 3, 10) + inflate(750, 3, 10));
+});
+
+test("future death tax uses today's brackets on today's-dollar amounts, then scales back up", () => {
+  // Growth equal to inflation leaves every amount the same in today's dollars,
+  // so the tax should only grow with inflation, not climb into higher brackets.
+  const shared = { income: 95000, rrsp: 80000, nonReg: 100000, estate: 200000, province: "AB", savingsReturn: 0.03, inflationPercent: 3 };
+  const today = deathTaxAtYear({ ...shared, years: 0 });
+  const later = deathTaxAtYear({ ...shared, years: 30 });
+  const factor = inflate(1, 3, 30);
+  assert.ok(Math.abs(later.total / factor - today.total) < 1, `${later.total / factor} vs ${today.total}`);
 });
 
 test("tax on a non-registered account, the estate, and an RRSP stays in the life insurance need and grows", () => {
@@ -269,210 +274,6 @@ test("education stays on the need path until each child reaches the independence
   assert.equal(path[14].age, 56);
   assert.equal(path[14].educationCount, 0);
   assert.equal(path[14].educationCapital, 0);
-});
-
-test("retirement savings fund only the gap after pensions, in today's dollars", () => {
-  const result = calculateRetirement({
-    years: 23,
-    desiredRetirementIncome: 98000,
-    cppAnnual: 0,
-    oasAnnual: 0,
-    partnerCppAnnual: 0,
-    partnerOasAnnual: 0,
-    retirementAssets: 120000,
-    savingsReturn: assumptions.realReturnBeforeRetirement,
-    retirementReturn: assumptions.realReturnInRetirement,
-    retirementYears: 17,
-    recoveryThreshold: oasAmounts.recoveryThreshold,
-    recoveryTaxRate: oasAmounts.recoveryTaxRate,
-    tfsaHolders: 2,
-    tfsaAnnualDollarLimit: tfsaContributionLimit.annualDollarLimit,
-    unusedTfsaRoom: 0,
-    rrspRoomThisYear: 0,
-    partnerRrspRoomThisYear: 0,
-    personalEarnedIncome: 95000,
-    partnerEarnedIncome: 45000,
-    hasPartner: true,
-    rrspEarnedIncomePercent: rrspLimits.earnedIncomePercent,
-    rrspNextYearDollarLimit: rrspLimits.nextYearDollarLimit,
-  });
-
-  const capitalNeeded = presentValueOfAnnuity(98000, 0.03, 17);
-  const shortfall = capitalNeeded - 120000 * 1.03 ** 23;
-  assert.equal(result.annualGap, 98000);
-  assert.equal(result.capitalNeeded, capitalNeeded);
-  assert.equal(result.capitalShortfall, shortfall);
-  assert.equal(result.annualSavings, savingsForFutureValue(shortfall, 0.03, 23));
-});
-
-test("estimated returns compound as entered and are not reduced by inflation", () => {
-  const result = calculateRetirement({
-    years: 10,
-    desiredRetirementIncome: 10000,
-    cppAnnual: 0,
-    oasAnnual: 0,
-    partnerCppAnnual: 0,
-    partnerOasAnnual: 0,
-    retirementAssets: 100000,
-    savingsReturn: 0.05,
-    retirementReturn: 0.05,
-    retirementYears: 20,
-    recoveryThreshold: 0,
-    recoveryTaxRate: 0,
-    tfsaHolders: 1,
-    tfsaAnnualDollarLimit: 7000,
-    unusedTfsaRoom: 0,
-    rrspRoomThisYear: 0,
-    partnerRrspRoomThisYear: 0,
-    personalEarnedIncome: 0,
-    partnerEarnedIncome: 0,
-    hasPartner: false,
-    rrspEarnedIncomePercent: 0.18,
-    rrspNextYearDollarLimit: 33810,
-  });
-  assert.equal(result.assetsAtRetirement, 100000 * 1.05 ** 10);
-  assert.equal(result.capitalNeeded, presentValueOfAnnuity(10000, 0.05, 20));
-  assert.equal(result.incomeFromAssets, annuityPayment(100000 * 1.05 ** 10, 0.05, 20));
-  assert.equal(result.legacyAtDeath, 0);
-});
-
-test("a legacy is still there at death, and no legacy means the plan ends at zero", () => {
-  const shared = {
-    years: 20,
-    cppAnnual: 0,
-    oasAnnual: 0,
-    partnerCppAnnual: 0,
-    partnerOasAnnual: 0,
-    retirementAssets: 0,
-    savingsReturn: 0.05,
-    retirementReturn: 0.05,
-    retirementYears: 20,
-    recoveryThreshold: 0,
-    recoveryTaxRate: 0,
-    tfsaHolders: 1,
-    tfsaAnnualDollarLimit: 7000,
-    unusedTfsaRoom: 0,
-    rrspRoomThisYear: 0,
-    partnerRrspRoomThisYear: 0,
-    personalEarnedIncome: 0,
-    partnerEarnedIncome: 0,
-    hasPartner: false,
-    rrspEarnedIncomePercent: 0.18,
-    rrspNextYearDollarLimit: 33810,
-  };
-  const none = calculateRetirement({ ...shared, desiredRetirementIncome: 10000 });
-  assert.equal(none.capitalNeeded, presentValueOfAnnuity(10000, 0.05, 20));
-  assert.equal(none.legacyAtRetirement, 0);
-  const legacy = 100000;
-  const reserved = presentValue(legacy, 0.05, 20);
-  const withLegacy = calculateRetirement({ ...shared, desiredRetirementIncome: 10000, legacyAtDeath: legacy });
-  assert.equal(withLegacy.legacyAtRetirement, reserved);
-  assert.equal(withLegacy.capitalNeeded, presentValueOfAnnuity(10000, 0.05, 20) + reserved);
-  assert.equal(withLegacy.annualSavings, savingsForFutureValue(withLegacy.capitalNeeded, 0.05, 20));
-  const covered = calculateRetirement({
-    ...shared,
-    desiredRetirementIncome: 10000,
-    legacyAtDeath: legacy,
-    retirementAssets: withLegacy.capitalNeeded,
-    years: 0,
-  });
-  assert.equal(covered.capitalShortfall, 0);
-  assert.equal(covered.incomeFromAssets, 10000);
-});
-
-test("OAS repayment is 15% of income above the threshold, capped at OAS", () => {
-  const oas = oasAmounts.maxMonthlyAge65to74 * 12;
-  const cpp = cppAmounts.maxMonthlyRetirementAt65 * 12;
-  const result = calculateRetirement({
-    years: 10,
-    desiredRetirementIncome: 120000,
-    cppAnnual: cpp,
-    oasAnnual: oas,
-    partnerCppAnnual: 0,
-    partnerOasAnnual: 0,
-    retirementAssets: 0,
-    savingsReturn: 0.03,
-    retirementReturn: 0.03,
-    retirementYears: 20,
-    recoveryThreshold: 20000,
-    recoveryTaxRate: 0.15,
-    tfsaHolders: 1,
-    tfsaAnnualDollarLimit: 7000,
-    unusedTfsaRoom: 0,
-    rrspRoomThisYear: 0,
-    partnerRrspRoomThisYear: 0,
-    personalEarnedIncome: 0,
-    partnerEarnedIncome: 0,
-    hasPartner: false,
-    rrspEarnedIncomePercent: 0.18,
-    rrspNextYearDollarLimit: 35390,
-  });
-
-  const excess = cpp + oas - 20000;
-  assert.equal(result.oasRepayment, Math.min(oas, 0.15 * excess));
-  assert.ok(result.oasRepayment < oas);
-});
-
-test("a large income goal does not claw back OAS when the taxable income is only CPP and OAS", () => {
-  const oas = oasAmounts.maxMonthlyAge65to74 * 12;
-  const cpp = cppAmounts.maxMonthlyRetirementAt65 * 12;
-  const result = calculateRetirement({
-    years: 10,
-    desiredRetirementIncome: 200000,
-    cppAnnual: cpp,
-    oasAnnual: oas,
-    partnerCppAnnual: 0,
-    partnerOasAnnual: 0,
-    retirementAssets: 0,
-    savingsReturn: 0.03,
-    retirementReturn: 0.03,
-    retirementYears: 20,
-    recoveryThreshold: 95323,
-    recoveryTaxRate: 0.15,
-    tfsaHolders: 1,
-    tfsaAnnualDollarLimit: 7000,
-    unusedTfsaRoom: 0,
-    rrspRoomThisYear: 0,
-    partnerRrspRoomThisYear: 0,
-    personalEarnedIncome: 0,
-    partnerEarnedIncome: 0,
-    hasPartner: false,
-    rrspEarnedIncomePercent: 0.18,
-    rrspNextYearDollarLimit: 35390,
-  });
-  assert.equal(result.oasRepayment, 0);
-  assert.ok(cpp + oas < 95323);
-});
-
-test("already retired means the shortfall is a lump sum, not an annual savings plan", () => {
-  const result = calculateRetirement({
-    years: 0,
-    desiredRetirementIncome: 40000,
-    cppAnnual: 0,
-    oasAnnual: 0,
-    partnerCppAnnual: 0,
-    partnerOasAnnual: 0,
-    retirementAssets: 100000,
-    savingsReturn: 0.03,
-    retirementReturn: 0.03,
-    retirementYears: 25,
-    recoveryThreshold: 95323,
-    recoveryTaxRate: 0.15,
-    tfsaHolders: 1,
-    tfsaAnnualDollarLimit: 7000,
-    unusedTfsaRoom: 12000,
-    rrspRoomThisYear: 5000,
-    partnerRrspRoomThisYear: 9000,
-    personalEarnedIncome: 200000,
-    partnerEarnedIncome: 80000,
-    hasPartner: false,
-    rrspEarnedIncomePercent: 0.18,
-    rrspNextYearDollarLimit: 35390,
-  });
-
-  const capitalNeeded = presentValueOfAnnuity(40000, 0.03, 25);
-  assert.equal(result.capitalNeeded, capitalNeeded);
-  assert.equal(result.annualSavings, capitalNeeded - 100000);
 });
 
 test("inflation starts from the latest 100 yearly rates in the file", () => {
@@ -1216,6 +1017,53 @@ test("Table F3 year 0 keeps today's opening balances before any return is applie
   assert.equal(path.rows[0].other, 80000);
   assert.ok(Math.abs(path.rows[1].tfsa - 40000 * 1.05) < 0.01);
   assert.ok(Math.abs(path.rows[1].other - 80000 * 1.03) < 0.01);
+});
+
+test("a mortgage with interest pays down slowly at first, and a zero rate is a straight line", () => {
+  // $200,000 over 25 yearly payments at 5%: about $147,000 is left after 10 years, not $120,000.
+  assert.equal(Math.round(mortgageRemaining(200000, 25, 10, 0.05)), 147292);
+  assert.equal(mortgageRemaining(200000, 25, 0, 0.05), 200000);
+  assert.equal(mortgageRemaining(200000, 25, 25, 0.05), 0);
+  assert.equal(mortgageRemaining(200000, 20, 10, 0), 100000);
+});
+
+test("RRSP income follows ownership until the larger owner is 65, then can be split evenly", () => {
+  const close = ([a, b], [x, y]) => assert.ok(Math.abs(a - x) < 1e-9 && Math.abs(b - y) < 1e-9, `${a},${b} vs ${x},${y}`);
+  close(rrspWeights(0.8, 60, 60), [0.8, 0.2]);
+  close(rrspWeights(0.8, 65, 60), [0.5, 0.5]);
+  close(rrspWeights(0.2, 65, 60), [0.2, 0.8]);
+  close(rrspWeights(0.2, 60, 65), [0.5, 0.5]);
+  close(rrspWeights(undefined, 50, 50), [0.5, 0.5]);
+});
+
+test("a couple retiring before 65 pays more tax when one spouse owns the RRSP", () => {
+  const shared = {
+    currentAge: 60,
+    retirementAge: 60,
+    years: 1,
+    desiredIncomeToday: 80000,
+    rrspOpening: 1000000,
+    partnerAge: 60,
+    province: "AB",
+  };
+  const even = projectPortfolio({ ...shared, clientRrspShare: 0.5 }).rows[0];
+  const oneOwner = projectPortfolio({ ...shared, clientRrspShare: 1 }).rows[0];
+  assert.ok(oneOwner.tax > even.tax, `${oneOwner.tax} vs ${even.tax}`);
+  const at65 = projectPortfolio({ ...shared, currentAge: 65, retirementAge: 65, partnerAge: 65, clientRrspShare: 1 }).rows[0];
+  const at65Even = projectPortfolio({ ...shared, currentAge: 65, retirementAge: 65, partnerAge: 65, clientRrspShare: 0.5 }).rows[0];
+  assert.ok(Math.abs(at65.tax - at65Even.tax) < 1);
+});
+
+test("a non-registered cost base lowers the gain taxed at death and on withdrawal", () => {
+  const shared = { income: 0, nonReg: 100000, province: "AB" };
+  assert.equal(deathTaxAtYear({ ...shared }).nonRegInclusion, 50000);
+  assert.equal(deathTaxAtYear({ ...shared, nonRegAcb: 80000 }).nonRegInclusion, 10000);
+  assert.equal(deathTaxAtYear({ ...shared, nonRegAcb: 150000 }).nonRegInclusion, 0);
+  const base = { currentAge: 70, retirementAge: 65, years: 1, desiredIncomeToday: 60000, nonRegOpening: 500000, province: "AB" };
+  const allGain = projectPortfolio(base).rows[0];
+  const mostlyBasis = projectPortfolio({ ...base, nonRegAcbOpening: 450000 }).rows[0];
+  assert.ok(mostlyBasis.tax < allGain.tax);
+  assert.equal(mostlyBasis.nonRegGainAtDeath, 50000);
 });
 
 if (failed > 0) {

@@ -9,25 +9,14 @@
   ];
   const STEPS = ["consent", "life", "people", "bridge", "companies", "close"];
   const STEP_LABELS = ["Consent", "The life", "The people", "The bridge", "Companies", "The question"];
-  const INPUT = "mt-2 w-full rounded-sm border border-line bg-white/90 px-3.5 py-3 text-base shadow-sm focus:border-gold focus:outline-none";
+  const INPUT = "mt-2 w-full rounded-sm border border-line bg-white/90 px-3.5 py-3 text-base shadow-sm placeholder:text-inksoft/60 focus:border-gold focus:outline-none";
 
   const PDF = {
     navydeep: [13, 35, 42], gold: [97, 137, 134], golddim: [77, 115, 111],
     ink: [13, 35, 42], inksoft: [62, 85, 88], line: [213, 222, 220],
   };
 
-  const pdfSafe = (s) => String(s)
-    .replace(/[\u2018\u2019]/g, "'")
-    .replace(/[\u201C\u201D]/g, '"')
-    .replace(/[\u2013\u2014\u2212]/g, "-")
-    .replace(/\u2026/g, "...")
-    .replace(/\u00a0/g, " ");
-
-  function todayIso() {
-    const now = new Date();
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-  }
+  const { CONTACT_EMAIL, pdfSafe, todayIso, loadJsPdf, loadLogo } = window.MarchandShared;
 
   function formatDate(iso) {
     const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
@@ -352,7 +341,7 @@
     if (docs.length) {
       out.push({
         title: "Documents to email",
-        note: "Email these to ethan@marchandwealth.ca. One email is enough.",
+        note: `Email these to ${CONTACT_EMAIL}. One email is enough.`,
         docs,
         pairs: [],
       });
@@ -508,9 +497,9 @@
 
     function emailBlock() {
       const before = "Email these to ";
-      const address = "ethan@marchandwealth.ca";
+      const address = CONTACT_EMAIL;
       const after = ". One email is enough.";
-      const mail = "mailto:ethan@marchandwealth.ca?subject=Advanced%20planning%20documents";
+      const mail = `mailto:${CONTACT_EMAIL}?subject=Advanced%20planning%20documents`;
       return {
         h: 18,
         paint() {
@@ -601,22 +590,6 @@
     return doc;
   }
 
-  function bytesToB64url(bytes) {
-    let binary = "";
-    for (let i = 0; i < bytes.length; i += 0x8000) {
-      binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-    }
-    return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
-  }
-
-  function b64urlToBytes(value) {
-    const padded = value.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((value.length + 3) % 4);
-    const binary = atob(padded);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
-    return bytes;
-  }
-
   function compactState(source) {
     const payload = { date: source.date };
     if (source.viewers?.length) payload.viewers = source.viewers;
@@ -660,26 +633,12 @@
     return payload;
   }
 
-  async function encodeState(source) {
-    const json = JSON.stringify(compactState(source));
-    const bytes = new TextEncoder().encode(json);
-    if (typeof CompressionStream === "function") {
-      const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"));
-      const packed = new Uint8Array(await new Response(stream).arrayBuffer());
-      return `z${bytesToB64url(packed)}`;
-    }
-    return `j${bytesToB64url(bytes)}`;
+  function encodeState(source) {
+    return MarchandLink.pack(compactState(source));
   }
 
   async function decodeState(payload) {
-    const kind = payload.slice(0, 1);
-    const bytes = b64urlToBytes(payload.slice(1));
-    let jsonBytes = bytes;
-    if (kind === "z" && typeof DecompressionStream === "function") {
-      const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
-      jsonBytes = new Uint8Array(await new Response(stream).arrayBuffer());
-    }
-    const parsed = JSON.parse(new TextDecoder().decode(jsonBytes));
+    const parsed = await MarchandLink.unpack(payload);
     const next = blankModel();
     next.date = /^\d{4}-\d{2}-\d{2}$/.test(parsed.date || "") ? parsed.date : next.date;
     next.viewers = Array.isArray(parsed.viewers) ? parsed.viewers.filter((item) => typeof item === "string") : [];
@@ -770,10 +729,6 @@
     return next;
   }
 
-  if (typeof module === "object" && module.exports) {
-    module.exports = { buildPdf, summaryText, sections, blankModel, encodeState, decodeState };
-  }
-  if (typeof document === "undefined") return;
 
   const form = document.getElementById("ac-form");
   if (!form) return;
@@ -830,10 +785,11 @@
 
   function field(personOrCompany, spec, scope) {
     const value = personOrCompany[spec.key] ?? "";
+    const tip = spec.placeholder ? ` placeholder="${esc(spec.placeholder)}"` : "";
     const common = `data-key="${spec.key}" data-scope="${scope}" class="${INPUT}"`;
     let control;
     if (spec.type === "area") {
-      control = `<textarea ${common} rows="${spec.rows || 3}">${esc(value)}</textarea>`;
+      control = `<textarea ${common}${tip} rows="${spec.rows || 3}">${esc(value)}</textarea>`;
     } else if (spec.type === "province") {
       control = `<select ${common}>${selectOptions(PROVINCES, value || "AB")}</select>`;
     } else if (spec.type === "select") {
@@ -844,7 +800,7 @@
     } else {
       const mode = spec.mode ? ` inputmode="${spec.mode}"` : "";
       const date = spec.type === "date" ? ` type="date"` : "";
-      control = `<input ${common}${date}${mode} value="${esc(value)}">`;
+      control = `<input ${common}${date}${mode}${spec.type === "date" ? "" : tip} value="${esc(value)}">`;
     }
     const hint = spec.hint ? `<span class="mt-1 block text-[13px] font-normal leading-5 text-inksoft">${esc(spec.hint)}</span>` : "";
     return `<label class="block text-sm font-medium text-navydeep">${esc(spec.label)}${hint}${control}</label>`;
@@ -855,50 +811,50 @@
   const ROLE = [["client", "Client"], ["spouse", "Spouse or partner"], ["dependant", "Child or other dependant"]];
 
   const INCOME_FIELDS = [
-    { key: "salaryLast", label: "Salary last year", mode: "decimal" },
-    { key: "salaryThis", label: "Salary expected this year", mode: "decimal" },
-    { key: "nonEligLast", label: "Non-eligible dividends last year", mode: "decimal" },
-    { key: "nonEligThis", label: "Non-eligible dividends expected this year", mode: "decimal" },
-    { key: "eligLast", label: "Eligible dividends last year", hint: "Paid only after the company earns more than $500,000.", mode: "decimal" },
-    { key: "eligThis", label: "Eligible dividends expected this year", mode: "decimal" },
-    { key: "otherLast", label: "Other income last year", hint: "Pension, CPP, OAS, or a job somewhere else.", type: "area", rows: 2 },
-    { key: "otherThis", label: "Other income expected this year", type: "area", rows: 2 },
-    { key: "tfsaRoom", label: "TFSA contribution room available", mode: "decimal" },
-    { key: "tfsaBalance", label: "What is your TFSA balance?", mode: "decimal" },
-    { key: "tfsaContributed", label: "TFSA contributions this year", mode: "decimal" },
-    { key: "tfsaWithdrawn", label: "TFSA withdrawals this year", mode: "decimal" },
-    { key: "rrspRoom", label: "RRSP contribution room available", mode: "decimal" },
-    { key: "rrspNoticeYear", label: "Year of the RRSP Notice of Assessment" },
-    { key: "rrspContributed", label: "RRSP contributions already made this year", mode: "decimal" },
-    { key: "pension", label: "An old-job pension, if any", type: "area", rows: 2 },
+    { key: "salaryLast", label: "Salary last year", placeholder: "e.g. 90,000", mode: "decimal" },
+    { key: "salaryThis", label: "Salary expected this year", placeholder: "e.g. 95,000", mode: "decimal" },
+    { key: "nonEligLast", label: "Non-eligible dividends last year", placeholder: "e.g. 60,000", mode: "decimal" },
+    { key: "nonEligThis", label: "Non-eligible dividends expected this year", placeholder: "e.g. 60,000", mode: "decimal" },
+    { key: "eligLast", label: "Eligible dividends last year", placeholder: "e.g. 0", hint: "Paid only after the company earns more than $500,000.", mode: "decimal" },
+    { key: "eligThis", label: "Eligible dividends expected this year", placeholder: "e.g. 0", mode: "decimal" },
+    { key: "otherLast", label: "Other income last year", placeholder: "e.g. CPP of $9,000, and $12,000 net rent from a condo", hint: "Pension, CPP, OAS, or a job somewhere else.", type: "area", rows: 2 },
+    { key: "otherThis", label: "Other income expected this year", placeholder: "e.g. The same as last year, plus OAS starting in July", type: "area", rows: 2 },
+    { key: "tfsaRoom", label: "TFSA contribution room available", placeholder: "e.g. 25,000, from CRA My Account", mode: "decimal" },
+    { key: "tfsaBalance", label: "What is your TFSA balance?", placeholder: "e.g. 80,000", mode: "decimal" },
+    { key: "tfsaContributed", label: "TFSA contributions this year", placeholder: "e.g. 7,000", mode: "decimal" },
+    { key: "tfsaWithdrawn", label: "TFSA withdrawals this year", placeholder: "e.g. 0", mode: "decimal" },
+    { key: "rrspRoom", label: "RRSP contribution room available", placeholder: "e.g. 32,000, from your Notice of Assessment", mode: "decimal" },
+    { key: "rrspNoticeYear", label: "Year of the RRSP Notice of Assessment", placeholder: "e.g. 2025" },
+    { key: "rrspContributed", label: "RRSP contributions already made this year", placeholder: "e.g. 10,000", mode: "decimal" },
+    { key: "pension", label: "An old-job pension, if any", placeholder: "e.g. A defined benefit pension from a former employer, about $1,800 a month at 65", type: "area", rows: 2 },
   ];
   const PROPERTY_FIELDS = [
-    { key: "reNames", label: "Other personal real estate, whose name" },
-    { key: "reCost", label: "Other real estate, what they paid", mode: "decimal" },
-    { key: "reValue", label: "Other real estate, rough value", mode: "decimal" },
-    { key: "reMortgage", label: "Other real estate mortgage", mode: "decimal" },
-    { key: "reRate", label: "Other real estate rate" },
-    { key: "reRenewal", label: "Other real estate renewal" },
+    { key: "reNames", label: "Other personal real estate, whose name", placeholder: "e.g. Both of us, jointly" },
+    { key: "reCost", label: "Other real estate, what they paid", placeholder: "e.g. 350,000", mode: "decimal" },
+    { key: "reValue", label: "Other real estate, rough value", placeholder: "e.g. 520,000", mode: "decimal" },
+    { key: "reMortgage", label: "Other real estate mortgage", placeholder: "e.g. 210,000", mode: "decimal" },
+    { key: "reRate", label: "Other real estate rate", placeholder: "e.g. 4.89% fixed" },
+    { key: "reRenewal", label: "Other real estate renewal", placeholder: "e.g. March 2028" },
     { key: "reOccupied", label: "Does anyone live in it?", type: "select", options: YESNO },
-    { key: "reNotes", label: "If there is more than one property, describe the rest", type: "area", rows: 2 },
-    { key: "reRent", label: "Net rent received last year", mode: "decimal" },
-    { key: "reRentOn", label: "Whose return is that rent on" },
+    { key: "reNotes", label: "If there is more than one property, describe the rest", placeholder: "e.g. A cabin in my name, worth about $400,000, with no mortgage", type: "area", rows: 2 },
+    { key: "reRent", label: "Net rent received last year", placeholder: "e.g. 14,000", mode: "decimal" },
+    { key: "reRentOn", label: "Whose return is that rent on", placeholder: "e.g. Split evenly between us" },
   ];
   const OWNED_FIELDS = [
-    { key: "nonregValue", label: "Non-registered investments, value", mode: "decimal" },
-    { key: "nonregCost", label: "Non-registered investments, what they paid", mode: "decimal" },
-    { key: "personalDebt", label: "Personal debt that is not a mortgage", type: "area", rows: 2 },
-    { key: "insurance", label: "Personal insurance", hint: "Company, type, owner, insured, beneficiary, coverage, premium, and renewal date.", type: "area", rows: 4 },
+    { key: "nonregValue", label: "Non-registered investments, value", placeholder: "e.g. 150,000", mode: "decimal" },
+    { key: "nonregCost", label: "Non-registered investments, what they paid", placeholder: "e.g. 110,000", mode: "decimal" },
+    { key: "personalDebt", label: "Personal debt that is not a mortgage", placeholder: "e.g. Car loan, $28,000 at 6.9%, $650 a month", type: "area", rows: 2 },
+    { key: "insurance", label: "Personal insurance", placeholder: "e.g. 20-year term life, I own it and I am insured, my spouse is the beneficiary, $1,000,000, $85 a month, renews in 2031", hint: "Company, type, owner, insured, beneficiary, coverage, premium, and renewal date.", type: "area", rows: 4 },
     { key: "will", label: "Will", type: "select", options: YESNO },
     { key: "poa", label: "Power of attorney", type: "select", options: YESNO },
     { key: "directive", label: "Personal directive", type: "select", options: YESNO },
   ];
   const HOME_FIELDS = [
-    { key: "names", label: "Whose names are on title" },
-    { key: "value", label: "Rough value", mode: "decimal" },
-    { key: "mortgage", label: "Mortgage balance", mode: "decimal" },
-    { key: "rate", label: "Mortgage rate" },
-    { key: "renewal", label: "Mortgage renewal" },
+    { key: "names", label: "Whose names are on title", placeholder: "e.g. Both of us, jointly" },
+    { key: "value", label: "Rough value", placeholder: "e.g. 750,000", mode: "decimal" },
+    { key: "mortgage", label: "Mortgage balance", placeholder: "e.g. 380,000", mode: "decimal" },
+    { key: "rate", label: "Mortgage rate", placeholder: "e.g. 5.19% variable" },
+    { key: "renewal", label: "Mortgage renewal", placeholder: "e.g. June 2027" },
   ];
 
   function ask(titleHtml, body = "") {
@@ -914,23 +870,23 @@
         ${field(person, { key: "name", label: "Name" }, "person")}
         ${field(person, { key: "dob", label: "Date of birth", type: "date" }, "person")}
         ${field(person, { key: "province", label: "Province of residence", type: "province" }, "person")}
-        ${person.role === "dependant" ? field(person, { key: "relationship", label: "Relationship to the client" }, "person") : ""}
+        ${person.role === "dependant" ? field(person, { key: "relationship", label: "Relationship to the client", placeholder: "e.g. Daughter, or mother-in-law" }, "person") : ""}
         ${field(person, { key: "taxResident", label: "Canadian resident for tax", type: "select", options: YESNO }, "person")}
         ${person.role === "dependant" ? "" : `
           ${field(person, { key: "citizenship", label: "Citizenship", type: "select", options: [["", "Choose one"], ["canadian", "Canadian"], ["other", "Not Canadian"]] }, "person")}
           <div data-reveal="citizenship" class="${person.citizenship === "other" ? "" : "hidden"}">
-            ${field(person, { key: "citizenshipCountry", label: "Which country?" }, "person")}
+            ${field(person, { key: "citizenshipCountry", label: "Which country?", placeholder: "e.g. United States" }, "person")}
           </div>
         `}
         ${field(person, { key: "workStatus", label: "Working, retired, student, or at home", type: "select", options: person.role === "dependant" ? [["", "Choose one"], ...WORK] : WORK }, "person")}
-        ${person.role === "client" ? `${field(person, { key: "email", label: "Email" }, "person")}${field(person, { key: "mobile", label: "Mobile" }, "person")}` : ""}
+        ${person.role === "client" ? `${field(person, { key: "email", label: "Email" }, "person")}${field(person, { key: "mobile", label: "Mobile", placeholder: "e.g. 403-555-0123" }, "person")}` : ""}
       `;
       const roleLabel = person.role === "client" ? "Client" : person.role === "spouse" ? "Spouse or partner" : "Dependant";
       const school = person.role === "dependant" ? `
         <div data-reveal="school" class="${person.workStatus === "student" ? "" : "hidden"}">
           ${ask(
-            field(person, { key: "schoolCost", label: "If this child is starting school, about how much per year?", hint: "One number.", mode: "decimal" }, "person"),
-            field(person, { key: "schoolYears", label: "For how many years?", mode: "decimal" }, "person"),
+            field(person, { key: "schoolCost", label: "If this child is starting school, about how much per year?", placeholder: "e.g. 20,000", hint: "One number.", mode: "decimal" }, "person"),
+            field(person, { key: "schoolYears", label: "For how many years?", placeholder: "e.g. 4", mode: "decimal" }, "person"),
           )}
         </div>
       ` : "";
@@ -962,7 +918,7 @@
           `<h3 class="font-serif text-lg text-navydeep">The home</h3>`,
           HOME_FIELDS.map((spec) => field(model.home, spec, "home")).join(""),
         )}
-        ${field({ spousalRrsp: model.spousalRrsp }, { key: "spousalRrsp", label: "Spousal RRSP", hint: "Who contributes, and who owns it. Leave this blank if there is none.", type: "area", rows: 2 }, "household")}
+        ${field({ spousalRrsp: model.spousalRrsp }, { key: "spousalRrsp", label: "Spousal RRSP", placeholder: "e.g. I contribute and my spouse owns it, about $60,000", hint: "Who contributes, and who owns it. Leave this blank if there is none.", type: "area", rows: 2 }, "household")}
       </article>
     `;
     peopleMount.innerHTML = cards + household;
@@ -972,14 +928,14 @@
     const companyFields = model.companies.map((company) => `
       <div class="flex items-end gap-3" data-company="${esc(company.id)}">
         <label class="block flex-1 text-sm font-medium text-navydeep">Legal name
-          <input data-key="legalName" data-scope="company" class="${INPUT}" value="${esc(company.legalName)}">
+          <input data-key="legalName" data-scope="company" class="${INPUT}" placeholder="e.g. Opco Ltd." value="${esc(company.legalName)}">
         </label>
         <button type="button" data-remove-company="${esc(company.id)}" class="mb-3 text-sm font-medium text-navydeep underline">Remove</button>
       </div>
     `).join("");
     const shareFields = (person) => `
-      ${field(person, { key: "shares", label: "Shares this person owns", hint: "Which company, which class, what percent, when they got the shares, and what they paid.", type: "area", rows: 3 }, "person")}
-      ${field(person, { key: "worksIn", label: "Work in a company", hint: "Which company, what they do, hours in a normal week, and since when.", type: "area", rows: 3 }, "person")}
+      ${field(person, { key: "shares", label: "Shares this person owns", placeholder: "e.g. Holdco Ltd., Class A common, 50%, since 2014, paid $100", hint: "Which company, which class, what percent, when they got the shares, and what they paid.", type: "area", rows: 3 }, "person")}
+      ${field(person, { key: "worksIn", label: "Work in a company", placeholder: "e.g. Opco Ltd., runs operations, 45 hours a week, since 2012", hint: "Which company, what they do, hours in a normal week, and since when.", type: "area", rows: 3 }, "person")}
     `;
     const peopleFields = model.people.map((person, index) => `
       <div class="space-y-4 rounded-sm border border-line bg-white/80 p-4" data-person="${esc(person.id)}">
@@ -997,37 +953,37 @@
       <button type="button" id="ac-add-company" class="px-4 py-2.5 rounded-sm border border-navydeep text-sm font-semibold text-navydeep hover:bg-navydeep hover:text-white transition">Add a company</button>
       ${peopleFields}
       <label class="block text-sm font-medium text-navydeep">Does a child or partner expect to buy or inherit a company?
-        <textarea id="ac-succession" rows="3" class="${INPUT}">${esc(model.succession || "")}</textarea>
+        <textarea id="ac-succession" rows="3" class="${INPUT}" placeholder="e.g. Our daughter works in the business and may take it over in about ten years. Our son is not involved.">${esc(model.succession || "")}</textarea>
       </label>
     `;
     document.getElementById("ac-add-company").addEventListener("click", addCompany);
   }
 
   const COMPANY_FIELDS = [
-    { key: "yearEnd", label: "Year-end", hint: "Month and day." },
-    { key: "does", label: "What it does", hint: "One line." },
+    { key: "yearEnd", label: "Year-end", placeholder: "e.g. December 31", hint: "Month and day." },
+    { key: "does", label: "What it does", placeholder: "e.g. Commercial electrical contracting", hint: "One line." },
     { key: "provinceInc", label: "Province of incorporation", type: "province" },
-    { key: "operates", label: "Where it actually operates" },
+    { key: "operates", label: "Where it actually operates", placeholder: "e.g. Alberta and British Columbia" },
     { key: "associated", label: "Is it associated with another company you own?", type: "select", options: YESNO },
-    { key: "associatedWith", label: "Which company, if it is associated", reveal: "associatedWith" },
-    { key: "revenue", label: "Last year revenue", mode: "decimal" },
-    { key: "expenses", label: "Last year expenses", mode: "decimal" },
-    { key: "profit", label: "Last year profit before anyone is paid", mode: "decimal" },
-    { key: "forecast", label: "What you expect for the next three years", hint: "Revenue, expenses, and profit for each year. Large capital spending belongs in the expenses.", type: "area", rows: 4 },
-    { key: "operatingCash", label: "Cash the business must keep to operate", mode: "decimal" },
-    { key: "surplusCash", label: "Cash and GICs beyond that", mode: "decimal" },
-    { key: "investments", label: "Investments", hint: "What they are, and the market value.", type: "area", rows: 2 },
-    { key: "investmentCost", label: "What the company paid for those investments", mode: "decimal" },
-    { key: "passiveIncome", label: "Interest, dividends, and rents earned last year", type: "area", rows: 2 },
-    { key: "gainsSold", label: "Gains already sold", mode: "decimal" },
-    { key: "gainsUnsold", label: "Gains not yet sold", mode: "decimal" },
-    { key: "debt", label: "Debt", hint: "Lender, balance, rate, payment, and what is pledged.", type: "area", rows: 3 },
-    { key: "shareholderLoans", label: "Shareholder loans", hint: "Who owes whom, and how much.", type: "area", rows: 2 },
+    { key: "associatedWith", label: "Which company, if it is associated", placeholder: "e.g. Holdco Ltd., which owns 100% of this company", reveal: "associatedWith" },
+    { key: "revenue", label: "Last year revenue", placeholder: "e.g. 2,400,000", mode: "decimal" },
+    { key: "expenses", label: "Last year expenses", placeholder: "e.g. 1,900,000", mode: "decimal" },
+    { key: "profit", label: "Last year profit before anyone is paid", placeholder: "e.g. 500,000", mode: "decimal" },
+    { key: "forecast", label: "What you expect for the next three years", placeholder: "e.g. Next year: $2.6M revenue, $2.0M expenses, $600K profit. The year after: about the same. Year three: includes a $400K equipment purchase.", hint: "Revenue, expenses, and profit for each year. Large capital spending belongs in the expenses.", type: "area", rows: 4 },
+    { key: "operatingCash", label: "Cash the business must keep to operate", placeholder: "e.g. 250,000", mode: "decimal" },
+    { key: "surplusCash", label: "Cash and GICs beyond that", placeholder: "e.g. 400,000", mode: "decimal" },
+    { key: "investments", label: "Investments", placeholder: "e.g. A balanced portfolio of stocks and bonds, worth about $900,000", hint: "What they are, and the market value.", type: "area", rows: 2 },
+    { key: "investmentCost", label: "What the company paid for those investments", placeholder: "e.g. 700,000", mode: "decimal" },
+    { key: "passiveIncome", label: "Interest, dividends, and rents earned last year", placeholder: "e.g. $18,000 in dividends and $6,000 in interest", type: "area", rows: 2 },
+    { key: "gainsSold", label: "Gains already sold", placeholder: "e.g. 25,000", mode: "decimal" },
+    { key: "gainsUnsold", label: "Gains not yet sold", placeholder: "e.g. 200,000", mode: "decimal" },
+    { key: "debt", label: "Debt", placeholder: "e.g. Bank operating line, $150,000 at prime plus 1%, interest only, secured by receivables", hint: "Lender, balance, rate, payment, and what is pledged.", type: "area", rows: 3 },
+    { key: "shareholderLoans", label: "Shareholder loans", placeholder: "e.g. The company owes me $120,000", hint: "Who owes whom, and how much.", type: "area", rows: 2 },
     { key: "corpIns", label: "Does the company own life insurance?", type: "select", options: YESNO },
-    { key: "corpInsDetail", label: "The policy", hint: "Whose life, the amount, term or permanent, the premium, and the renewal or cash value if you know it.", type: "area", rows: 3, reveal: "corpIns" },
+    { key: "corpInsDetail", label: "The policy", placeholder: "e.g. My life, $2,000,000 permanent, $14,000 a year, cash value about $80,000", hint: "Whose life, the amount, term or permanent, the premium, and the renewal or cash value if you know it.", type: "area", rows: 3, reveal: "corpIns" },
     { key: "saleWindow", label: "If this company might be sold", type: "select", options: [["", "Choose one"], ["Not selling", "Not selling"], ["1–3 years", "1–3 years"], ["3–7 years", "3–7 years"], ["7–15 years", "7–15 years"], ["Unknown", "Unknown"]] },
     { key: "successor", label: "Who should end up with it", type: "select", options: [["", "Choose one"], ["You", "You"], ["A child", "A child"], ["A partner", "A partner"], ["A buyer", "A buyer"], ["Unknown", "Unknown"]] },
-    { key: "valuation", label: "Valuation range, if you have had one", reveal: "saleExtra" },
+    { key: "valuation", label: "Valuation range, if you have had one", placeholder: "e.g. $3M to $4M, done in 2024", reveal: "saleExtra" },
     { key: "buyerWants", label: "Would a buyer want the shares or the assets", type: "select", options: [["", "Choose one"], ["Shares", "Shares"], ["Assets", "Assets"], ["Not sure", "Not sure"]], reveal: "saleExtra" },
     { key: "purify", label: "Are you willing to move passive assets out before a sale?", type: "select", options: [["", "Choose one"], ["Yes", "Yes"], ["No", "No"], ["Not sure", "Not sure"]], reveal: "purify" },
     { key: "sha", label: "Shareholder agreement", type: "select", options: YESNO },
@@ -1192,7 +1148,7 @@
     const mount = document.getElementById("ac-documents");
     if (!mount) return;
     const groups = documentGroups(model);
-    const mail = `<a class="font-medium text-navydeep underline" href="mailto:ethan@marchandwealth.ca?subject=Advanced%20planning%20documents">ethan@marchandwealth.ca</a>`;
+    const mail = `<a class="font-medium text-navydeep underline" href="mailto:${CONTACT_EMAIL}?subject=Advanced%20planning%20documents">${CONTACT_EMAIL}</a>`;
     if (!groups.length) {
       mount.innerHTML = `<p>As you fill this in, the documents to email ${mail} are listed here. Do not upload them.</p>`;
       return;
@@ -1581,14 +1537,14 @@
     submitBtn.disabled = true;
     statusEl.textContent = "Submitting…";
     statusEl.className = "text-[13.5px] text-inksoft";
-    const link = await caseUrl();
-    document.getElementById("ac-field-name").value = client.name.trim();
-    document.getElementById("ac-field-email").value = client.email.trim();
-    document.getElementById("ac-field-phone").value = client.mobile.trim();
-    document.getElementById("ac-field-link").value = link;
-    document.getElementById("ac-field-date").value = formatDate(model.date);
-    document.getElementById("ac-field-summary").value = summaryText(model);
     try {
+      const link = await caseUrl();
+      document.getElementById("ac-field-name").value = client.name.trim();
+      document.getElementById("ac-field-email").value = (client.email || "").trim();
+      document.getElementById("ac-field-phone").value = (client.mobile || "").trim();
+      document.getElementById("ac-field-link").value = link;
+      document.getElementById("ac-field-date").value = formatDate(model.date);
+      document.getElementById("ac-field-summary").value = summaryText(model);
       const body = new URLSearchParams();
       ["form-name", "client-name", "client-email", "client-phone", "case-link", "completed-date", "case-summary", "bot-field"].forEach((name) => {
         const field = form.querySelector(`[name="${name}"]`);
@@ -1600,11 +1556,11 @@
         body,
       });
       if (!res.ok) throw new Error("Submission failed");
-      statusEl.textContent = "Submitted. Your answers were emailed to your advisor. Send the documents to ethan@marchandwealth.ca.";
+      statusEl.textContent = `Submitted. Your answers were emailed to your advisor. Send the documents to ${CONTACT_EMAIL}.`;
       statusEl.className = "text-[13.5px] text-green-700";
       submitBtn.textContent = "Submit again";
     } catch {
-      statusEl.textContent = "Your answers could not be sent automatically. Download the PDF and email it, with the documents, to ethan@marchandwealth.ca.";
+      statusEl.textContent = `Your answers could not be sent automatically. Download the PDF and email it, with the documents, to ${CONTACT_EMAIL}.`;
       statusEl.className = "text-[13.5px] text-red-700";
     } finally {
       submitBtn.disabled = false;
@@ -1625,40 +1581,6 @@
     }
     setTimeout(() => { copyLabel.textContent = "Copy link to answers"; }, 1800);
   });
-
-  let jsPdfLoading = null;
-  function loadJsPdf() {
-    if (window.jspdf?.jsPDF) return Promise.resolve(window.jspdf.jsPDF);
-    if (!jsPdfLoading) {
-      jsPdfLoading = new Promise((resolve, reject) => {
-        const script = document.createElement("script");
-        script.src = "/assets/vendor/jspdf.umd.min.js";
-        script.onload = () => (window.jspdf?.jsPDF ? resolve(window.jspdf.jsPDF) : reject(new Error("jsPDF missing")));
-        script.onerror = () => {
-          jsPdfLoading = null;
-          reject(new Error("jsPDF failed to load"));
-        };
-        document.head.append(script);
-      });
-    }
-    return jsPdfLoading;
-  }
-
-  async function loadLogo() {
-    try {
-      const res = await fetch("/assets/logo.png");
-      if (!res.ok) return null;
-      const blob = await res.blob();
-      return await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => resolve(null);
-        reader.readAsDataURL(blob);
-      });
-    } catch {
-      return null;
-    }
-  }
 
   const downloadBtn = document.getElementById("ac-download");
   const downloadStatus = document.getElementById("ac-download-status");
