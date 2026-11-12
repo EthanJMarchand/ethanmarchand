@@ -820,7 +820,7 @@
       "investor-profile": scoreAnswers(a).profile.key,
       "iq-link": await reviewUrl(a),
     });
-    return `/client-intake.html?in=${packed}`;
+    return `client-intake.html?in=${packed}`;
   }
 
   function submissionBody(a, link) {
